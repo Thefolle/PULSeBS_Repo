@@ -13,3 +13,310 @@ const db = new sqlite3.Database( 'pulsebs.db', ( err ) => {
 /*
 * DAO Methods
 */
+
+/*
+* Checking user password
+* */
+
+exports.checkUser = ( email, password, type ) => {
+    return new Promise( ( resolve, reject ) => {
+        let query;
+        //Check for user type
+        switch ( type ) {
+            case 1:
+                query = `SELECT password FROM student WHERE email = ?`;
+                break;
+            case 2:
+                query = `SELECT password FROM teacher WHERE email = ?`;
+                break;
+            case 3:
+                query = `SELECT password FROM staff WHERE email = ?`;
+                break;
+        }
+        db.get( query, [ email ], ( err, row ) => {
+            if ( err ) reject( err );
+            if ( row ) {
+                password.localeCompare( row.password ) === 0 ? resolve( true ) : reject( false );
+            }
+        } )
+    } );
+}
+
+/*
+* Book a seat for a lecture
+* */
+
+exports.bookSeat = ( lectureId, studentId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        //1 - Check if student is undersigned to that course
+        //2 - Insert a new booking record
+
+        let checkQuery = "SELECT COUNT(*) " +
+            "FROM subscription S,course C,lecture L " +
+            "WHERE S.ref_course = C.id AND C.id = L.ref_course = AND " +
+            "L.id = ? AND S.ref_student = ?";
+        let bookQuery = "INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ?,?,?)";
+
+        db.get( checkQuery, [ lectureId, studentId ], ( err, row ) => {
+            if ( err ) reject( err );
+            if ( row ) {
+                //Student subscription exists
+                db.run( bookQuery, [ studentId, lectureId, moment().valueOf() ], ( err ) => {
+                    err ? reject( err ) : resolve( 1 );
+                } );
+            }
+        } );
+    } ) );
+}
+
+/*
+* Get list of student's lectures
+* */
+
+exports.getStudentLectures = ( studentId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT C.desc as course, CL.desc as class, " +
+            "L.date, L.presence, L.bookable, T.name, T.surname, L.active " +
+            "FROM lecture L,course C,teacher T,class CL, subscription S, student ST " +
+            "WHERE L.ref_course = C.id AND L.ref_class = CL.id AND " +
+            "S.ref_student = ST.id = ? AND S.ref_course = C.id " +
+            "C.ref_teacher = T.id"
+        db.all( query, [ studentId ], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Get list of teacher's lectures
+* */
+
+exports.getTeacherLectures = ( teacherId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT C.desc as course, CL.desc as class, " +
+            "L.date, L.presence, L.bookable " +
+            "FROM lecture L,course C,class CL " +
+            "WHERE L.ref_course = C.id AND L.ref_class = CL.id AND " +
+            "C.ref_teacher = ?"
+        db.all( query, [ teacherId ], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Get a list of students who will attend a lecture
+* */
+
+exports.getStudentsForLecture = ( lectureId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT ref_student " +
+            "FROM booking B" +
+            "WHERE B.ref_lecture = ?"
+        db.all( query, [ lectureId ], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Delete a booking
+* */
+
+exports.cancelBooking = ( bookingId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "UPDATE booking SET active = 0 WHERE id = ?"
+        db.run( query, [ bookingId ], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+        } );
+    } ) );
+}
+
+/*
+* Get a list of student's booking
+* */
+
+exports.getStudentBookings = ( studentId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT * FROM booking WHERE ref_student = ?"
+        db.all( query, [ studentId ], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Delete a lecture
+* */
+
+exports.cancelLecture = ( lectureId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "UPDATE lecture SET active = 0 WHERE id = ?"
+        db.run( query, [ lectureId ], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+        } );
+    } ) );
+}
+
+/*
+* Turn a presence lecture into an online one
+* */
+
+exports.setPresenceLecture = ( lectureId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ?"
+        db.run( query, [ lectureId ], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+        } );
+    } ) );
+}
+
+/*
+* Get all bookings to be grouped by week,month or single lecture
+* */
+
+exports.getTeacherBookingStats = ( teacherId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT * " +
+            "FROM booking B, lecture L, course C " +
+            "WHERE B.ref_lecture = L.id AND L.ref_course = C.id AND" +
+            "C.ref_teacher = ? AND active = 1 "
+
+        db.all( query, [teacherId], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Get all presence grouped by week,month or single lecture
+* */
+
+exports.getTeacherPresenceStats = ( teacherId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT * " +
+            "FROM booking B, lecture L, course C " +
+            "WHERE B.ref_lecture = L.id AND L.ref_course = C.id AND" +
+            "C.ref_teacher = ? AND active = 1 AND presence = 1 AND L.date < ? "
+        db.all( query, [teacherId, moment().valueOf() ], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Get the total of bookings, cancellations and attendances of the system
+* */
+
+exports.getManagerStats = () => {
+    return new Promise( ( ( resolve, reject ) => {
+        //Result => [ BOOKING COUNT, CANCELLATION COUNT, PRESENCE COUNT ]
+        let query = "SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL " +
+            "SELECT COUNT(*) FROM booking WHERE active = 0 UNION ALL " +
+            "SELECT COUNT(*) FROM booking WHERE presence = 1"
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Get all attendance of a positive student and the relative people involved in
+* */
+
+exports.studentContactTracing = ( studentId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let now = moment();
+        let twoWeeksAgo = now.subtract(14,'days');
+
+        let query = "SELECT S.name as sname,S.surname as ssurname, " +
+            "T.name as tname,T.surname as tsurname " +
+            "FROM booking B, lecture L, student S, course C, teacher T " +
+            "WHERE B.ref_student = S.id AND B.ref_lecture = L.id AND " +
+            "L.ref_course = C.id AND C.ref_teacher = T.id AND " +
+            "B.id IN ( " +
+            "SELECT B.id " +
+            "FROM booking B, lecture L " +
+            "WHERE B.ref_lecture = L.lecture AND B.ref_student = ? AND " +
+            "B.presence = 1 AND L.date < ? AND L.date > ? )"
+        db.all( query, [studentId, now.valueOf(), twoWeeksAgo.valueOf()], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Get all lectures of a positive teacher and the relative people involved in
+* */
+
+exports.teacherContactTracing = ( teacherId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let now = moment();
+        let twoWeeksAgo = now.subtract(14,'days');
+
+        let query = "SELECT S.name as sname,S.surname as ssurname " +
+            "FROM booking B, lecture L, student S, course C" +
+            "WHERE B.ref_student = S.id AND B.ref_lecture = L.id AND " +
+            "L.ref_course = C.id AND C.ref_teacher = ? AND " +
+            "B.presence = 1 AND L.date < ? AND L.date > ? "
+        db.all( query, [teacherId, now.valueOf(), twoWeeksAgo.valueOf()], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Make bookable/no bookable a lecture
+* */
+
+exports.editBookableLecture = ( lectureId, bookable ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "UPDATE lecture SET bookable = ? WHERE id = ?"
+        db.run( query, [ bookable,lectureId ], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+        } );
+    } ) );
+}
+
+/*
+* Get all courses, with relative lectures anda dates
+* */
+
+exports.getOfficerCoursesLectures = () => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "SELECT * " +
+            "FROM lecture L, course C" +
+            "WHERE L.ref_course = C.id"
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+        } );
+    } ) );
+}
+
+/*
+* Edit a lecture date
+* */
+
+exports.editLectureDate = ( lectureId, newDate ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = "UPDATE lecture SET date = ? WHERE id = ?"
+        db.run( query, [ newDate,lectureId ], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+        } );
+    } ) );
+}
