@@ -7,7 +7,7 @@ const moment = require( 'moment' );
 */
 const db = new sqlite3.Database( 'pulsebs.db', ( err ) => {
     if ( err ) return console.error( err.message );
-    console.log( 'Connected to the in-memory SQlite database.' );
+    //console.log( 'Connected to the in-memory SQlite database.' );
 } );
 
 /*
@@ -53,7 +53,7 @@ exports.bookSeat = ( lectureId, studentId ) => {
 
         let checkQuery = "SELECT COUNT(*) " +
             "FROM subscription S,course C,lecture L " +
-            "WHERE S.ref_course = C.id AND C.id = L.ref_course = AND " +
+            "WHERE S.ref_course = C.id AND C.id = L.ref_course AND " +
             "L.id = ? AND S.ref_student = ?";
         let bookQuery = "INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ?,?,?)";
 
@@ -75,12 +75,28 @@ exports.bookSeat = ( lectureId, studentId ) => {
 
 exports.getStudentLectures = ( studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = "SELECT C.desc as course, CL.desc as class, " +
-            "L.date, L.presence, L.bookable, T.name, T.surname, L.active " +
-            "FROM lecture L,course C,teacher T,class CL, subscription S, student ST " +
-            "WHERE L.ref_course = C.id AND L.ref_class = CL.id AND " +
-            "S.ref_student = ST.id = ? AND S.ref_course = C.id " +
-            "C.ref_teacher = T.id"
+        let query = "SELECT L.id,\n" +
+            "       date,\n" +
+            "       presence,\n" +
+            "       bookable,\n" +
+            "       active,\n" +
+            "       C.desc,\n" +
+            "       name,\n" +
+            "       surname,\n" +
+            "       CL.desc\n" +
+            "FROM lecture L,\n" +
+            "     course C,\n" +
+            "     teacher T,\n" +
+            "     class CL\n" +
+            "WHERE L.ref_course = C.id\n" +
+            "  AND L.ref_class = CL.id\n" +
+            "  AND C.ref_teacher = T.id\n" +
+            "  AND C.id IN (\n" +
+            "      SELECT C2.id\n" +
+            "      FROM subscription S, student ST, course C2\n" +
+            "      WHERE S.ref_course = C2.id AND\n" +
+            "            S.ref_student = ?\n" +
+            "    )"
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
