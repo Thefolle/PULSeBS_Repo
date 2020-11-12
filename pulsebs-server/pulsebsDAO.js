@@ -37,7 +37,7 @@ exports.checkUser = ( email, password, type ) => {
             if ( err ) reject( err );
             if ( row ) {
                 password.localeCompare( row.password ) === 0 ? resolve( true ) : reject( false );
-            }
+            }else resolve(0);
         } )
     } );
 }
@@ -51,7 +51,7 @@ exports.bookSeat = ( lectureId, studentId ) => {
         //1 - Check if student is undersigned to that course
         //2 - Insert a new booking record
 
-        let checkQuery = "SELECT COUNT(*) " +
+        let checkQuery = "SELECT bookable " +
             "FROM subscription S,course C,lecture L " +
             "WHERE S.ref_course = C.id AND C.id = L.ref_course AND " +
             "L.id = ? AND S.ref_student = ?";
@@ -59,12 +59,12 @@ exports.bookSeat = ( lectureId, studentId ) => {
 
         db.get( checkQuery, [ lectureId, studentId ], ( err, row ) => {
             if ( err ) reject( err );
-            if ( row ) {
+            if ( row && row.bookable === 1 ) {
                 //Student subscription exists
                 db.run( bookQuery, [ studentId, lectureId, moment().valueOf() ], ( err ) => {
                     err ? reject( err ) : resolve( 1 );
                 } );
-            }
+            }else resolve(0);
         } );
     } ) );
 }
@@ -100,6 +100,7 @@ exports.getStudentLectures = ( studentId ) => {
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -118,6 +119,7 @@ exports.getTeacherLectures = ( teacherId ) => {
         db.all( query, [ teacherId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -128,12 +130,11 @@ exports.getTeacherLectures = ( teacherId ) => {
 
 exports.getStudentsForLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = "SELECT ref_student " +
-            "FROM booking B" +
-            "WHERE B.ref_lecture = ?"
+        let query = "SELECT ref_student FROM booking B WHERE B.ref_lecture = ?"
         db.all( query, [ lectureId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -148,6 +149,7 @@ exports.cancelBooking = ( bookingId ) => {
         db.run( query, [ bookingId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
+            else resolve(0);
         } );
     } ) );
 }
@@ -162,6 +164,7 @@ exports.getStudentBookings = ( studentId ) => {
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -172,10 +175,11 @@ exports.getStudentBookings = ( studentId ) => {
 
 exports.cancelLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = "UPDATE lecture SET active = 0 WHERE id = ?"
+        let query = "UPDATE lecture SET active = 0, bookable = 0 WHERE id = ?"
         db.run( query, [ lectureId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
+            else resolve(0);
         } );
     } ) );
 }
@@ -186,10 +190,11 @@ exports.cancelLecture = ( lectureId ) => {
 
 exports.setPresenceLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = "UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ?"
+        let query = "UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ? AND active = 1"
         db.run( query, [ lectureId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
+            else resolve(0);
         } );
     } ) );
 }
@@ -205,9 +210,10 @@ exports.getTeacherBookingStats = ( teacherId ) => {
             "WHERE B.ref_lecture = L.id AND L.ref_course = C.id AND" +
             "C.ref_teacher = ? AND active = 1 "
 
-        db.all( query, [teacherId], ( err, rows ) => {
+        db.all( query, [ teacherId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -222,9 +228,10 @@ exports.getTeacherPresenceStats = ( teacherId ) => {
             "FROM booking B, lecture L, course C " +
             "WHERE B.ref_lecture = L.id AND L.ref_course = C.id AND" +
             "C.ref_teacher = ? AND active = 1 AND presence = 1 AND L.date < ? "
-        db.all( query, [teacherId, moment().valueOf() ], ( err, rows ) => {
+        db.all( query, [ teacherId, moment().valueOf() ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -242,6 +249,7 @@ exports.getManagerStats = () => {
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -253,7 +261,7 @@ exports.getManagerStats = () => {
 exports.studentContactTracing = ( studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let now = moment();
-        let twoWeeksAgo = now.subtract(14,'days');
+        let twoWeeksAgo = now.subtract( 14, 'days' );
 
         let query = "SELECT S.name as sname,S.surname as ssurname, " +
             "T.name as tname,T.surname as tsurname " +
@@ -265,9 +273,10 @@ exports.studentContactTracing = ( studentId ) => {
             "FROM booking B, lecture L " +
             "WHERE B.ref_lecture = L.lecture AND B.ref_student = ? AND " +
             "B.presence = 1 AND L.date < ? AND L.date > ? )"
-        db.all( query, [studentId, now.valueOf(), twoWeeksAgo.valueOf()], ( err, rows ) => {
+        db.all( query, [ studentId, now.valueOf(), twoWeeksAgo.valueOf() ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -279,16 +288,17 @@ exports.studentContactTracing = ( studentId ) => {
 exports.teacherContactTracing = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let now = moment();
-        let twoWeeksAgo = now.subtract(14,'days');
+        let twoWeeksAgo = now.subtract( 14, 'days' );
 
         let query = "SELECT S.name as sname,S.surname as ssurname " +
             "FROM booking B, lecture L, student S, course C" +
             "WHERE B.ref_student = S.id AND B.ref_lecture = L.id AND " +
             "L.ref_course = C.id AND C.ref_teacher = ? AND " +
             "B.presence = 1 AND L.date < ? AND L.date > ? "
-        db.all( query, [teacherId, now.valueOf(), twoWeeksAgo.valueOf()], ( err, rows ) => {
+        db.all( query, [ teacherId, now.valueOf(), twoWeeksAgo.valueOf() ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -300,9 +310,10 @@ exports.teacherContactTracing = ( teacherId ) => {
 exports.editBookableLecture = ( lectureId, bookable ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = "UPDATE lecture SET bookable = ? WHERE id = ?"
-        db.run( query, [ bookable,lectureId ], function ( err ) {
+        db.run( query, [ bookable, lectureId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
+            else resolve(0);
         } );
     } ) );
 }
@@ -319,6 +330,7 @@ exports.getOfficerCoursesLectures = () => {
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
+            else resolve(0);
         } );
     } ) );
 }
@@ -330,9 +342,10 @@ exports.getOfficerCoursesLectures = () => {
 exports.editLectureDate = ( lectureId, newDate ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = "UPDATE lecture SET date = ? WHERE id = ?"
-        db.run( query, [ newDate,lectureId ], function ( err ) {
+        db.run( query, [ newDate, lectureId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
+            else resolve(0);
         } );
     } ) );
 }
