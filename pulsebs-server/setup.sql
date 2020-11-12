@@ -12,7 +12,9 @@ create table staff
     id       INTEGER primary key,
     email    TEXT not null unique,
     password TEXT not null,
-    type     INTEGER default 0 not null
+    type     INTEGER default 0 not null,
+    name     TEXT not null,
+    surname  TEXT not null
 );
 
 create table student

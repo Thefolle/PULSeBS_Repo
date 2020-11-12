@@ -13,8 +13,8 @@ insert into teacher (id, email, password, name, surname) VALUES (239902,'dalmau.
 insert into teacher (id, email, password, name, surname) VALUES (239903,'kaitlin.whittier@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Kaitlin', 'Whittier');
 insert into teacher (id, email, password, name, surname) VALUES (239904,'montserrat.wilder@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Montserrat', 'Wilder');
 
-insert into staff (email, password, type, name, surname) VALUES ('harry.houdini@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG',0, 'harry', 'houdini'); /* 0 => Booking manager */
-insert into staff (email, password, type, name, surname) VALUES ('john.doe@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG',1, 'john', 'doe'); /* 1 => Support officer */
+insert into staff (email, password, type, name, surname) VALUES ('harry.houdini@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG',0, 'Harry', 'Houdini'); /* 0 => Booking manager */
+insert into staff (email, password, type, name, surname) VALUES ('john.doe@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG',1, 'John', 'Doe'); /* 1 => Support officer */
 
 insert into course (desc, ref_teacher) VALUES ('Analisi 1',239901);
 insert into course (desc, ref_teacher) VALUES ('Elettrotecnica',239901);
