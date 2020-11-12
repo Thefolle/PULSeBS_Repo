@@ -1,25 +1,26 @@
-const DAO = require( "../pulsebsDAO.js" );
+const DAO = require("../pulsebsDAO.js");
 
 //REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
 
-//LOGIN
-test( 'Try to login with < student1@gmail.com, ciao123>', () => {
-    return DAO.checkUser( 'student1@gmail.com', 'ciao123', 1 ).then( result => {
-        expect( result ).toBe( true );
-    } )
-} );
+describe("Login test suite", () => {
+    test('Try to login with < davide.calarco@gmail.com, password>', () => {
+        return DAO.getUserByEmail('davide.calarco@gmail.com', 'password').then(result => {
+            expect(result.name).toBe('Davide');
+        });
+    });
 
-test( 'Try to login with < teacher1@gmail.com, ciao123>', () => {
-    return DAO.checkUser( 'teacher1@gmail.com', 'ciao123', 2 ).then( result => {
-        expect( result ).toBe( true );
-    } )
-} );
+    test('Try to login with < hyeronimus.bosch@gmail.com, password>', () => {
+        return DAO.getUserByEmail('hyeronimus.bosch@gmail.com', 'password').then(result => {
+            expect(result.name).toBe('Hyeronimus');
+        });
+    });
 
-test( 'Try to login with < staff1@gmail.com, ciao123>', () => {
-    return DAO.checkUser( 'staff1@gmail.com', 'ciao123', 3 ).then( result => {
-        expect( result ).toBe( true );
-    } )
-} );
+    test('Try to login with < harry.houdini@gmail.com, password>', () => {
+        return DAO.getUserByEmail('harry.houdini@gmail.com', 'password').then(result => {
+            expect(result.name).toBe('Harry');
+        });
+    });
+});
 
 //BOOKING A SEAT
 test( 'Try to book a new seat', () => {

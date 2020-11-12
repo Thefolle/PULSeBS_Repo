@@ -46,6 +46,15 @@ exports.getUserByEmail = function (email) {
                 }
             });
         }
+<<<<<<< HEAD
+        db.get( query, [ email ], ( err, row ) => {
+            if ( err ) reject( err );
+            if ( row ) {
+                password.localeCompare( row.password ) === 0 ? resolve( true ) : reject( false );
+            }else resolve(0);
+        } )
+    } );
+=======
 
     });
 };
@@ -56,6 +65,7 @@ exports.checkPassword = function (user, password) {
      console.log('hash:' + bcrypt.hashSync('password', 0));
     */
    return bcrypt.compareSync(password, user.hash);
+>>>>>>> login
 }
 
 /*
@@ -73,6 +83,7 @@ exports.bookSeat = (lectureId, studentId) => {
             "L.id = ? AND S.ref_student = ?";
         let bookQuery = "INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ?,?,?)";
 
+<<<<<<< HEAD
         db.get( checkQuery, [ lectureId, studentId ], ( err, row ) => {
             if ( err ) reject( err );
             if ( row && row.bookable === 1 ) {
@@ -83,6 +94,18 @@ exports.bookSeat = (lectureId, studentId) => {
             }else resolve(0);
         } );
     } ) );
+=======
+        db.get(checkQuery, [lectureId, studentId], (err, row) => {
+            if (err) reject(err);
+            if (row) {
+                //Student subscription exists
+                db.run(bookQuery, [studentId, lectureId, moment().valueOf()], (err) => {
+                    err ? reject(err) : resolve(1);
+                });
+            }
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -113,12 +136,20 @@ exports.getStudentLectures = (studentId) => {
             "      WHERE S.ref_course = C2.id AND\n" +
             "            S.ref_student = ?\n" +
             "    )"
+<<<<<<< HEAD
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [studentId], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -132,18 +163,27 @@ exports.getTeacherLectures = (teacherId) => {
             "FROM lecture L,course C,class CL " +
             "WHERE L.ref_course = C.id AND L.ref_class = CL.id AND " +
             "C.ref_teacher = ?"
+<<<<<<< HEAD
         db.all( query, [ teacherId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [teacherId], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
 * Get a list of students who will attend a lecture
 * */
 
+<<<<<<< HEAD
 exports.getStudentsForLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = "SELECT ref_student FROM booking B WHERE B.ref_lecture = ?"
@@ -153,6 +193,18 @@ exports.getStudentsForLecture = ( lectureId ) => {
             else resolve(0);
         } );
     } ) );
+=======
+exports.getStudentsForLecture = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = "SELECT ref_student " +
+            "FROM booking B" +
+            "WHERE B.ref_lecture = ?"
+        db.all(query, [lectureId], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -162,12 +214,20 @@ exports.getStudentsForLecture = ( lectureId ) => {
 exports.cancelBooking = (bookingId) => {
     return new Promise(((resolve, reject) => {
         let query = "UPDATE booking SET active = 0 WHERE id = ?"
+<<<<<<< HEAD
         db.run( query, [ bookingId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve(0);
         } );
     } ) );
+=======
+        db.run(query, [bookingId], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -177,18 +237,27 @@ exports.cancelBooking = (bookingId) => {
 exports.getStudentBookings = (studentId) => {
     return new Promise(((resolve, reject) => {
         let query = "SELECT * FROM booking WHERE ref_student = ?"
+<<<<<<< HEAD
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [studentId], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
 * Delete a lecture
 * */
 
+<<<<<<< HEAD
 exports.cancelLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = "UPDATE lecture SET active = 0, bookable = 0 WHERE id = ?"
@@ -198,12 +267,23 @@ exports.cancelLecture = ( lectureId ) => {
             else resolve(0);
         } );
     } ) );
+=======
+exports.cancelLecture = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = "UPDATE lecture SET active = 0 WHERE id = ?"
+        db.run(query, [lectureId], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
 * Turn a presence lecture into an online one
 * */
 
+<<<<<<< HEAD
 exports.setPresenceLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = "UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ? AND active = 1"
@@ -213,6 +293,16 @@ exports.setPresenceLecture = ( lectureId ) => {
             else resolve(0);
         } );
     } ) );
+=======
+exports.setPresenceLecture = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = "UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ?"
+        db.run(query, [lectureId], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -226,12 +316,20 @@ exports.getTeacherBookingStats = (teacherId) => {
             "WHERE B.ref_lecture = L.id AND L.ref_course = C.id AND" +
             "C.ref_teacher = ? AND active = 1 "
 
+<<<<<<< HEAD
         db.all( query, [ teacherId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [teacherId], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -244,12 +342,20 @@ exports.getTeacherPresenceStats = (teacherId) => {
             "FROM booking B, lecture L, course C " +
             "WHERE B.ref_lecture = L.id AND L.ref_course = C.id AND" +
             "C.ref_teacher = ? AND active = 1 AND presence = 1 AND L.date < ? "
+<<<<<<< HEAD
         db.all( query, [ teacherId, moment().valueOf() ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [teacherId, moment().valueOf()], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -262,12 +368,20 @@ exports.getManagerStats = () => {
         let query = "SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL " +
             "SELECT COUNT(*) FROM booking WHERE active = 0 UNION ALL " +
             "SELECT COUNT(*) FROM booking WHERE presence = 1"
+<<<<<<< HEAD
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -277,7 +391,11 @@ exports.getManagerStats = () => {
 exports.studentContactTracing = (studentId) => {
     return new Promise(((resolve, reject) => {
         let now = moment();
+<<<<<<< HEAD
         let twoWeeksAgo = now.subtract( 14, 'days' );
+=======
+        let twoWeeksAgo = now.subtract(14, 'days');
+>>>>>>> login
 
         let query = "SELECT S.name as sname,S.surname as ssurname, " +
             "T.name as tname,T.surname as tsurname " +
@@ -289,12 +407,20 @@ exports.studentContactTracing = (studentId) => {
             "FROM booking B, lecture L " +
             "WHERE B.ref_lecture = L.lecture AND B.ref_student = ? AND " +
             "B.presence = 1 AND L.date < ? AND L.date > ? )"
+<<<<<<< HEAD
         db.all( query, [ studentId, now.valueOf(), twoWeeksAgo.valueOf() ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [studentId, now.valueOf(), twoWeeksAgo.valueOf()], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -304,19 +430,31 @@ exports.studentContactTracing = (studentId) => {
 exports.teacherContactTracing = (teacherId) => {
     return new Promise(((resolve, reject) => {
         let now = moment();
+<<<<<<< HEAD
         let twoWeeksAgo = now.subtract( 14, 'days' );
+=======
+        let twoWeeksAgo = now.subtract(14, 'days');
+>>>>>>> login
 
         let query = "SELECT S.name as sname,S.surname as ssurname " +
             "FROM booking B, lecture L, student S, course C" +
             "WHERE B.ref_student = S.id AND B.ref_lecture = L.id AND " +
             "L.ref_course = C.id AND C.ref_teacher = ? AND " +
             "B.presence = 1 AND L.date < ? AND L.date > ? "
+<<<<<<< HEAD
         db.all( query, [ teacherId, now.valueOf(), twoWeeksAgo.valueOf() ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [teacherId, now.valueOf(), twoWeeksAgo.valueOf()], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -326,12 +464,20 @@ exports.teacherContactTracing = (teacherId) => {
 exports.editBookableLecture = (lectureId, bookable) => {
     return new Promise(((resolve, reject) => {
         let query = "UPDATE lecture SET bookable = ? WHERE id = ?"
+<<<<<<< HEAD
         db.run( query, [ bookable, lectureId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve(0);
         } );
     } ) );
+=======
+        db.run(query, [bookable, lectureId], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -343,12 +489,20 @@ exports.getOfficerCoursesLectures = () => {
         let query = "SELECT * " +
             "FROM lecture L, course C" +
             "WHERE L.ref_course = C.id"
+<<<<<<< HEAD
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
         } );
     } ) );
+=======
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+        });
+    }));
+>>>>>>> login
 }
 
 /*
@@ -358,10 +512,18 @@ exports.getOfficerCoursesLectures = () => {
 exports.editLectureDate = (lectureId, newDate) => {
     return new Promise(((resolve, reject) => {
         let query = "UPDATE lecture SET date = ? WHERE id = ?"
+<<<<<<< HEAD
         db.run( query, [ newDate, lectureId ], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve(0);
         } );
     } ) );
+=======
+        db.run(query, [newDate, lectureId], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+        });
+    }));
+>>>>>>> login
 }
