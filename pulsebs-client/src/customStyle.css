@@ -1,0 +1,109 @@
+* {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;  
+}
+
+h1, h2, h3, h4, h5, h6, p, small, label, .card-header, td {
+    cursor: default;
+    user-select: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+.jumbotron p {
+    font-size: 2em;
+}
+
+.jumbotron.error {
+    background-color: rgb(255, 153, 153);
+}
+
+.togglebutton, .togglebutton:focus {
+    transform: translateY(5px);
+    background-color: rgb(255, 91, 91);
+}
+
+button[class*='btn-primary'] {
+    width: 200px;
+    height: 50px;
+}
+
+#filtersForm {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#filtersForm > * {
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+#filtersForm:nth-child(2) {
+    align-self: flex-start;
+}
+
+.TableWithHiddenID th:first-child, .TableWithHiddenID td:first-child {
+    display: none;
+}
+
+h1 {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 5em;
+    margin-top: 80px;
+    margin-bottom: 40px;
+}
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 30px;
+}
+
+.card-header:hover {
+    cursor: pointer;
+}
+
+.card {
+    width: 80%;
+}
+
+.card-body {
+    display: flex;
+    justify-content: center;
+}
+
+.card-body > * {
+    margin-left: 50px;
+    margin-right: 50px;
+    width: 80%;
+}
+
+.jumbotron {
+    background-color: rgb(101, 196, 101);
+}
+
+#searchBar {
+    display: flex;
+    height: 100px;
+    justify-content: space-between;
+}
+
+nav {
+    height: 100px;
+}
+
+#loginForm {
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+tbody > tr:hover {
+    background-color: gainsboro;
+}
