@@ -25,7 +25,7 @@ class LoginPage extends React.Component {
     login() {
   
       API.login(this.state.email, this.state.password).then((user) => {
-        this.props.setFullName(user.name, user.surname, user.type);
+        this.props.setFullName(user.id, user.name, user.surname, user.type);
   
         this.setState({ redirect: true, invalidCredentials: false, userType: user.type });
       }).catch((err) => {

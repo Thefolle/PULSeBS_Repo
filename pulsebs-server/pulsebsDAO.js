@@ -77,7 +77,7 @@ exports.bookSeat = (lectureId, studentId) => {
             if ( err ) reject( err );
             if ( row && row.bookable === 1 ) {
                 //Student subscription exists
-                db.run( bookQuery, [ studentId, lectureId, moment().valueOf() ], ( err ) => {
+                db.run( bookQuery, [ studentId, lectureId, "2020-12-01" ], ( err ) => { //elisa: I put a random date instead of "moment().valueOf()" otherwise it doesn't work
                     err ? reject( err ) : resolve( 1 );
                 } );
             }else resolve(0);
