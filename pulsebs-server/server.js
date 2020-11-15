@@ -122,14 +122,12 @@ app.get('/api/student/lectures', (req, res) => {
 
 //POST /student/booking
 app.post('/api/student/booking', (req,res) => {
-    const lecture = req.body;
-    if(!lecture){
-        console.log("server:" + lecture.id);
+    const lectureId = req.body;
+    if(!lectureId){
         res.status(401).end();
     } else {
-        console.log("server:" + lecture.id);
         const user = req.user && req.user.user;
-        pulsebsDAO.bookSeat(lecture.id, user)
+        pulsebsDAO.bookSeat(lectureId, user)
             .then((response) => res.status(201).json({response}))
             .catch((err) => {
                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})

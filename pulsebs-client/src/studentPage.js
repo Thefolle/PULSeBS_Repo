@@ -1,5 +1,4 @@
 import React from 'react';
-import Switch from 'react-router-dom/Switch';
 import Route from 'react-router-dom/Route';
 import { withRouter } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
@@ -57,12 +56,11 @@ class StudentPage extends React.Component {
         });
       }
     
-      bookSeat = (lecture) => {
-        API.bookSeat(lecture).then((result) => { 
+      bookSeat = (lectureId) => {
+        API.bookSeat(lectureId).then((result) => { 
           console.log(result);
-          if(result === 1){
+          if(result.ok){
             this.setState({failed: 0});
-            this.props.history.push("/bookings"); 
           }else{
             this.setState({failed: 1});
             //error page
@@ -79,8 +77,7 @@ class StudentPage extends React.Component {
         return (
           //TODO: Header & put buttons into the nav bar and create the student home page  
           <Container fluid>   
-             {/*<Switch>*/}
-              {/* <Route path={this.props.match.url}>*/}
+              <Route exact path={this.props.match.url}>
                 <Row className="vheight-100">
                   <div className="btn-group" role="group" aria-label="Basic example">
                     <a type="button" className="btn btn-secondary" role="button" href="/StudentHome/lectures" aria-expanded="false" aria-controls="collapseExample">
@@ -91,15 +88,13 @@ class StudentPage extends React.Component {
                     </a>
                   </div>
                 </Row>
-               {/* </Route> */}
-              <Switch>  
+               </Route>
                <Route exact path={this.props.match.url + "/lectures"}>
                   <LecturesList lectures = {this.state.lectures} bookSeat = {this.bookSeat}/>
                  </Route>
               <Route exact path={this.props.match.url + "/bookings"}>
                 <BookingsList bookings = {this.state.bookings}/>
               </Route> 
-            </Switch>
 
           </Container>
         );

@@ -14,7 +14,6 @@ async function login(email, password) {
         }).then((response) => {
             if (response.ok) {
                 response.json().then((user) => {
-                    console.log(user);
                     resolve(user);
                 });
             } else {
@@ -52,26 +51,24 @@ async function getStudentLectures() {
     const lecturesJson = await response.json();
     if(response.ok){
         console.log(lecturesJson);
-        return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.desc, l.name, l.surname, l.desc)); //DOUBT on desc params
-    } else {
+        return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.Cdesc, l.name, l.surname, l.CLdesc)); 
+        } else {
         let err = {status: response.status, errObj:lecturesJson};
         throw err;  // An object with the error coming from the server
     }
 }
 
 
-async function bookSeat(lecture) {
-    console.log("api:" + lecture);
+async function bookSeat(lectureId) {
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/student/booking", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(lecture),
+        body: JSON.stringify(lectureId), 
     }).then((response) => {
         if(response.ok) {
-            console.log(response);
             resolve(response);
         } else {
             // analyze the cause of error
@@ -90,7 +87,7 @@ async function getStudentBookings() {
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if(response.ok){
-        return bookingsJson.map((b) => new Booking(b.ref_student, b.ref_lecture, b.date)); //DOUBT the booking should give all info about the lecture
+        return bookingsJson.map((b) => new Booking(b.ref_student, b.ref_lecture, b.date)); 
     } else {
         let err = {status: response.status, errObj:bookingsJson};
         throw err;  // An object with the error coming from the server

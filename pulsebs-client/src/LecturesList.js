@@ -13,15 +13,17 @@ const LecturesList = (props) => {
               <tr>
                 <th>Id</th>
                 <th>Date</th>
+                <th>Time</th>
                 <th>Presence</th>
                 <th>Course</th>
+                <th>Class</th>
                 <th>Teacher</th>  
                 <th></th>              
               </tr>
               </thead>
               <tbody>
                 {lectures.map((l) => <LectureItem key={l.id} lecture = {l} bookSeat = {bookSeat} 
-                                                /> )}      
+                                     /> )}      
               </tbody>     
             </table>   
              }
