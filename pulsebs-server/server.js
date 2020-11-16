@@ -12,6 +12,14 @@ const expireTime = 900; //seconds
 // Authorization error
 const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
 
+checkPassword = function (user, password) {
+    /*
+     The salt used to obfuscate passwords is 0
+     console.log('hash:' + bcrypt.hashSync('password', 0));
+    */
+    return bcrypt.compareSync(password, user.hash);
+}
+
 //Initializing server
 const app = express();
 const port = 3001;
@@ -34,7 +42,7 @@ app.post('/api/login', (req, res) => {
                     errors: [{ 'param': 'Server', 'msg': 'Invalid e-mail' }]
                 });
             } else {
-                if (!pulsebsDAO.checkPassword(user, password)) {
+                if (!checkPassword(user, password)) {
                     res.status(401).send({
                         errors: [{ 'param': 'Server', 'msg': 'Wrong password' }]
                     });

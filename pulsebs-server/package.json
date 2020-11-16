@@ -4,7 +4,8 @@
   "description": "PULSeBS REST API server",
   "main": "server.js",
   "scripts": {
-    "test": "jest"
+    "test": "cross-env TEST=1 jest",
+    "run": "cross-env TEST=0 npx nodemon server.js"
   },
   "author": "Team 9",
   "license": "ISC",
@@ -19,8 +20,9 @@
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {
+    "@types/jest": "22.2.3",
+    "cross-env": "^7.0.2",
     "jest": "^26.6.3",
-    "nodemon": "^2.0.4",
-    "@types/jest": "22.2.3"
+    "nodemon": "^2.0.4"
   }
 }
