@@ -5,8 +5,6 @@ const moment = require( 'moment' );
 
 const User = require( './User' );
 
-//Aggiungi 45min prossima week di testing
-
 let db;
 
 function loadData() {
