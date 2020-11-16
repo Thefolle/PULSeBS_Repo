@@ -220,7 +220,28 @@ exports.cancelBooking = ( bookingId ) => {
 
 exports.getStudentBookings = ( studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT * FROM booking WHERE ref_student = ${ studentId };`
+        let query = `   SELECT  B.id,
+                                B.date,
+                                B.active, 
+                                B.presence,
+                                L.date, 
+                                L.presence, 
+                                L.active,
+                                C.desc as course, 
+                                Cl.desc as class, 
+                                seats,
+                                name,
+                                surname
+                        FROM    booking B,
+                                lecture L,
+                                course C,
+                                class CL,
+                                teacher T
+                        WHERE   B.ref_lecture = L.id AND
+                                L.ref_class = CL.id AND
+                                L.ref_course = C.id AND
+                                C.ref_teacher = T.id AND
+                                B.ref_student = ${ studentId };`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
@@ -310,7 +331,14 @@ exports.setPresenceLecture = ( lectureId ) => {
 
 exports.getTeacherBookingStats = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT * 
+        let query = `SELECT B.id,
+                            B.date as bDate,
+                            B.active,
+                            B.presence,
+                            L.date as Ldate, 
+                            L.presence as lPresence,
+                            L.active as lActive,
+                            C.desc
                      FROM   booking B, 
                             lecture L, 
                             course C 
