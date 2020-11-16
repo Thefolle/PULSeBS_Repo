@@ -55,7 +55,6 @@ const j = schedule.scheduleJob({hour: 23, minute: 0, second: 0}, () => {
     // TESTED
     pulsebsDAO.getTomorrowLessonsStats()
         .then((lessons) => {
-            console.log("sono qui");
             if(lessons != undefined) { // There is at least one lesson
                 lessons.forEach(l => {
                     var mailOptions = {
