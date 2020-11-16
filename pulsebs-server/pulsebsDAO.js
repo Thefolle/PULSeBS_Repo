@@ -165,7 +165,7 @@ exports.getStudentLectures = ( studentId ) => {
 
 exports.getTeacherLectures = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query =    `SELECT C.desc as course,
+        let query = `SELECT C.desc as course,
                                 CL.desc as class,
                                 L.date,
                                 L.presence,
@@ -175,8 +175,8 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 class CL 
                         WHERE   L.ref_course = C.id AND
                                 L.ref_class = CL.id AND
-                                C.ref_teacher = ${teacherId};`
-        db.all( query, [ ], ( err, rows ) => {
+                                C.ref_teacher = ${ teacherId };`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -190,8 +190,8 @@ exports.getTeacherLectures = ( teacherId ) => {
 
 exports.getStudentsForLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT ref_student FROM booking B WHERE B.ref_lecture = ${lectureId};`
-        db.all( query, [ ], ( err, rows ) => {
+        let query = `SELECT ref_student FROM booking B WHERE B.ref_lecture = ${ lectureId };`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -205,8 +205,8 @@ exports.getStudentsForLecture = ( lectureId ) => {
 
 exports.cancelBooking = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE booking SET active = 0 WHERE id = ${bookingId};`
-        db.run( query, [ ], function ( err ) {
+        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
+        db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );
@@ -220,8 +220,8 @@ exports.cancelBooking = ( bookingId ) => {
 
 exports.getStudentBookings = ( studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT * FROM booking WHERE ref_student = ${studentId};`
-        db.all( query, [ ], ( err, rows ) => {
+        let query = `SELECT * FROM booking WHERE ref_student = ${ studentId };`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -235,8 +235,8 @@ exports.getStudentBookings = ( studentId ) => {
 
 exports.cancelLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE lecture SET active = 0, bookable = 0 WHERE id = ${lectureId};`
-        db.run( query, [ ], function ( err ) {
+        let query = `UPDATE lecture SET active = 0, bookable = 0 WHERE id = ${ lectureId };`
+        db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );
@@ -248,7 +248,7 @@ exports.cancelLecture = ( lectureId ) => {
 * Get tomorrow's lessons stats
 * */
 
-exports.getTomorrowLessonsStats = (test = false) => {
+exports.getTomorrowLessonsStats = ( test = false ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `    SELECT T.id,
                                 T.email,
@@ -267,20 +267,20 @@ exports.getTomorrowLessonsStats = (test = false) => {
                                 B.ref_lecture = L.id AND 
                                 B.active = 1 AND
                                 L.active = 1 AND 
-                                L.date > ${ test ? 1605398400000 : moment().milliseconds(0)
-                                                                            .seconds(0)
-                                                                            .minute(0)
-                                                                            .hour(0)
-                                                                            .valueOf() } AND 
+                                L.date > ${ test ? 1605398400000 : moment().milliseconds( 0 )
+                                                                           .seconds( 0 )
+                                                                           .minute( 0 )
+                                                                           .hour( 0 )
+                                                                           .valueOf() } AND 
                                 L.date < ${ test ? 1605571199000 : moment().add( 2, "days" )
-                                                                           .milliseconds(0)
-                                                                           .seconds(0)
-                                                                           .minute(0)
-                                                                           .hour(0)
+                                                                           .milliseconds( 0 )
+                                                                           .seconds( 0 )
+                                                                           .minute( 0 )
+                                                                           .hour( 0 )
                                                                            .valueOf() } AND  
                                 CL.id = L.ref_class 
                         GROUP BY B.ref_lecture;`
-        db.all( query, [ ], ( err, rows ) => {
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             else if ( rows ) resolve( rows );
             else resolve( undefined );
@@ -289,13 +289,13 @@ exports.getTomorrowLessonsStats = (test = false) => {
 }
 
 /*
-* Turn a presence lecture into an online one
+* Turn a presence and active lecture into an online one
 * */
 
 exports.setPresenceLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = "UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ? AND active = 1"
-        db.run( query, [ lectureId ], function ( err ) {
+        let query = `UPDATE lecture SET presence = 0, ref_class = 0 WHERE id = ${ lectureId } AND active = 1;`
+        db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );
@@ -305,6 +305,7 @@ exports.setPresenceLecture = ( lectureId ) => {
 
 /*
 * Get all bookings to be grouped by week,month or single lecture
+* Time handling should be done on frontend due to a too simple handling of date format in sqlite
 * */
 
 exports.getTeacherBookingStats = ( teacherId ) => {
@@ -315,9 +316,9 @@ exports.getTeacherBookingStats = ( teacherId ) => {
                             course C 
                      WHERE  B.ref_lecture = L.id AND
                             L.ref_course = C.id AND
-                            C.ref_teacher = ${teacherId} AND
+                            C.ref_teacher = ${ teacherId } AND
                             active = 1;`
-        db.all( query, [ ], ( err, rows ) => {
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -327,6 +328,7 @@ exports.getTeacherBookingStats = ( teacherId ) => {
 
 /*
 * Get all presence grouped by week,month or single lecture
+* Time handling should be done on frontend due to a too simple handling of date format in sqlite
 * */
 
 exports.getTeacherPresenceStats = ( teacherId ) => {
@@ -337,11 +339,11 @@ exports.getTeacherPresenceStats = ( teacherId ) => {
                                 course C 
                          WHERE  B.ref_lecture = L.id AND
                                 L.ref_course = C.id AND 
-                                C.ref_teacher = ${teacherId} AND 
+                                C.ref_teacher = ${ teacherId } AND 
                                 active = 1 AND 
                                 presence = 1 AND 
-                                L.date < ${moment().valueOf()};`
-        db.all( query, [ ], ( err, rows ) => {
+                                L.date < ${ moment().valueOf() };`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -356,7 +358,9 @@ exports.getTeacherPresenceStats = ( teacherId ) => {
 exports.getManagerStats = () => {
     return new Promise( ( ( resolve, reject ) => {
         //Result => [ BOOKING COUNT, CANCELLATION COUNT, PRESENCE COUNT ]
-        let query = `SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL  SELECT COUNT(*) FROM booking WHERE active = 0 UNION ALL SELECT COUNT(*) FROM booking WHERE presence = 1;`
+        let query = `SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL  
+                     SELECT COUNT(*) FROM booking WHERE active = 0 UNION ALL
+                     SELECT COUNT(*) FROM booking WHERE presence = 1;`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
@@ -391,11 +395,11 @@ exports.studentContactTracing = ( studentId ) => {
                                         FROM    booking B, 
                                                 lecture L 
                                         WHERE   B.ref_lecture = L.lecture AND 
-                                                B.ref_student = ${studentId} AND 
+                                                B.ref_student = ${ studentId } AND 
                                                 B.presence = 1 AND 
-                                                L.date < ${now.valueOf()} AND 
-                                                L.date > ${twoWeeksAgo.valueOf()} );`
-        db.all( query, [ ], ( err, rows ) => {
+                                                L.date < ${ now.valueOf() } AND 
+                                                L.date > ${ twoWeeksAgo.valueOf() } );`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -421,11 +425,11 @@ exports.teacherContactTracing = ( teacherId ) => {
                      WHERE  B.ref_student = S.id AND 
                             B.ref_lecture = L.id AND 
                             L.ref_course = C.id AND 
-                            C.ref_teacher = ${teacherId} AND 
+                            C.ref_teacher = ${ teacherId } AND 
                             B.presence = 1 AND 
-                            L.date < ${now.valueOf()} AND 
-                            L.date > ${twoWeeksAgo.valueOf()};`
-        db.all( query, [ ], ( err, rows ) => {
+                            L.date < ${ now.valueOf() } AND 
+                            L.date > ${ twoWeeksAgo.valueOf() };`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -439,8 +443,8 @@ exports.teacherContactTracing = ( teacherId ) => {
 
 exports.editBookableLecture = ( lectureId, bookable ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE lecture SET bookable = ${bookable} WHERE id = ${lectureId};`
-        db.run( query, [ ], function ( err ) {
+        let query = `UPDATE lecture SET bookable = ${ bookable } WHERE id = ${ lectureId };`
+        db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );
@@ -469,8 +473,8 @@ exports.getOfficerCoursesLectures = () => {
 
 exports.editLectureDate = ( lectureId, newDate ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE lecture SET date = ${newDate} WHERE id = ${lectureId};`
-        db.run( query, [ ], function ( err ) {
+        let query = `UPDATE lecture SET date = ${ newDate } WHERE id = ${ lectureId };`
+        db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );

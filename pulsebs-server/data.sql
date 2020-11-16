@@ -2,6 +2,7 @@ INSERT INTO class (desc,seats) values  ('12',70);
 INSERT INTO class (desc,seats) values  ('10',60);
 INSERT INTO class (desc,seats) values  ('11A',120);
 INSERT INTO class (desc,seats) values  ('4S',40);
+INSERT INTO class (id,desc,seats) values  (0,'VIRTUAL CLASSROOM',9999);
 
 insert into student (id,email,password, name, surname) values (269901,'davide.calarco@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Davide', 'Calarco');
 insert into student (id,email,password, name, surname) values (269902,'francesco.gallo@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Francesco', 'Gallo');
