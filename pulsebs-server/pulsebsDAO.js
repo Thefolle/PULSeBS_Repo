@@ -292,12 +292,13 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
                                                                            .seconds( 0 )
                                                                            .minute( 0 )
                                                                            .hour( 0 )
+                                                                           .add(1,"day")
                                                                            .valueOf() } AND 
-                                L.date < ${ test ? 1605571199000 : moment().add( 2, "days" )
-                                                                           .milliseconds( 0 )
+                                L.date < ${ test ? 1605571199000 : moment().milliseconds( 0 )
                                                                            .seconds( 0 )
                                                                            .minute( 0 )
                                                                            .hour( 0 )
+                                                                           .add( 2, "days" )
                                                                            .valueOf() } AND  
                                 CL.id = L.ref_class 
                         GROUP BY B.ref_lecture;`
