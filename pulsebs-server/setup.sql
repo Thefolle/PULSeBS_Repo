@@ -4,7 +4,8 @@
 create table class
 (
     id   INTEGER primary key,
-    desc TEXT not null unique
+    desc TEXT not null unique,
+    seats INTEGER not null
 );
 
 create table staff
@@ -38,7 +39,7 @@ create table teacher
 create table course
 (
     id          INTEGER primary key,
-    summary        TEXT    not null,
+    desc        TEXT    not null,
     ref_teacher INTEGER not null references teacher
 );
 

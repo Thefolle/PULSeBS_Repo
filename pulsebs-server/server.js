@@ -8,9 +8,21 @@ const cookieParser = require('cookie-parser');
 
 const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
 const expireTime = 900; //seconds
+const bcrypt = require('bcrypt');
+
+const schedule = require('node-schedule');
+const nodemailer = require('nodemailer');
 
 // Authorization error
 const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
+
+checkPassword = function (user, password) {
+    /*
+     The salt used to obfuscate passwords is 0
+     console.log('hash:' + bcrypt.hashSync('password', 0));
+    */
+    return bcrypt.compareSync(password, user.hash);
+}
 
 //Initializing server
 const app = express();
@@ -21,6 +33,54 @@ app.use(morgan('tiny'));
 
 // Process body content
 app.use(express.json());
+
+// Transporter needed to send emails
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'noreply.pulsebs@gmail.com',
+      pass: 'pswteam9pulsebs',
+    },
+    tls: {
+        rejectUnauthorized:false
+    }
+});
+
+// Email sender (each day at 11PM)
+const j = schedule.scheduleJob({hour: 23, minute: 0, second: 0}, () => {
+    console.log('It is 11PM: sending emails to teachers for tomorrow\'s lessons');
+    
+    // TESTED
+    pulsebsDAO.getTomorrowLessonsStats()
+        .then((lessons) => {
+            if(lessons != undefined) { // There is at least one lesson
+                lessons.forEach(l => {
+                    var mailOptions = {
+                        from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                        to: l.email,
+                        subject: 'Tomorrow lesson (' + l.desc + ')',
+                        text: "Dear " + l.surname + " " + l.name + " (" + l.id + "), here are some useful informations about tomorrow lesson:\n\n"
+                                + "     - Class: " + l.class + ".\n     - Course: '" + l.desc + "'.\n     - Number of students attending: " + l.nStudents + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
+                    };
+                    
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent to: ' + l.id + ", info: " + info.response);
+                        }
+                    });
+                });
+            }
+            else console.log("There are no lessons tomorrow.")
+        }).catch(
+            (err) => {
+                console.log(err);
+            }
+        )
+});
 
 // Authentication endpoint
 // TESTED
@@ -34,7 +94,7 @@ app.post('/api/login', (req, res) => {
                     errors: [{ 'param': 'Server', 'msg': 'Invalid e-mail' }]
                 });
             } else {
-                if (!pulsebsDAO.checkPassword(user, password)) {
+                if (!checkPassword(user, password)) {
                     res.status(401).send({
                         errors: [{ 'param': 'Server', 'msg': 'Wrong password' }]
                     });
