@@ -1,7 +1,8 @@
 import Lecture from './Lecture.js'
 import Booking from './Booking.js'
-
+import LectureTeacher from './LectureTeacher.js'
 const baseURL = "/api";
+
 
 async function login(email, password) {
     return new Promise((resolve, reject) => {
@@ -46,12 +47,12 @@ async function logout() {
 /****** STUDENT *******/
 
 async function getStudentLectures() {
-    let url = "/student/lectures";    
+    let url = "/student/lectures";
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
     if(response.ok){
         console.log(lecturesJson);
-        return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.Cdesc, l.name, l.surname, l.CLdesc)); 
+        return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.Cdesc, l.name, l.surname, l.CLdesc));
         } else {
         let err = {status: response.status, errObj:lecturesJson};
         throw err;  // An object with the error coming from the server
@@ -66,7 +67,7 @@ async function bookSeat(lectureId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({lectureId : lectureId}), 
+        body: JSON.stringify({lectureId : lectureId}),
     }).then((response) => {
         if(response.ok) {
             resolve(response);
@@ -87,7 +88,7 @@ async function getStudentBookings() {
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if(response.ok){
-        return bookingsJson.map((b) => new Booking(b.ref_student, b.ref_lecture, b.date)); 
+        return bookingsJson.map((b) => new Booking(b.ref_student, b.ref_lecture, b.date));
     } else {
         let err = {status: response.status, errObj:bookingsJson};
         throw err;  // An object with the error coming from the server
@@ -97,8 +98,35 @@ async function getStudentBookings() {
 
 
 /****** TEACHER *******/
+async function getTeacherLectures() {
+    let url="/teacher/lectures";
+    const response=await fetch(baseURL+url);
+    const lecturesJson=await response.json();
+    if(response.ok){
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.presence, l.bookable));
+    }else{
+        let err = {status: response.status, errObj:lecturesJson};
+        throw err;
+    }
+}
+
+async function getStudents(filter){
+    let url="/getStudentsForLecture";
+    if(filter){
+        const queryP="?filter="+filter;
+        url+=queryP;
+    }
+
+    const response=await fetch(baseURL+url);
+    const idJson=await response.json();
+    if(response.ok){
+        return idJson;
+    } else {
+        let err = {status: response.status, errObj:idJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
 
 
-
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, getTeacherLectures, getStudents };
 export default API;

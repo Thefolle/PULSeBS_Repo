@@ -1,15 +1,14 @@
 import React from 'react';
 
 import { BrowserRouter as Router } from 'react-router-dom';
-import Switch from 'react-router-dom/Switch';
-import Route from 'react-router-dom/Route';
-import Redirect from 'react-router-dom/Redirect';
+import {Switch,Route,Redirect} from 'react-router-dom';
 import LoginPage from './login';
 import StudentPage from './studentPage';
 
+
+import TeacherPage from './Components/TeacherPage';
+
 import './App.css';
-
-
 
 function App() {
   return (
@@ -33,6 +32,7 @@ class PULSeBSApp extends React.Component {
     this.setState({id: id, name: name, surname: surname, type: type });
   }
 
+
   render() {
     return <>
      <Router>
@@ -44,9 +44,9 @@ class PULSeBSApp extends React.Component {
           {/* <StudentPage /> */}
          {/* <StudentPage authUser={this.state.authUser} name={this.state.name} surname={this.state.surname} /> */}
         </Route>
-        <Route exact path='/TeacherHome'>
-          {/* <TeacherPage /> */}
-        </Route>
+        <Route path='/teacher'>
+          <TeacherPage id={this.state.id} name={this.state.name} surname={this.state.surname}/>
+          </Route>
         <Route exact path='/'>
           <Redirect to='Login' />
         </Route>

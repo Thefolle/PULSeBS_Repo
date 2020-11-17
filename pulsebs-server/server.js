@@ -51,7 +51,7 @@ let transporter = nodemailer.createTransport({
 // Email sender (each day at 11PM)
 const j = schedule.scheduleJob({hour: 23, minute: 0, second: 0}, () => {
     console.log('It is 11PM: sending emails to teachers for tomorrow\'s lessons');
-    
+
     // TESTED
     pulsebsDAO.getTomorrowLessonsStats()
         .then((lessons) => {
@@ -64,7 +64,7 @@ const j = schedule.scheduleJob({hour: 23, minute: 0, second: 0}, () => {
                         text: "Dear " + l.surname + " " + l.name + " (" + l.id + "), here are some useful informations about tomorrow lesson:\n\n"
                                 + "     - Class: " + l.class + ".\n     - Course: '" + l.desc + "'.\n     - Number of students attending: " + l.nStudents + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
                     };
-                    
+
                     transporter.sendMail(mailOptions, function(error, info){
                         if (error) {
                             console.log(error);
@@ -160,12 +160,39 @@ const validError = {
     description: "Data not valid"
 }
 
+/*TEACHER */
+
+app.get('/api/teacher/lectures',(req,res)=>{
+    const user=req.user && req.user.id;
+    pulsebsDAO.getTeacherLectures(user)
+    .then((lectures)=>{
+        res.json(lectures);
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            errors: [{'msg':err}],
+        });
+    });
+});
+
+app.get('/api/getStudentsForLecture',(req,res)=>{
+    const filter=req.query.filter;
+    pulsebsDAO.getStudentsForLecturev2(filter)
+    .then((students)=>{
+        res.json(students);
+    }).catch((err) => {
+          res.status(500).json({
+              errors: [{'msg': err}],
+           });
+     });
+});
+
 
 /****** STUDENT ******/
 
 
 //GET /student/lectures
-app.get('/api/student/lectures', (req, res) => {    
+app.get('/api/student/lectures', (req, res) => {
     const user = req.user && req.user.user;
    // const user = 269901;
     pulsebsDAO.getStudentLectures(user)
@@ -201,7 +228,7 @@ app.post('/api/student/booking', (req,res) => {
 //GET /student/bookings
 app.get('/api/student/bookings', (req, res) => {
    const user = req.user && req.user.user;
-   //const user = 269901; 
+   //const user = 269901;
    pulsebsDAO.getStudentBookings(user)
         .then((bookings) => {
             res.json(bookings);
