@@ -1,38 +1,40 @@
-const express = require("express");
+const express = require('express');
+const request = require("supertest");
+const pulsebsDAO = require('../pulsebsDAO');
+const server = require("../server");
 const morgan = require('morgan'); // logging middleware
 const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-//const serverRoutes = require("./server-routes");
-const request = require("supertest");
-//const [save] = require("./save_json");
-const bodyParser = require("body-parser");
 
-/*jest.mock("./save_json", () => ({
-  save: jest.fn(),
-}));*/
 
+const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
+const expireTime = 900; //seconds
+
+// Authorization error
+const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
+
+//Initializing server
 const app = express();
-//app.use("/states", serverRoutes);
-app.use(bodyParser.json());
+const port = 3001;
 
-// Set-up logging
-app.use(morgan('tiny'));
-// Process body content
-app.use(express.json());
+app.use("/", server);
+
 
 let token;
+let session;
 
-beforeEach((done) => {
+
+beforeAll((done) => {
 
     const authdata = {
         email: 'davide.calarco@gmail.com', 
         password: 'password' 
       };
 
-     const response = request(app)
+       const response = request(app)
       .post('/api/login')
-      .send({ email: authdata.email, password: authdata.password })
+      .send({email: 'davide.calarco@gmail.com', password: 'password'})
       .end((err, response) => {
         token = response.body.token;
         done();
@@ -44,16 +46,20 @@ beforeEach((done) => {
 
 describe('post /api/student/booking', () => {
     it('POST should return a 1', async () => {
-      const lectureId = 1;
+      const lectureId = 2;
   
-      const response = await request(app).post('/api/student/booking')
-        .send(lectureId);
-  
-      expect(response.body).toBe(1);
-    });
+      await request(app)
+        .post('/api/student/booking')
+        .set('Cookie', `token=${token}`)
+        .set('Content-Type', 'application/json')
+        .send({lectureId: lectureId})
+        .then((res) => {
+           expect(res.status).toBe(201);
+           expect(res.body.response).toBe(1);
+        });
   });
   
-
+});
 
 
 //GET STUDENT LECTURES
@@ -65,24 +71,24 @@ describe('get /api/student/lectures', () => {
             {
                 "active": 1,
                 "bookable": 1,
-                "date": 1605452400000,
+                "date": 1635452400000,
                 "Cdesc": "Analisi 1",
                 "CLdesc": "12",
                 "id": 1,
-                "name": "Mario",
+                "name": "Hyeronimus",
                 "presence": 1,
-                "surname": "Rossi"
+                "surname": "Bosch"
             },
             {
-                "active": 1,
+                "active": 0,
                 "bookable": 0,
                 "date": 1605547800000,
                 "Cdesc": "Analisi 1",
                 "CLdesc": "10",
                 "id": 2,
-                "name": "Mario",
+                "name": "Hyeronimus",
                 "presence": 0,
-                "surname": "Rossi"
+                "surname": "Bosch"
             },
             {
                 "active": 1,
@@ -91,9 +97,9 @@ describe('get /api/student/lectures', () => {
                 "Cdesc": "Analisi 1",
                 "CLdesc": "12",
                 "id": 3,
-                "name": "Mario",
+                "name": "Hyeronimus",
                 "presence": 1,
-                "surname": "Rossi"
+                "surname": "Bosch"
             },
             {
                 "active": 1,
@@ -102,13 +108,17 @@ describe('get /api/student/lectures', () => {
                 "Cdesc": "Analisi 1",
                 "CLdesc": "10",
                 "id": 4,
-                "name": "Mario",
+                "name": "Hyeronimus",
                 "presence": 1,
-                "surname": "Rossi"
+                "surname": "Bosch"
             }
         ]
     
-      const response = await request(app).get('/api/student/lectures');
+      const response = await request(app)
+                .get('/api/student/lectures')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
       expect(response.status).toBe(200);
       expect(response.body).toEqual( studentLecturesExpected );
     });
@@ -132,10 +142,10 @@ describe('get /api/student/bookings', () => {
     },
     {
         "active": 1,
-        "date": 1605022961000,
+        "date": 1605538865653,
         "id": 2,
         "presence": 0,
-        "ref_lecture": 2,
+        "ref_lecture": 1,
         "ref_student": 269901
     },
     {
@@ -143,7 +153,7 @@ describe('get /api/student/bookings', () => {
         "date": 1605024581392,
         "id": 3,
         "presence": 0,
-        "ref_lecture": 3,
+        "ref_lecture": 2,
         "ref_student": 269901
     },
     {
@@ -156,8 +166,15 @@ describe('get /api/student/bookings', () => {
     }
 ]
 
-const response = await request(app).get('/api/student/bookings');
-expect(body.status).toBe(200);
+const response = await request(app)
+        .get('/api/student/bookings')
+        .set('Cookie', `token=${token}`)
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
+expect(response.status).toBe(200);
 expect(response.body).toEqual( studentBookingsExpected );
  });
 });
+
+
+//app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));

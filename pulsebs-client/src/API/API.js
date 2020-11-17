@@ -66,7 +66,7 @@ async function bookSeat(lectureId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(lectureId), 
+        body: JSON.stringify({lectureId : lectureId}), 
     }).then((response) => {
         if(response.ok) {
             resolve(response);

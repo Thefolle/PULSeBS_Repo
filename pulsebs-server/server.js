@@ -42,7 +42,7 @@ app.post('/api/login', (req, res) => {
                     //AUTHENTICATION SUCCESS
                     const token = jsonwebtoken.sign({ user : user.id }, jwtSecret, { expiresIn: expireTime });
                     res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
-                    res.json({ id: user.id, name: user.name, surname: user.surname, type: user.type });
+                    res.json({ id: user.id, name: user.name, surname: user.surname, type: user.type, token: token });
                 }
             }
         }).catch(
@@ -107,6 +107,7 @@ const validError = {
 //GET /student/lectures
 app.get('/api/student/lectures', (req, res) => {    
     const user = req.user && req.user.user;
+   // const user = 269901;
     pulsebsDAO.getStudentLectures(user)
         .then((lectures) => {
             res.json(lectures);
@@ -122,12 +123,12 @@ app.get('/api/student/lectures', (req, res) => {
 
 //POST /student/booking
 app.post('/api/student/booking', (req,res) => {
-    const lectureId = req.body;
+    const lectureId = req.body.lectureId;
     if(!lectureId){
         res.status(401).end();
     } else {
         const user = req.user && req.user.user;
-        pulsebsDAO.bookSeat(lectureId, user)
+       pulsebsDAO.bookSeat(lectureId, user)
             .then((response) => res.status(201).json({response}))
             .catch((err) => {
                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
@@ -139,8 +140,9 @@ app.post('/api/student/booking', (req,res) => {
 
 //GET /student/bookings
 app.get('/api/student/bookings', (req, res) => {
-    const user = req.user && req.user.user;
-    pulsebsDAO.getStudentBookings(user)
+   const user = req.user && req.user.user;
+   //const user = 269901; 
+   pulsebsDAO.getStudentBookings(user)
         .then((bookings) => {
             res.json(bookings);
         })
@@ -155,4 +157,6 @@ app.get('/api/student/bookings', (req, res) => {
 
 
 
-app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));
+//app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));
+
+module.exports = app;

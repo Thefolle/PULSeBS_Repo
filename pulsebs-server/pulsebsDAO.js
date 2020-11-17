@@ -75,6 +75,7 @@ exports.bookSeat = (lectureId, studentId) => {
 
         db.get( checkQuery, [ lectureId, studentId ], ( err, row ) => {
             if ( err ) reject( err );
+            console.log(row);
             if ( row && row.bookable === 1 ) {
                 //Student subscription exists
                 db.run( bookQuery, [ studentId, lectureId, moment().valueOf() ], ( err ) => { 
