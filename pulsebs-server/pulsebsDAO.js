@@ -208,8 +208,10 @@ exports.getStudentsForLecture = ( lectureId ) => {
 
 exports.getStudentsForLecturev2 = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT B.ref_student as studentId,B.ref_lecture as lId FROM booking B,course CO, lecture L WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${ teacherId };`
-        db.all( query, [ teacherId ], ( err, rows ) => {
+        let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId 
+                     FROM booking B,course CO, lecture L 
+                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${ teacherId };`
+        db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve(0);
