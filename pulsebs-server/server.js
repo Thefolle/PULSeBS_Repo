@@ -40,9 +40,10 @@ app.post('/api/login', (req, res) => {
                     });
                 } else {
                     //AUTHENTICATION SUCCESS
-                    const token = jsonwebtoken.sign({ userID: user.id }, jwtSecret, { expiresIn: expireTime });
+                    //change something
+                    const token = jsonwebtoken.sign({ id: user.id }, jwtSecret, { expiresIn: expireTime });
                     res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
-                    res.json({ userID: user.id, name: user.name, type: user.type });
+                    res.json({ id: user.id, name: user.name,surname: user.surname, type: user.type });
                 }
             }
         }).catch(
@@ -92,6 +93,33 @@ const validError = {
     error: "validation",
     description: "Data not valid"
 }
+
+/*TEACHER */
+
+app.get('/api/teacher/lectures',(req,res)=>{
+    const user=req.user && req.user.id;
+    pulsebsDAO.getTeacherLectures(user)
+    .then((lectures)=>{
+        res.json(lectures);
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            errors: [{'msg':err}],
+        });
+    });
+});
+
+app.get('/api/getStudentsForLecture',(req,res)=>{
+    const filter=req.query.filter;
+    pulsebsDAO.getStudentsForLecturev2(filter)
+    .then((students)=>{
+        res.json(students);
+    }).catch((err) => {
+          res.status(500).json({
+              errors: [{'msg': err}],
+           });
+     });
+});
 
 
 app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));

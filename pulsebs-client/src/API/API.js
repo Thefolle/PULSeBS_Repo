@@ -1,4 +1,6 @@
+import LectureTeacher from './LectureTeacher.js'
 const baseURL = "/api";
+
 
 async function login(email, password) {
     return new Promise((resolve, reject) => {
@@ -40,5 +42,34 @@ async function logout() {
     });
 }
 
-const API = { login, logout };
+async function getTeacherLectures() {
+    let url="/teacher/lectures";
+    const response=await fetch(baseURL+url);
+    const lecturesJson=await response.json();
+    if(response.ok){
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.presence, l.bookable));
+    }else{
+        let err = {status: response.status, errObj:lecturesJson};
+        throw err;
+    }
+}
+
+async function getStudents(filter){
+    let url="/getStudentsForLecture";
+    if(filter){
+        const queryP="?filter="+filter;
+        url+=queryP;
+    }
+
+    const response=await fetch(baseURL+url);
+    const idJson=await response.json();
+    if(response.ok){
+        return idJson;
+    } else {
+        let err = {status: response.status, errObj:idJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+const API = { login, logout, getTeacherLectures, getStudents };
 export default API;

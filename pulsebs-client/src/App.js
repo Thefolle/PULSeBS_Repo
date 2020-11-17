@@ -1,14 +1,13 @@
 import React from 'react';
 
 import { BrowserRouter as Router } from 'react-router-dom';
-import Switch from 'react-router-dom/Switch';
-import Route from 'react-router-dom/Route';
-import Redirect from 'react-router-dom/Redirect';
+import {Switch,Route,Redirect} from 'react-router-dom';
 import LoginPage from './login';
 
+
+import TeacherPage from './Components/TeacherPage';
+
 import './App.css';
-
-
 
 function App() {
   return (
@@ -23,14 +22,15 @@ function App() {
 class PULSeBSApp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', surname: '', type: undefined };
+    this.state = { name: '', surname: '', type: undefined,id:''};
     this.setFullName = this.setFullName.bind(this);
   }
 
   // called by LoginPage, this method sets the fullname of the user at this level; it may be useful for presentation purposes
-  setFullName(name, surname, type) {
-    this.setState({ name: name, surname: surname, type: type });
+  setFullName(name, surname, type,id) {
+    this.setState({ name: name, surname: surname, type: type, id: id});
   }
+
 
   render() {
     return <>
@@ -41,9 +41,9 @@ class PULSeBSApp extends React.Component {
         <Route exact path='/StudentHome' >
           {/* <StudentPage /> */}
         </Route>
-        <Route exact path='/TeacherHome'>
-          {/* <TeacherPage /> */}
-        </Route>
+        <Route path='/teacher'>
+          <TeacherPage id={this.state.id} name={this.state.name} surname={this.state.surname}/>
+          </Route>
         <Route exact path='/'>
           <Redirect to='Login' />
         </Route>

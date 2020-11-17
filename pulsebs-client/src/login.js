@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Redirect from 'react-router-dom/Redirect';
+import {Redirect} from 'react-router-dom';
 
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -25,7 +25,7 @@ class LoginPage extends React.Component {
     login() {
   
       API.login(this.state.email, this.state.password).then((user) => {
-        this.props.setFullName(user.name, user.surname, user.type);
+        this.props.setFullName(user.name, user.surname, user.type, user.id);
   
         this.setState({ redirect: true, invalidCredentials: false, userType: user.type });
       }).catch((err) => {
@@ -38,7 +38,7 @@ class LoginPage extends React.Component {
     render() {
   
       return <>
-        {this.state.redirect ? <Redirect to={{ pathname: this.state.userType === 0 ? '/StudentHome' : this.state.userType === 1 ? '/TeacherHome' : '/StaffHome' }} /> : undefined}
+        {this.state.redirect ? <Redirect to={{ pathname: this.state.userType === 0 ? '/StudentHome' : this.state.userType === 1 ? '/teacher' : '/StaffHome' }} /> : undefined}
         <Form id='loginForm'>
           <header><h1>Login</h1></header>
           <Form.Group controlId="formEmail">
