@@ -163,7 +163,7 @@ const validError = {
 /*TEACHER */
 
 app.get('/api/teacher/lectures',(req,res)=>{
-    const user=req.user && req.user.id;
+    const user=req.user && req.user.user;
     pulsebsDAO.getTeacherLectures(user)
     .then((lectures)=>{
         res.json(lectures);
