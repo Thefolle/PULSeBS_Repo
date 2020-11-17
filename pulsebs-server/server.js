@@ -217,6 +217,6 @@ app.get('/api/student/bookings', (req, res) => {
 
 
 
-//app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));
+app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`)); //comment to test
 
-module.exports = app;
+//module.exports = app; //uncomment to test
