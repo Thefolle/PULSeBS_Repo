@@ -1,7 +1,8 @@
-INSERT INTO class (desc) values  ('12');
-INSERT INTO class (desc) values  ('10');
-INSERT INTO class (desc) values  ('11A');
-INSERT INTO class (desc) values  ('4S');
+INSERT INTO class (desc,seats) values  ('12',70);
+INSERT INTO class (desc,seats) values  ('10',60);
+INSERT INTO class (desc,seats) values  ('11A',120);
+INSERT INTO class (desc,seats) values  ('4S',40);
+INSERT INTO class (id,desc,seats) values  (0,'VIRTUAL CLASSROOM',9999);
 
 insert into student (id,email,password, name, surname) values (269901,'davide.calarco@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Davide', 'Calarco');
 insert into student (id,email,password, name, surname) values (269902,'francesco.gallo@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Francesco', 'Gallo');
@@ -27,11 +28,13 @@ insert into subscription (ref_student, ref_course) VALUES (269901,4);
 insert into subscription (ref_student, ref_course) VALUES (269901,2);
 insert into subscription (ref_student, ref_course) VALUES (269902,1);
 insert into subscription (ref_student, ref_course) VALUES (269902,4);
+insert into subscription (ref_student, ref_course) VALUES (269905,1);
 
-insert into lecture (ref_course, ref_class, date) VALUES (1,1,16054524);
-insert into lecture (ref_course, ref_class, date) VALUES (1,2,16055478);
-insert into lecture (ref_course, ref_class, date) VALUES (1,1,16060572);
-insert into lecture (ref_course, ref_class, date) VALUES (1,2,16061526);
 
-insert into booking (ref_student, ref_lecture, date) values (269901,1,1605022);
-insert into booking (ref_student, ref_lecture, date) values (269901,2,1605022);
+insert into lecture (ref_course, ref_class, date) VALUES (1,1,1605526200000);
+insert into lecture (ref_course, ref_class, date) VALUES (1,2,1605699000000);
+insert into lecture (ref_course, ref_class, date) VALUES (1,1,1606131000000);
+insert into lecture (ref_course, ref_class, date) VALUES (1,2,1606303800000);
+
+insert into booking (ref_student, ref_lecture, date) values (269901,1,1605441600000);
+insert into booking (ref_student, ref_lecture, date) values (269901,2,1605445200000);

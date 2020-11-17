@@ -4,7 +4,6 @@
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.5",
-    "@testing-library/react": "^11.1.1",
     "@testing-library/user-event": "^12.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -44,5 +43,10 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:3001",
+  "devDependencies": {
+    "@testing-library/react": "^11.1.2",
+    "jest-dom": "^4.0.0",
+    "react-test-render": "^1.1.2"
+  }
 }

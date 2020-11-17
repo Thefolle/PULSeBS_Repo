@@ -5,6 +5,7 @@ import Switch from 'react-router-dom/Switch';
 import Route from 'react-router-dom/Route';
 import Redirect from 'react-router-dom/Redirect';
 import LoginPage from './login';
+import StudentPage from './studentPage';
 
 import './App.css';
 
@@ -23,23 +24,25 @@ function App() {
 class PULSeBSApp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', surname: '', type: undefined };
+    this.state = { id: '', name: '', surname: '', type: undefined };
     this.setFullName = this.setFullName.bind(this);
   }
 
   // called by LoginPage, this method sets the fullname of the user at this level; it may be useful for presentation purposes
-  setFullName(name, surname, type) {
-    this.setState({ name: name, surname: surname, type: type });
+  setFullName(id, name, surname, type) {
+    this.setState({id: id, name: name, surname: surname, type: type });
   }
 
   render() {
     return <>
+     <Router>
       <Switch>
         <Route exact path='/Login'>
           <LoginPage setFullName={this.setFullName} ></LoginPage>
         </Route>
-        <Route exact path='/StudentHome' >
+        <Route path='/StudentHome' component={StudentPage}>
           {/* <StudentPage /> */}
+         {/* <StudentPage authUser={this.state.authUser} name={this.state.name} surname={this.state.surname} /> */}
         </Route>
         <Route exact path='/TeacherHome'>
           {/* <TeacherPage /> */}
@@ -48,6 +51,7 @@ class PULSeBSApp extends React.Component {
           <Redirect to='Login' />
         </Route>
       </Switch>
+      </Router>
     </>;
   }
 }

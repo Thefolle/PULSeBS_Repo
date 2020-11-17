@@ -1,7 +1,7 @@
 class User{    
     constructor(id, email, hash, type, name, surname) {
 
-        this.userID = id;
+        this.id = id;
         this.email = email;
         this.hash = hash;
         this.name = name;
