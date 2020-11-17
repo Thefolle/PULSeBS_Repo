@@ -38,7 +38,6 @@ test( 'Try to get a student\'s lectures', () => {
 
 //GET TEACHER LECTURES
 test( 'Try to get a teacher\'s lectures', () => {
-
     return DAO.getTeacherLectures( '239901' ).then( result => {
         expect(result.length).toBe(4); //or toEqual
     } );
@@ -47,7 +46,7 @@ test( 'Try to get a teacher\'s lectures', () => {
 //GET STUDENTS BOOKED FOR LECTURE ID
 test('Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2('239901').then( result => {
-        expect(result.length).toBe(4);
+        expect(result.length).toBe(2);
     });
 });
 
