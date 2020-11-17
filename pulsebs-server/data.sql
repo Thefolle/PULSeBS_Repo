@@ -28,6 +28,8 @@ insert into subscription (ref_student, ref_course) VALUES (269901,4);
 insert into subscription (ref_student, ref_course) VALUES (269901,2);
 insert into subscription (ref_student, ref_course) VALUES (269902,1);
 insert into subscription (ref_student, ref_course) VALUES (269902,4);
+insert into subscription (ref_student, ref_course) VALUES (269905,1);
+
 
 insert into lecture (ref_course, ref_class, date) VALUES (1,1,1605526200000);
 insert into lecture (ref_course, ref_class, date) VALUES (1,2,1605699000000);

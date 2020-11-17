@@ -115,7 +115,9 @@ exports.bookSeat = ( lectureId, studentId ) => {
             if ( err ) reject( err );
             if ( row && row.bookable === 1 ) {
                 //Student subscription exists
+                
                 db.run( bookQuery, [], ( err ) => {
+                  
                     err ? reject( err ) : resolve( 1 );
                 } );
             } else resolve( 0 );

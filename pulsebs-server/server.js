@@ -100,9 +100,9 @@ app.post('/api/login', (req, res) => {
                     });
                 } else {
                     //AUTHENTICATION SUCCESS
-                    const token = jsonwebtoken.sign({ userID: user.id }, jwtSecret, { expiresIn: expireTime });
+                    const token = jsonwebtoken.sign({ user : user.id }, jwtSecret, { expiresIn: expireTime });
                     res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
-                    res.json({ userID: user.id, name: user.name, type: user.type });
+                    res.json({ id: user.id, name: user.name, surname: user.surname, type: user.type, token: token });
                 }
             }
         }).catch(
@@ -134,6 +134,13 @@ app.use(
     })
 );
 
+// To return a better object in case of errors
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401).json(authErrorObj);
+    }
+  });
+
 /*
  * Protected APIs
  */
@@ -154,4 +161,62 @@ const validError = {
 }
 
 
-app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));
+/****** STUDENT ******/
+
+
+//GET /student/lectures
+app.get('/api/student/lectures', (req, res) => {    
+    const user = req.user && req.user.user;
+   // const user = 269901;
+    pulsebsDAO.getStudentLectures(user)
+        .then((lectures) => {
+            res.json(lectures);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{'msg': err}],
+             });
+       });
+});
+
+
+
+//POST /student/booking
+app.post('/api/student/booking', (req,res) => {
+    const lectureId = req.body.lectureId;
+    if(!lectureId){
+        res.status(401).end();
+    } else {
+        const user = req.user && req.user.user;
+       pulsebsDAO.bookSeat(lectureId, user)
+            .then((response) => res.status(201).json({response}))
+            .catch((err) => {
+                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+        });
+    }
+});
+
+
+
+//GET /student/bookings
+app.get('/api/student/bookings', (req, res) => {
+   const user = req.user && req.user.user;
+   //const user = 269901; 
+   pulsebsDAO.getStudentBookings(user)
+        .then((bookings) => {
+            res.json(bookings);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{'msg': err}],
+             });
+       });
+})
+
+
+
+
+
+//app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));
+
+module.exports = app;
