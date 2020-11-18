@@ -6,12 +6,13 @@ const BookingItem = (props) => {
 
   let {booking} = props;
 
-
   return (
-    <tr>
+    <tr key={booking.id}>
       <td>{moment(new Date(booking.date)).format("YYYY-MM-DD")}</td>
-      <td>{booking.ref_lecture}</td>
-       <td><Image width="30" height="30" className="img-button" type="button" src="/svg/delete.svg" alt =""/></td>   
+        <td>{booking.course}</td>
+        <td>{booking.class}</td>
+        <td>{booking.presence === 1 ? "Presence" : "Remote"}</td>
+       <td><Image width="30" height="30" className="img-button" type="button" src="/svg/delete.svg" alt =""/></td>
    </tr>
   );
 }
