@@ -3,27 +3,23 @@ import Route          from 'react-router-dom/Route';
 import { withRouter } from 'react-router-dom';
 import Container      from 'react-bootstrap/Container';
 import Row            from 'react-bootstrap/Row';
-import Col            from 'react-bootstrap/Col';
 import LecturesList   from './LecturesList';
 import BookingsList   from './BookingsList'
-import logo           from './logo.svg';
 import './App.css';
 import API            from './API/API';
 
-import { BrowserRouter as Router } from 'react-router-dom';
-import Redirect                    from 'react-router-dom/Redirect';
 import { FaBookOpen,FaCalendarAlt }              from "react-icons/fa";
 import { Button }                  from "react-bootstrap";
 
 class StudentPage extends React.Component {
     constructor( props ) {
         super( props );
-        console.log( props );
+        console.log(this.props);
         this.state = {
-            id: props.id,
+            id: this.props.id,
             email: '',
-            name: props.name,
-            surname: props.surname,
+            name: this.props.name,
+            surname: this.props.surname,
             userType: 'student',
             lectures: [],
             bookings: [],
@@ -31,7 +27,7 @@ class StudentPage extends React.Component {
         };
     }
 
-    componentDidMount() {
+    loadData() {
         API.getStudentLectures()
            .then( ( lectures ) => {
                API.getStudentBookings()
@@ -53,25 +49,26 @@ class StudentPage extends React.Component {
 
 
     getStudentLectures = () => {
-        API.getStudentLectures().then( ( lectures ) => this.setState( {lectures: lectures} ) )
+        API.getStudentLectures().then( ( lectures ) => { return lectures; } )
            .catch( ( errorObj ) => {
                this.handleErrors( errorObj );
            } );
     }
 
-    getStudentReservations = () => {
-        API.getStudentReservations().then( ( bookings ) => this.setState( {bookings: bookings}))
+    getStudentBookings = () => {
+        API.getStudentBookings().then( ( bookings ) => { return bookings; } )
            .catch( ( errorObj ) => {
                this.handleErrors( errorObj );
            } );
     }
+
 
     bookSeat = ( lectureId ) => {
         API.bookSeat( lectureId ).then( ( result ) => {
             console.log( result );
             if ( result.ok ) {
                 this.setState( {failed: 0} );
-                this.getStudentReservations();
+                this.props.history.push("/StudentHome/bookings");
             } else {
                 this.setState( {failed: 1} );
                 //error page
@@ -85,6 +82,7 @@ class StudentPage extends React.Component {
     //add Delete method in mybookings
 
     render() {
+        this.loadData();
         return (
             //TODO: Header & put buttons into the nav bar and create the student home page
             <Container fluid>
@@ -103,7 +101,7 @@ class StudentPage extends React.Component {
                     </div>
                 </Row>
                 <Route exact path={ this.props.match.url + "/lectures" }>
-                    <LecturesList lectures={ this.state.lectures } bookings={this.state.bookingsId} bookSeat={ this.bookSeat }/>
+                    <LecturesList lectures={ this.state.lectures } bookings={this.state.bookings} bookSeat={ this.bookSeat } alreadyBooked={ this.alreadyBooked }/>
                 </Route>
                 <Route exact path={ this.props.match.url + "/bookings" }>
                     <BookingsList bookings={ this.state.bookings }/>

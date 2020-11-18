@@ -88,6 +88,7 @@ async function getStudentBookings() {
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if(response.ok){
+        console.log(bookingsJson);
         return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence));
     } else {
         let err = {status: response.status, errObj:bookingsJson};

@@ -5,7 +5,15 @@ import { ImCross } from "react-icons/im";
 
 const LectureItem = ( props ) => {
 
-    let {lecture, bookSeat} = props;
+    let {lecture, bookings, bookSeat, alreadyBooked} = props;
+
+    alreadyBooked = (lectureId) => {
+            const ids = bookings.map((b) => b.ref_lecture );
+            if(ids.includes(lectureId) === true)
+              return 1;
+            else
+              return 0;
+    }
 
 
     return (
@@ -17,7 +25,7 @@ const LectureItem = ( props ) => {
             <td>{ lecture.courseDesc }</td>
             <td>{ lecture.classDesc }</td>
             <td>{ lecture.teacherName + " " + lecture.teacherSurname }</td>
-            { lecture.bookable === 1 && lecture.date > moment().valueOf() ?
+            { lecture.bookable === 1 && alreadyBooked(lecture.id) === 0 && lecture.date > moment().valueOf() ?
             <td><Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt=""
                        onClick={ () => bookSeat( lecture.id ) }/></td> : <td><ImCross/></td>
                 /*do something if it fails*/

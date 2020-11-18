@@ -247,6 +247,7 @@ exports.getStudentBookings = ( studentId ) => {
                                 B.date,
                                 B.active,
                                 B.presence,
+                                B.ref_lecture,
                                 L.date,
                                 L.presence,
                                 L.active,

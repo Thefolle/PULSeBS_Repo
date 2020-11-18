@@ -3,7 +3,7 @@ import LectureItem from './LectureItem';
 
 const LecturesList = ( props ) => {
 
-    let {lectures, bookings, bookSeat} = props;
+    let {lectures, bookings, bookSeat, alreadyBooked} = props;
 
     return (
         <>
@@ -21,7 +21,7 @@ const LecturesList = ( props ) => {
                 </tr>
                 </thead>
                 <tbody>
-                { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } bookSeat={ bookSeat } /> ) }
+                { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } bookings={bookings} bookSeat={ bookSeat } alreadyBooked={ alreadyBooked } /> ) }
                 </tbody>
             </table>
             }
