@@ -113,11 +113,6 @@ async function getTeacherLectures() {
 
 async function getStudents(filter){
     let url="/getStudentsForLecture";
-    if(filter){
-        const queryP="?filter="+filter;
-        url+=queryP;
-    }
-
     const response=await fetch(baseURL+url);
     const idJson=await response.json();
     if(response.ok){

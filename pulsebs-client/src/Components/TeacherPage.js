@@ -29,9 +29,9 @@ class TeacherPage extends React.Component {
                this.setState( {
                                   lectures: lectures,
                                   courses: this.getCourses( lectures ).sort(),
-                                  id_courses: this.getIdCourses( lectures ).sort(),
-                                  students: this.getStudentsByLecture( this.state.id )
+                                  id_courses: this.getIdCourses( lectures ).sort()
                               } );
+              this.getStudentsByLecture();
            } )
            .catch( ( err ) => {
                console.log( err );
@@ -41,7 +41,6 @@ class TeacherPage extends React.Component {
     handleErrors( err ) {
         if ( err ) {
             if ( err.status && err.status === 401 ) {
-                this.setState( {authErr: err.errorObj} );
                 this.props.history.push( "/" );
             }
         }
@@ -65,8 +64,8 @@ class TeacherPage extends React.Component {
         } ) ) ];
     }
 
-    getStudentsByLecture( lectureId ) {
-        API.getStudents( lectureId )
+    getStudentsByLecture( ) {
+        API.getStudents()
            .then( ( student ) => {
                this.setState( {students: student} );
            } )
@@ -75,24 +74,36 @@ class TeacherPage extends React.Component {
            } );
     }
 
-    render() {
-        return (
-            <div>
-                <Switch>
-                    <Route exact path="/teacher" component={ ButtonTeacherHub }/>
-                    <Route exact path={ "/teacher/courses" }>
-                        <CourseList courses={ this.state.courses } idc={ this.state.id_courses }/>
-                    </Route>
-                    <Route exact path={ "/teacher/:courseId/lectures" } render={ ( {match} ) => (
-                        <LectureList lectures={ this.state.lectures } idc={ match.params.courseId }/>
-                    ) }/>
-                    <Route exact path={ "/teacher/:courseId/:lectureId/students" } render={ ( {match} ) => (
-                        <StudentList students={ this.state.students } idl={ match.params.lectureId }/>
-                    ) }/>
-                </Switch>
-            </div>
+    getTeacherLectures( ) {
+    API.getTeacherLectures()
+        .then( ( lectures )=>{
+          this.setState( { lectures: lectures, courses: this.getCourses(lectures).sort(),
+             id_courses: this.getIdCourses(lectures).sort()} );
+             this.getStudentsByLecture();
+        })
+        .catch((errorObj) => {
+            console.log(errorObj);
+        });
+  }
 
-        );
+    render() {
+      return (
+         <div>
+           <Switch>
+             <Route exact path="/teacher" component={ButtonTeacherHub}/>
+             <Route exact path={"/teacher/courses"}>
+               <CourseList courses={this.state.courses} idc={this.state.id_courses} getLectures={this.getTeacherLectures} />
+             </Route>
+             <Route exact path={"/teacher/:courseId/lectures"} render={({match})=>(
+                 <LectureList lectures={this.state.lectures} idc={match.params.courseId} getLectures={this.getTeacherLectures} />
+             )}/>
+             <Route exact path={"/teacher/:courseId/:lectureId/students"} render={({match})=>(
+                 <StudentList students={this.state.students} idl={match.params.lectureId} getLectures={this.getTeacherLectures} />
+             )}/>
+           </Switch>
+         </div>
+
+     );
     }
 }
 

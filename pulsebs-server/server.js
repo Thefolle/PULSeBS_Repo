@@ -181,8 +181,8 @@ app.get( '/api/teacher/lectures', ( req, res ) => {
 } );
 
 app.get( '/api/getStudentsForLecture', ( req, res ) => {
-    const filter = req.query.filter;
-    pulsebsDAO.getStudentsForLecturev2( filter )
+    const user = req.user && req.user.user;
+    pulsebsDAO.getStudentsForLecturev2( user )
               .then( ( students ) => {
                   res.json( students );
               } ).catch( ( err ) => {
@@ -248,4 +248,3 @@ if ( process.env.TEST && process.env.TEST === '1' )
     module.exports = app; //uncomment to test
 else
     app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
-

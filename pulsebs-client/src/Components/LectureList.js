@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { Table }    from "react-bootstrap";
 
 const LectureList = ( props ) => {
-    let {lectures, idc} = props;
+  let {lectures,idc,getLectures } = props;
+  getLectures();
 
     return (
         <Table className="table" id="lectures-table">

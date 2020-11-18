@@ -3,7 +3,8 @@ import { Link }  from 'react-router-dom';
 import { Table } from "react-bootstrap";
 
 const CourseList = ( props ) => {
-    let {courses, idc} = props;
+  let {courses,idc,getLectures}=props;
+  getLectures();
 
 
     return (

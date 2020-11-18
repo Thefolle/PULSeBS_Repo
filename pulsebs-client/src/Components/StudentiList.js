@@ -2,8 +2,9 @@ import React     from 'react';
 import { Table } from "react-bootstrap";
 
 const StudentList = ( props ) => {
-    let {students, idl} = props;
-    let student = students.filter( e => e.lId === parseInt( idl ) );
+    let {students,idl,getLectures } =props;
+    getLectures();
+    //let student = students.filter( e => e.lId === parseInt( idl ) );
     return (
         <Table className="table" id="lectures-table">
             <thead>
@@ -12,7 +13,8 @@ const StudentList = ( props ) => {
             </tr>
             </thead>
             <tbody>
-            { student.map( ( s, id ) => <StudentItem key={ id } student={ s }/> ) }
+            { students.filter( e => e.lId === parseInt( idl ) )
+              .map( ( s, id ) => <StudentItem key={ id } student={ s }/> ) }
             </tbody>
         </Table>
     );

@@ -2,7 +2,6 @@ import React     from 'react';
 import Container from 'react-bootstrap/Container';
 import Row       from 'react-bootstrap/Row';
 import { Link }  from 'react-router-dom';
-import Button    from 'react-bootstrap/Button';
 
 const ButtonTeacherHub = ( props ) => {
     return (
