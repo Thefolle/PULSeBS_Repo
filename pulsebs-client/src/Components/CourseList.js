@@ -1,38 +1,34 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
+import React     from 'react';
+import { Link }  from 'react-router-dom';
+import { Table } from "react-bootstrap";
 
-const CourseList=(props)=>{
-    let {courses,idc}=props;
-    
+const CourseList = ( props ) => {
+    let {courses, idc} = props;
 
-   return(
-       <>
-       {courses.length!==0 &&
-        <table className="table" id="lectures-table">
-              <thead>
-              <tr>
+
+    return (
+        <Table className="table" id="lectures-table">
+            <thead>
+            <tr>
                 <th>Name</th>
-              </tr>
-              </thead>
-              <tbody>
-                {courses.map((c,id) => <CourseItem key={id} course = {c} index={idc[id]}/> )}      
-              </tbody>     
-            </table>
-            }
-       </>
-       );
-    
+            </tr>
+            </thead>
+            <tbody>
+            { courses.map( ( c, id ) => <CourseItem key={ id } course={ c } index={ idc[id] }/> ) }
+            </tbody>
+        </Table>
+    );
 }
 
-const CourseItem=(props)=>{
-    let {course,index}=props;
+const CourseItem = ( props ) => {
+    let {course, index} = props;
 
-    return(
+    return (
         <tr>
-          <td> <Link to={"/teacher/" + index + "/lectures"}>{course}</Link></td>
+            <td><Link to={ "/teacher/" + index + "/lectures" }>{ course }</Link></td>
         </tr>
-        
-       );
+
+    );
 }
 
 export default CourseList;

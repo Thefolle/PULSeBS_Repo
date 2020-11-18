@@ -4,7 +4,7 @@
   "description": "PULSeBS REST API server",
   "main": "server.js",
   "scripts": {
-    "test": "cross-env TEST=1 jest",
+    "test": "cross-env TEST=1 jest --coverage",
     "run": "cross-env TEST=0 npx nodemon server.js"
   },
   "author": "Team 9",

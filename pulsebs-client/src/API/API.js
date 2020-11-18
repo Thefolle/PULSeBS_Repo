@@ -52,7 +52,7 @@ async function getStudentLectures() {
     const lecturesJson = await response.json();
     if(response.ok){
         console.log(lecturesJson);
-        return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.Cdesc, l.name, l.surname, l.CLdesc));
+        return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.course, l.name, l.surname, l.class));
         } else {
         let err = {status: response.status, errObj:lecturesJson};
         throw err;  // An object with the error coming from the server
@@ -88,7 +88,8 @@ async function getStudentBookings() {
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if(response.ok){
-        return bookingsJson.map((b) => new Booking(b.ref_student, b.ref_lecture, b.date));
+        console.log(bookingsJson);
+        return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence));
     } else {
         let err = {status: response.status, errObj:bookingsJson};
         throw err;  // An object with the error coming from the server

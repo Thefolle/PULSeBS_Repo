@@ -1,35 +1,31 @@
-import React from 'react';
+import React     from 'react';
+import { Table } from "react-bootstrap";
 
-const StudentList =(props) => {
-    let { students,idl } =props;
-    let student=students.filter(e=>e.lId===parseInt(idl));
+const StudentList = ( props ) => {
+    let {students, idl} = props;
+    let student = students.filter( e => e.lId === parseInt( idl ) );
     return (
-        <>
-        
-            {student.length !== 0 &&
-                <table className="table" id="lectures-table">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {student.map((s, id) => <StudentItem key={id} student={s} />)}
-                    </tbody>
-                </table>
-            }
-        </>
+        <Table className="table" id="lectures-table">
+            <thead>
+            <tr>
+                <th>Id</th>
+            </tr>
+            </thead>
+            <tbody>
+            { student.map( ( s, id ) => <StudentItem key={ id } student={ s }/> ) }
+            </tbody>
+        </Table>
     );
 
 }
 
-const StudentItem = (props) => {
+const StudentItem = ( props ) => {
     let {student} = props;
 
     return (
-            <tr>
-                <td>{student.studentId}</td>
-            </tr>
+        <tr>
+            <td>{ student.studentId }</td>
+        </tr>
     );
 }
 
