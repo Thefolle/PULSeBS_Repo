@@ -18,7 +18,6 @@ class TeacherPage extends React.Component {
             userType: 'teacher',
             lectures: [],
             courses: [],
-            id_courses: [],
             students: []
         };
     }
@@ -28,17 +27,16 @@ class TeacherPage extends React.Component {
            .then( ( lectures ) => {
                this.setState( {
                                   lectures: lectures,
-                                  courses: this.getCourses( lectures ).sort(),
-                                  id_courses: this.getIdCourses( lectures ).sort()
+                                  courses: this.getCourses( lectures ).sort()
                               } );
               this.getStudentsByLecture();
            } )
            .catch( ( err ) => {
-               console.log( err );
+               this.handleErrors( err );
            } );
     }
 
-    handleErrors( err ) {
+    handleErrors=( err )=> {
         if ( err ) {
             if ( err.status && err.status === 401 ) {
                 this.props.history.push( "/" );
@@ -46,43 +44,40 @@ class TeacherPage extends React.Component {
         }
     }
 
-    getCourses( lectures ) {
-        return [ ...new Set( lectures.map( ( course ) => {
-            if ( course.course )
-                return course.course;
-            else
-                return null;
-        } ) ) ];
-    }
+    getCourses=( lectures )=> {
+            const result = [];
+            const map = new Map();
+            for (const item of lectures) {
+                if(!map.has(item.id)){
+                    map.set(item.id, true);    // set any value to Map
+                    result.push({
+                        id: item.id,
+                        course: item.course
+                    });
+                }
+            }
+            return result;
+        }
 
-    getIdCourses( lectures ) {
-        return [ ...new Set( lectures.map( ( course ) => {
-            if ( course.id )
-                return course.id;
-            else
-                return null;
-        } ) ) ];
-    }
 
-    getStudentsByLecture( ) {
+    getStudentsByLecture=( )=> {
         API.getStudents()
            .then( ( student ) => {
                this.setState( {students: student} );
            } )
            .catch( ( err ) => {
-               console.log( err );
+               this.handleErrors( err );
            } );
     }
 
-    getTeacherLectures( ) {
+    getTeacherLectures=( )=>{
     API.getTeacherLectures()
         .then( ( lectures )=>{
-          this.setState( { lectures: lectures, courses: this.getCourses(lectures).sort(),
-             id_courses: this.getIdCourses(lectures).sort()} );
+          this.setState( { lectures: lectures, courses: this.getCourses(lectures).sort()} );
              this.getStudentsByLecture();
         })
         .catch((errorObj) => {
-            console.log(errorObj);
+            this.handleErrors(errorObj);
         });
   }
 
@@ -92,7 +87,7 @@ class TeacherPage extends React.Component {
            <Switch>
              <Route exact path="/teacher" component={ButtonTeacherHub}/>
              <Route exact path={"/teacher/courses"}>
-               <CourseList courses={this.state.courses} idc={this.state.id_courses} getLectures={this.getTeacherLectures} />
+               <CourseList courses={this.state.courses} getLectures={this.getTeacherLectures} />
              </Route>
              <Route exact path={"/teacher/:courseId/lectures"} render={({match})=>(
                  <LectureList lectures={this.state.lectures} idc={match.params.courseId} getLectures={this.getTeacherLectures} />

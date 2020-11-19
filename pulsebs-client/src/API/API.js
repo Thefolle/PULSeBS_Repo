@@ -90,7 +90,7 @@ async function getStudentBookings() {
     const bookingsJson = await response.json();
     if(response.ok){
         console.log(bookingsJson);
-        return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence));
+        return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence, b.active));
     } else {
         let err = {status: response.status, errObj:bookingsJson};
         throw err;  // An object with the error coming from the server

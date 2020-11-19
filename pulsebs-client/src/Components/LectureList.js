@@ -15,7 +15,7 @@ const LectureList = ( props ) => {
             </tr>
             </thead>
             <tbody>
-            { lectures.map( ( l, id ) => <LectureItem key={ id } lecture={ l } idc={ idc } index={ l.lecId }/> ) }
+            { lectures.filter(l=>l.id===parseInt(idc)).map( ( l, id ) => <LectureItem key={ id } lecture={ l } idc={ idc } index={ l.lecId }/> ) }
             </tbody>
         </Table>
     );
