@@ -38,24 +38,26 @@ function loadData() {
 /*
 * Database Connection
 */
-if ( process.env.TEST && process.env.TEST === '1' ) {
-    //TEST DB
-    const dbname = 'pulsebs-test.db'
-    //Check for file existance
-    if ( fs.existsSync( dbname ) ) {
-        fs.unlinkSync( dbname ); //If true, delete file
+if( !db ) {
+    if ( process.env.TEST && process.env.TEST === '1' ) {
+        //TEST DB
+        const dbname = 'pulsebs-test.db'
+        //Check for file existance
+        if ( fs.existsSync( dbname ) ) {
+            fs.unlinkSync( dbname ); //If true, delete file
+        }
+        //Create new db
+        db = new sqlite3.Database( 'pulsebs-test.db', ( err ) => {
+            if ( err ) return console.error( err.message );
+            else console.log( 'Connected to the in-memory TEST SQlite database.' );
+        } );
+        loadData();
+    } else {
+        db = new sqlite3.Database( 'pulsebs.db', ( err ) => {
+            if ( err ) return console.error( err.message );
+            else console.log( 'Connected to the in-memory SQlite database.' );
+        } );
     }
-    //Create new db
-    db = new sqlite3.Database( 'pulsebs-test.db', ( err ) => {
-        if ( err ) return console.error( err.message );
-        else console.log( 'Connected to the in-memory TEST SQlite database.' );
-    } );
-    loadData();
-} else {
-    db = new sqlite3.Database( 'pulsebs.db', ( err ) => {
-        if ( err ) return console.error( err.message );
-        else console.log( 'Connected to the in-memory SQlite database.' );
-    } );
 }
 
 
@@ -102,11 +104,11 @@ exports.getUserByEmail = function ( email ) {
 exports.bookSeat = ( lectureId, studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
         //1 - Check if student is undersigned to that course
-        let checkQuery = `SELECT bookable 
-                          FROM subscription S,course C,lecture L 
+        let checkQuery = `SELECT bookable
+                          FROM subscription S,course C,lecture L
                           WHERE S.ref_course = C.id AND
-                                C.id = L.ref_course AND 
-                                L.id = ${ lectureId } AND 
+                                C.id = L.ref_course AND
+                                L.id = ${ lectureId } AND
                                 S.ref_student = ${ studentId };`
         //2 - Insert a new booking record
         let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ studentId },${ lectureId },${ moment().valueOf() });`
@@ -115,9 +117,9 @@ exports.bookSeat = ( lectureId, studentId ) => {
             if ( err ) reject( err );
             if ( row && row.bookable === 1 ) {
                 //Student subscription exists
-                
+
                 db.run( bookQuery, [], ( err ) => {
-                  
+
                     err ? reject( err ) : resolve( 1 );
                 } );
             } else resolve( 0 );
@@ -131,11 +133,11 @@ exports.bookSeat = ( lectureId, studentId ) => {
 
 exports.getStudentLectures = ( studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT L.id, 
+        let query = `SELECT L.id,
                             date,
                             presence,
                             bookable,
-                            active, 
+                            active,
                             C.desc as course,
                             name,
                             surname,
@@ -147,8 +149,8 @@ exports.getStudentLectures = ( studentId ) => {
                       WHERE L.ref_course = C.id AND
                             L.ref_class = CL.id AND
                             C.ref_teacher = T.id AND
-                            C.id IN (   SELECT  C2.id 
-                                        FROM    subscription S, student ST, course C2 
+                            C.id IN (   SELECT  C2.id
+                                        FROM    subscription S, student ST, course C2
                                         WHERE   S.ref_course = C2.id AND
                                                 S.ref_student = ${ studentId }
                             );`
@@ -168,12 +170,14 @@ exports.getTeacherLectures = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `SELECT C.desc as course,
                                 CL.desc as class,
+                                C.id as id,
+                                L.id as lecId,
                                 L.date,
                                 L.presence,
                                 L.bookable
                         FROM    lecture L,
                                 course C,
-                                class CL 
+                                class CL
                         WHERE   L.ref_course = C.id AND
                                 L.ref_class = CL.id AND
                                 C.ref_teacher = ${ teacherId };`
@@ -201,6 +205,24 @@ exports.getStudentsForLecture = ( lectureId ) => {
 }
 
 /*
+* Get a list of students who will attend a lecture - Vincenzo's implementation
+* */
+
+exports.getStudentsForLecturev2 = ( teacherId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId 
+                     FROM booking B,course CO, lecture L 
+                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${ teacherId };`
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+            else resolve(0);
+        } );
+    } ) );
+}
+
+
+/*
 * Delete a booking
 * */
 
@@ -223,13 +245,14 @@ exports.getStudentBookings = ( studentId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `   SELECT  B.id,
                                 B.date,
-                                B.active, 
+                                B.active,
                                 B.presence,
-                                L.date, 
-                                L.presence, 
+                                B.ref_lecture,
+                                L.date,
+                                L.presence,
                                 L.active,
-                                C.desc as course, 
-                                Cl.desc as class, 
+                                C.desc as course,
+                                Cl.desc as class,
                                 seats,
                                 name,
                                 surname
@@ -286,22 +309,22 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
                                 class CL
                         WHERE   T.id = C.ref_teacher AND
                                 C.id = L.ref_course AND
-                                B.ref_lecture = L.id AND 
+                                B.ref_lecture = L.id AND
                                 B.active = 1 AND
-                                L.active = 1 AND 
+                                L.active = 1 AND
                                 L.date > ${ test ? 1605398400000 : moment().milliseconds( 0 )
                                                                            .seconds( 0 )
                                                                            .minute( 0 )
                                                                            .hour( 0 )
                                                                            .add(1,"day")
-                                                                           .valueOf() } AND 
+                                                                           .valueOf() } AND
                                 L.date < ${ test ? 1605571199000 : moment().milliseconds( 0 )
                                                                            .seconds( 0 )
                                                                            .minute( 0 )
                                                                            .hour( 0 )
                                                                            .add( 2, "days" )
-                                                                           .valueOf() } AND  
-                                CL.id = L.ref_class 
+                                                                           .valueOf() } AND
+                                CL.id = L.ref_class
                         GROUP BY B.ref_lecture;`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
@@ -337,13 +360,13 @@ exports.getTeacherBookingStats = ( teacherId ) => {
                             B.date as bDate,
                             B.active,
                             B.presence,
-                            L.date as Ldate, 
+                            L.date as Ldate,
                             L.presence as lPresence,
                             L.active as lActive,
                             C.desc
-                     FROM   booking B, 
-                            lecture L, 
-                            course C 
+                     FROM   booking B,
+                            lecture L,
+                            course C
                      WHERE  B.ref_lecture = L.id AND
                             L.ref_course = C.id AND
                             C.ref_teacher = ${ teacherId } AND
@@ -363,15 +386,15 @@ exports.getTeacherBookingStats = ( teacherId ) => {
 
 exports.getTeacherPresenceStats = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `    SELECT * 
-                         FROM   booking B, 
-                                lecture L, 
-                                course C 
+        let query = `    SELECT *
+                         FROM   booking B,
+                                lecture L,
+                                course C
                          WHERE  B.ref_lecture = L.id AND
-                                L.ref_course = C.id AND 
-                                C.ref_teacher = ${ teacherId } AND 
-                                active = 1 AND 
-                                presence = 1 AND 
+                                L.ref_course = C.id AND
+                                C.ref_teacher = ${ teacherId } AND
+                                active = 1 AND
+                                presence = 1 AND
                                 L.date < ${ moment().valueOf() };`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
@@ -388,7 +411,7 @@ exports.getTeacherPresenceStats = ( teacherId ) => {
 exports.getManagerStats = () => {
     return new Promise( ( ( resolve, reject ) => {
         //Result => [ BOOKING COUNT, CANCELLATION COUNT, PRESENCE COUNT ]
-        let query = `SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL  
+        let query = `SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL
                      SELECT COUNT(*) FROM booking WHERE active = 0 UNION ALL
                      SELECT COUNT(*) FROM booking WHERE presence = 1;`
         db.all( query, [], ( err, rows ) => {
@@ -409,25 +432,25 @@ exports.studentContactTracing = ( studentId ) => {
         let twoWeeksAgo = now.subtract( 14, 'days' );
 
         let query = `SELECT S.name as sname,
-                            S.surname as ssurname, 
+                            S.surname as ssurname,
                             T.name as tname,
-                            T.surname as tsurname 
-                     FROM   booking B, 
-                            lecture L, 
-                            student S, 
-                            course C, 
-                            teacher T 
-                     WHERE  B.ref_student = S.id AND 
-                            B.ref_lecture = L.id AND 
-                            L.ref_course = C.id AND 
-                            C.ref_teacher = T.id AND 
-                            B.id IN (   SELECT  B.id 
-                                        FROM    booking B, 
-                                                lecture L 
-                                        WHERE   B.ref_lecture = L.lecture AND 
-                                                B.ref_student = ${ studentId } AND 
-                                                B.presence = 1 AND 
-                                                L.date < ${ now.valueOf() } AND 
+                            T.surname as tsurname
+                     FROM   booking B,
+                            lecture L,
+                            student S,
+                            course C,
+                            teacher T
+                     WHERE  B.ref_student = S.id AND
+                            B.ref_lecture = L.id AND
+                            L.ref_course = C.id AND
+                            C.ref_teacher = T.id AND
+                            B.id IN (   SELECT  B.id
+                                        FROM    booking B,
+                                                lecture L
+                                        WHERE   B.ref_lecture = L.lecture AND
+                                                B.ref_student = ${ studentId } AND
+                                                B.presence = 1 AND
+                                                L.date < ${ now.valueOf() } AND
                                                 L.date > ${ twoWeeksAgo.valueOf() } );`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
@@ -447,17 +470,17 @@ exports.teacherContactTracing = ( teacherId ) => {
         let twoWeeksAgo = now.subtract( 14, 'days' );
 
         let query = `SELECT S.name as sname,
-                            S.surname as ssurname 
-                     FROM   booking B, 
-                            lecture L, 
-                            student S, 
-                            course C 
-                     WHERE  B.ref_student = S.id AND 
-                            B.ref_lecture = L.id AND 
-                            L.ref_course = C.id AND 
-                            C.ref_teacher = ${ teacherId } AND 
-                            B.presence = 1 AND 
-                            L.date < ${ now.valueOf() } AND 
+                            S.surname as ssurname
+                     FROM   booking B,
+                            lecture L,
+                            student S,
+                            course C
+                     WHERE  B.ref_student = S.id AND
+                            B.ref_lecture = L.id AND
+                            L.ref_course = C.id AND
+                            C.ref_teacher = ${ teacherId } AND
+                            B.presence = 1 AND
+                            L.date < ${ now.valueOf() } AND
                             L.date > ${ twoWeeksAgo.valueOf() };`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
