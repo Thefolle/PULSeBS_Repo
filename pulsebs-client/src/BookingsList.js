@@ -4,7 +4,7 @@ import { Table }   from "react-bootstrap";
 
 const BookingsList = ( props ) => {
 
-    let {bookings} = props; //add delete method
+    let {bookings, cancelBooking} = props; //add delete method
 
     return (
             <Table className="table">
@@ -18,7 +18,9 @@ const BookingsList = ( props ) => {
                 </tr>
                 </thead>
                 <tbody>
-                { bookings.filter(b => b.active === 1).map( ( b ) => <BookingItem booking={ b }/> ) }
+
+                { bookings.map( ( b ) => <BookingItem key={ b.id } booking={ b } cancelBooking={cancelBooking} /> ) }
+
                 </tbody>
             </Table>
 

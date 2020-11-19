@@ -226,7 +226,7 @@ exports.getStudentsForLecturev2 = ( teacherId ) => {
 * Delete a booking
 * */
 
-exports.cancelBooking = ( bookingId ) => {
+exports.cancelBookings = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
         db.run( query, [], function ( err ) {
@@ -236,6 +236,22 @@ exports.cancelBooking = ( bookingId ) => {
         } );
     } ) );
 }
+
+/*
+* Delete a booking  -v2
+* */
+
+exports.cancelBooking = ( bookingId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = `DELETE FROM booking WHERE id = ${ bookingId };`
+        db.run( query, [], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+            else resolve( 0 );
+        } );
+    } ) );
+}
+
 
 /*
 * Get a list of student's booking
