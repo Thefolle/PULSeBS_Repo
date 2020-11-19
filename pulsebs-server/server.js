@@ -12,6 +12,7 @@ const bcrypt = require('bcrypt');
 
 const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
+const { response } = require('express');
 
 // Authorization error
 const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
@@ -213,6 +214,24 @@ app.get('/api/student/bookings', (req, res) => {
        });
 })
 
+
+
+// PUT /student/bookings
+app.put('/api/student/bookings', (req, res) => {
+    const bookingId = req.body.bookingId;
+    if (!bookingId) {
+        res.status(401).end();
+    } else{
+        // const user = req.user && req.user.user;
+        pulsebsDAO.cancelBooking(bookingId)
+            .then((response) => res.status(201).json({response}))
+            .catch((err) => {
+                res.status(500).json({
+                    errors: [{'param': 'Server', 'msg': err}],
+                });
+        });
+    }
+});
 
 
 
