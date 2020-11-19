@@ -2,7 +2,7 @@
 .idea/
 pulsebs-client/node_modules/
 pulsebs-server/node_modules/
-pulsebs-server/pulsebs-test.db
+pulsebs-server/pulsebs.db
 
 # dependencies
 /node_modules
