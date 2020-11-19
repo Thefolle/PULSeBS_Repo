@@ -3,7 +3,7 @@ import { Link }  from 'react-router-dom';
 import { Table } from "react-bootstrap";
 
 const CourseList = ( props ) => {
-  let {courses,idc,getLectures}=props;
+  let {courses,getLectures}=props;
   getLectures();
 
 
@@ -15,7 +15,7 @@ const CourseList = ( props ) => {
             </tr>
             </thead>
             <tbody>
-            { courses.map( ( c, id ) => <CourseItem key={ id } course={ c } index={ idc[id] }/> ) }
+            { courses.map( ( c ) => <CourseItem key={ c.id } course={ c } index={ c.id }/> ) }
             </tbody>
         </Table>
     );
@@ -26,7 +26,7 @@ const CourseItem = ( props ) => {
 
     return (
         <tr>
-            <td><Link to={ "/teacher/" + index + "/lectures" }>{ course }</Link></td>
+            <td><Link to={ "/teacher/" + index + "/lectures" }>{ course.course }</Link></td>
         </tr>
 
     );
