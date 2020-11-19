@@ -1,6 +1,7 @@
 import Lecture from './Lecture.js'
 import Booking from './Booking.js'
 import LectureTeacher from './LectureTeacher.js'
+import { Ellipsis } from 'react-bootstrap/esm/PageItem';
 const baseURL = "/api";
 
 
@@ -47,7 +48,7 @@ async function logout() {
 /****** STUDENT *******/
 
 async function getStudentLectures() {
-    let url = "/student/lectures";
+    let url = "/student/lectures";    
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
     if(response.ok){
@@ -67,7 +68,7 @@ async function bookSeat(lectureId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({lectureId : lectureId}),
+        body: JSON.stringify({lectureId : lectureId}), 
     }).then((response) => {
         if(response.ok) {
             resolve(response);
@@ -98,6 +99,24 @@ async function getStudentBookings() {
 }
 
 
+async function cancelBooking(bookingId){
+    return new Promise((resolve, reject) =>{
+        fetch(baseURL + "/student/booking" + bookingId, {
+            method: 'DELETE'
+        }).then((response) => {
+            if (response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);})
+                .catch( (err) => { reject({errors: [{ param: "Application", msg: "Cannot parse server response" }]})}); //something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    })
+}
+
+
 /****** TEACHER *******/
 async function getTeacherLectures() {
     let url="/teacher/lectures";
@@ -124,5 +143,6 @@ async function getStudents(filter){
 }
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, getTeacherLectures, getStudents };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents };
 export default API;

@@ -4,7 +4,7 @@ import Image from 'react-bootstrap/Image';
 
 const BookingItem = (props) => {
 
-  let {booking} = props;
+  let {booking, cancelBooking} = props;
 
   return (
     <tr key={booking.id}>
@@ -12,7 +12,7 @@ const BookingItem = (props) => {
         <td>{booking.course}</td>
         <td>{booking.class}</td>
         <td>{booking.presence === 1 ? "Presence" : "Remote"}</td>
-       <td><Image width="30" height="30" className="img-button" type="button" src="/svg/delete.svg" alt =""/></td>
+       <td><Image width="30" height="30" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {() => cancelBooking(booking.id)}/></td>
    </tr>
   );
 }

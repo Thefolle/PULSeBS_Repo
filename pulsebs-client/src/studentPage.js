@@ -79,8 +79,22 @@ class StudentPage extends React.Component {
            } );
     }
 
-    //add Delete method in mybookings
 
+
+    //add Delete method in mybookings
+    cancelBooking = (bookings) => {
+        API.cancelBooking(bookings.id)
+          .then(() => {
+            //get the updated list of tasks from the server
+            API.getStudentBookings().then((bookings) => this.setState({bookings: bookings}));
+          })
+          .catch((errorObj) => {
+            this.handleErrors(errorObj);
+          });
+      }
+
+
+    
     render() {
         this.loadData();
         return (
@@ -104,7 +118,7 @@ class StudentPage extends React.Component {
                     <LecturesList lectures={ this.state.lectures } bookings={this.state.bookings} bookSeat={ this.bookSeat } alreadyBooked={ this.alreadyBooked }/>
                 </Route>
                 <Route exact path={ this.props.match.url + "/bookings" }>
-                    <BookingsList bookings={ this.state.bookings }/>
+                    <BookingsList bookings={ this.state.bookings } cancelBookings = {this.cancelBooking} />
                 </Route>
 
             </Container>

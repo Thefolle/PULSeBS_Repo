@@ -10,14 +10,10 @@ const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYx
 const expireTime = 900; //seconds
 const bcrypt = require( 'bcrypt' );
 
-<<<<<<< HEAD
 const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
 const { response } = require('express');
-=======
-const schedule = require( 'node-schedule' );
-const nodemailer = require( 'nodemailer' );
->>>>>>> upstream/main
+
 
 // Authorization error
 const authErrorObj = {errors: [ {'param': 'Server', 'msg': 'Authorization error'} ]};
@@ -235,25 +231,23 @@ app.post( '/api/student/booking', ( req, res ) => {
 
 
 //GET /student/bookings
-<<<<<<< HEAD
-app.get('/api/student/bookings', (req, res) => {
-   const user = req.user && req.user.user;
-   //const user = 269901; 
-   pulsebsDAO.getStudentBookings(user)
-        .then((bookings) => {
-            res.json(bookings);
-        })
-        .catch((err) => {
-            res.status(500).json({
-                errors: [{'msg': err}],
-             });
-       });
-})
 
+app.get( '/api/student/bookings', ( req, res ) => {
+    const user = req.user && req.user.user;
+    //const user = 269901;
+    pulsebsDAO.getStudentBookings( user )
+              .then( ( bookings ) => {
+                  res.json( bookings );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'msg': err} ],
+                                          } );
+              } );
+} )
 
-
-// PUT /student/bookings
-app.put('/api/student/bookings', (req, res) => {
+// DELETE /student/bookings
+app.delete('/api/student/bookings', (req, res) => {
     const bookingId = req.body.bookingId;
     if (!bookingId) {
         res.status(401).end();
@@ -270,29 +264,8 @@ app.put('/api/student/bookings', (req, res) => {
 });
 
 
-
-
-app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`)); //comment to test
-
-//module.exports = app; //uncomment to test
-=======
-app.get( '/api/student/bookings', ( req, res ) => {
-    const user = req.user && req.user.user;
-    //const user = 269901;
-    pulsebsDAO.getStudentBookings( user )
-              .then( ( bookings ) => {
-                  res.json( bookings );
-              } )
-              .catch( ( err ) => {
-                  res.status( 500 ).json( {
-                                              errors: [ {'msg': err} ],
-                                          } );
-              } );
-} )
-
-
 if ( process.env.TEST && process.env.TEST === '1' )
     module.exports = app; //uncomment to test
 else
     app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
->>>>>>> upstream/main
+
