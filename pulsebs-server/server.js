@@ -247,8 +247,8 @@ app.get( '/api/student/bookings', ( req, res ) => {
 } )
 
 // DELETE /student/bookings
-app.delete('/api/student/bookings', (req, res) => {
-    const bookingId = req.body.bookingId;
+app.delete('/api/student/bookings/:id', (req, res) => {
+    const bookingId = req.params.id;
     if (!bookingId) {
         res.status(401).end();
     } else{
