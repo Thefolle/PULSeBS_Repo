@@ -18,7 +18,7 @@ const BookingsList = ( props ) => {
                 </tr>
                 </thead>
                 <tbody>
-                { bookings.map( ( b ) => <BookingItem booking={ b }/> ) }
+                { bookings.filter(b => b.active === 1).map( ( b ) => <BookingItem booking={ b }/> ) }
                 </tbody>
             </Table>
 

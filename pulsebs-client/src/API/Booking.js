@@ -1,6 +1,6 @@
 class Booking{
 
-    constructor(id,ref_student, ref_lecture, date, course, classDesc, presence) {
+    constructor(id,ref_student, ref_lecture, date, course, classDesc, presence, active) {
         this.id = id;
         this.ref_student = ref_student;
         this.ref_lecture = ref_lecture;
@@ -8,6 +8,7 @@ class Booking{
         this.course = course;
         this.class = classDesc;
         this.presence = presence;
+        this.active = active;
     }
 }
 

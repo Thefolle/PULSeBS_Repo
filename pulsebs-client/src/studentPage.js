@@ -27,7 +27,11 @@ class StudentPage extends React.Component {
         };
     }
 
-    loadData() {
+    componentDidMount() {
+        this.loadData();
+    }
+
+    loadData = () => {
         API.getStudentLectures()
            .then( ( lectures ) => {
                API.getStudentBookings()
@@ -82,7 +86,6 @@ class StudentPage extends React.Component {
     //add Delete method in mybookings
 
     render() {
-        this.loadData();
         return (
             //TODO: Header & put buttons into the nav bar and create the student home page
             <Container fluid>
