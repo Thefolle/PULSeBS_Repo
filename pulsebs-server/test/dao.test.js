@@ -23,29 +23,29 @@ describe("Login test suite", () => {
 });
 
 //BOOKING A SEAT
-test( 'Try to book a new seat', () => {
-    return DAO.bookSeat( '2', '269901' ).then( result => {
-        expect( result ).toBe( 1 );
-    } );
-} );
+test('Try to book a new seat', () => {
+    return DAO.bookSeat('2', '269901').then(result => {
+        expect(result).toBe(1);
+    });
+});
 
 //GET STUDENT LECTURES
-test( 'Try to get a student\'s lectures', () => {
-    return DAO.getStudentLectures( '269901' ).then( result => {
-        expect( result.length ).toEqual( 4 );
-    } )
-} );
+test('Try to get a student\'s lectures', () => {
+    return DAO.getStudentLectures('269901').then(result => {
+        expect(result.length).toEqual(4);
+    })
+});
 
 //GET TEACHER LECTURES
-test( 'Try to get a teacher\'s lectures', () => {
-    return DAO.getTeacherLectures( '239901' ).then( result => {
+test('Try to get a teacher\'s lectures', () => {
+    return DAO.getTeacherLectures('239901').then(result => {
         expect(result.length).toBe(4); //or toEqual
-    } );
-} );
+    });
+});
 
 //GET STUDENTS BOOKED FOR LECTURE ID
 test('Try to get students booked for lectures of 1 professor', () => {
-    return DAO.getStudentsForLecturev2('239901').then( result => {
+    return DAO.getStudentsForLecturev2('239901').then(result => {
         expect(result.length).toBe(2);
     });
 });
@@ -60,7 +60,7 @@ test('Try to get students booked for lectures of 1 professor', () => {
 
 //GET ALL STUDENT'S BOOKINGS
 test('Try to get all student\'s bookings', () => {
-    return DAO.getStudentBookings('269901').then( result => {
+    return DAO.getStudentBookings('269901').then(result => {
         expect(result.length).toEqual(3);
     })
 });
@@ -74,21 +74,66 @@ test('Try to get all students booked for tomorrow lectures', () => {
 
 //EDIT PRESENCE LECTURE
 test('Try to put a lecture in remote', () => {
-    return DAO.setPresenceLecture(2).then( result => {
+    return DAO.setPresenceLecture(2).then(result => {
         expect(result).toEqual(1);
     });
 });
 
 //CANCEL A BOOKING
 test('Try to cancel a booking', () => {
-    return DAO.cancelBooking(1).then( result => {
+    return DAO.cancelBooking(1).then(result => {
         expect(result).toEqual(1);
     })
 });
 
 //CANCEL LECTURE
 test('Try to cancel a lecture', () => {
-    return DAO.cancelLecture(2).then( result => {
+    return DAO.cancelLecture(2).then(result => {
         expect(result).toEqual(1);
     })
 });
+
+describe('Turn a lecture to be online instead of in presence', () => {
+    test('Turnable lecture', () => {
+        return DAO.turnLectureIntoOnline(1).then(exitCode => {
+            expect(exitCode).toBe(0);
+        }).catch(exitCode => {
+            // test failed because the lecture should have been turnable into online
+            console.log("Test failure message: ");
+            console.log(exitCode);
+        });
+    });
+
+    test('Non-existing lecture', () => {
+        return DAO.turnLectureIntoOnline(300).then(exitCode => {
+            console.log("Test failure message: ");
+            console.log(exitCode);
+        }).catch(exitCode => {
+            // test failed because the lecture should have been turnable into online
+            expect(exitCode).toBe(-1);
+        });
+    });
+
+    test('Non-active lecture', () => {
+        return DAO.turnLectureIntoOnline(2).then(exitCode => {
+            console.log("Test failure message: ");
+            console.log(exitCode);
+        }).catch(exitCode => {
+            // test failed because the lecture should have been turnable into online
+            expect(exitCode).toBe(-2);
+        });
+    });
+
+    test('Lecture is starting within 30 minutes', () => {
+        return DAO.turnLectureIntoOnline(3).then(exitCode => {
+            console.log("Test failure message: ");
+            console.log(exitCode);
+        }).catch(exitCode => {
+            // test failed because the lecture should have been turnable into online
+            expect(exitCode).toBe(-3);
+        });
+    });
+
+    // Cannot test exitCode === -4
+});
+
