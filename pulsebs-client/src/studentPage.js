@@ -1,20 +1,22 @@
-import React          from 'react';
-import Route          from 'react-router-dom/Route';
+import React from 'react';
+import Route from 'react-router-dom/Route';
 import { withRouter } from 'react-router-dom';
-import Container      from 'react-bootstrap/Container';
-import Row            from 'react-bootstrap/Row';
-import LecturesList   from './LecturesList';
-import BookingsList   from './BookingsList'
-import './App.css';
-import API            from './API/API';
+import LecturesList from './LecturesList';
+import BookingsList from './BookingsList';
+import UserNavBar from './Components/UserNavBar';
 
-import { FaBookOpen,FaCalendarAlt }              from "react-icons/fa";
-import { Button }                  from "react-bootstrap";
+import './App.css';
+import API from './API/API';
+
+import { FaBookOpen, FaCalendarAlt } from "react-icons/fa";
+import { Button } from "react-bootstrap";
+import Switch from 'react-router-dom/Switch';
 
 class StudentPage extends React.Component {
-    constructor( props ) {
-        super( props );
-        console.log(this.props);
+
+    constructor(props) {
+        super(props);
+
         this.state = {
             id: this.props.id,
             email: '',
@@ -25,6 +27,9 @@ class StudentPage extends React.Component {
             bookings: [],
             bookingFailed: ''
         };
+
+        this.getStudentLectures = this.getStudentLectures.bind(this);
+        this.getStudentBookings = this.getStudentBookings.bind(this);
     }
 
     componentDidMount() {
@@ -35,54 +40,56 @@ class StudentPage extends React.Component {
     loadData = () => {
 
         API.getStudentLectures()
-           .then( ( lectures ) => {
-               API.getStudentBookings()
-                  .then( ( bookings ) => {
-                      this.setState( ( state, props ) => ( {lectures: lectures, bookings: bookings} ) );
-                  } )
-           } )
+            .then((lectures) => {
+                API.getStudentBookings()
+                    .then((bookings) => {
+                        this.setState((state, props) => ({ lectures: lectures, bookings: bookings }));
+                    })
+            })
     }
 
 
-    handleErrors( err ) {
-        if ( err ) {
-            if ( err.status && err.status === 401 ) {
-                this.setState( {authErr: err.errorObj} );
-                this.props.history.push( "/" );
+    handleErrors(err) {
+        if (err) {
+            if (err.status && err.status === 401) {
+                this.setState({ authErr: err.errorObj });
+                this.props.history.push("/");
             }
         }
+        console.log("Error occured. Check the handleErrors method in studentPage.");
+        console.log(err);
     }
 
 
     getStudentLectures = () => {
-        API.getStudentLectures().then( ( lectures ) => { return lectures; } )
-           .catch( ( errorObj ) => {
-               this.handleErrors( errorObj );
-           } );
+        console.log("Get lectures:");
+        API.getStudentLectures().then((lectures) => { console.log("Lectures found correctly:"); console.log(lectures); this.setState({ lectures: lectures }); })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
     }
 
     getStudentBookings = () => {
-        API.getStudentBookings().then( ( bookings ) => { return bookings; } )
-           .catch( ( errorObj ) => {
-               this.handleErrors( errorObj );
-           } );
+        API.getStudentBookings().then((bookings) => { return bookings; })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
     }
 
 
-    bookSeat = ( lectureId ) => {
-        API.bookSeat( lectureId ).then( ( result ) => {
-            console.log( result );
-            if ( result.ok ) {
-                this.setState( {failed: 0} );
+    bookSeat = (lectureId) => {
+        API.bookSeat(lectureId).then((result) => {
+            if (result.ok) {
+                this.setState({ failed: 0 });
                 this.props.history.push("/StudentHome/bookings");
             } else {
-                this.setState( {failed: 1} );
+                this.setState({ failed: 1 });
                 //error page
             }
-        } ) //if SUCCEDED return 1
-           .catch( ( errorObj ) => {
-               this.handleErrors( errorObj );
-           } );
+        }) //if SUCCEDED return 1
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
     }
 
 
@@ -90,48 +97,47 @@ class StudentPage extends React.Component {
     //add Delete method in mybookings
     cancelBooking = (bookingID) => {
         API.cancelBooking(bookingID)
-          .then(() => {
-            //get the updated list of tasks from the server
-            API.getStudentBookings().then((bookings) => this.setState({bookings: bookings}));
-          })
-          .catch((errorObj) => {
-            this.handleErrors(errorObj);
-          });
-      }
+            .then(() => {
+                //get the updated list of tasks from the server
+                API.getStudentBookings().then((bookings) => this.setState({ bookings: bookings }));
+            })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
+    }
 
 
-    
+
     render() {
 
         return (
-            //TODO: Header & put buttons into the nav bar and create the student home page
-            <Container fluid>
-                <Row className="vheight-100">
-                    <div className="btn-group" role="group" aria-label="Basic example" style={ {margin: '10px'}}>
-                        <Button className="btn btn-secondary" role="button" href="/StudentHome/lectures"
-                                aria-expanded="false" aria-controls="collapseExample">
-                            Lectures
-                            <FaBookOpen className={"ml-1"}/>
-                        </Button>
-                        <a type="button" className="btn btn-secondary" role="button" href="/StudentHome/bookings"
-                           aria-expanded="false" aria-controls="collapseExample">
-                            Bookings
-                            <FaCalendarAlt className={"ml-1"} />
-                        </a>
-                    </div>
-                </Row>
-                <Route exact path={ this.props.match.url + "/lectures" }>
-                    <LecturesList lectures={ this.state.lectures } bookings={this.state.bookings} bookSeat={ this.bookSeat } alreadyBooked={ this.alreadyBooked }/>
-                </Route>
-                <Route exact path={ this.props.match.url + "/bookings" }>
-                    <BookingsList bookings={ this.state.bookings } cancelBooking = {this.cancelBooking} />
-                </Route>
-
-            </Container>
+            <>
+                <UserNavBar></UserNavBar>
+                <div>
+                    <Button className="btn btn-secondary" role="button" href="/StudentHome/lectures"
+                        aria-expanded="false" aria-controls="collapseExample">
+                        Lectures
+                        <FaBookOpen className={"ml-1"} />
+                    </Button>
+                    <a type="button" className="btn btn-secondary" role="button" href="/StudentHome/bookings"
+                        aria-expanded="false" aria-controls="collapseExample">
+                        Bookings
+                        <FaCalendarAlt className={"ml-1"} />
+                    </a>
+                </div>
+                <Switch>
+                    <Route exact path={this.props.match.url + "/lectures"}>
+                        <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
+                    </Route>
+                    <Route exact path={this.props.match.url + "/bookings"}>
+                        <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
+                    </Route>
+                </Switch>
+            </>
         );
     }
 }
 
 
-export default withRouter( StudentPage );
+export default withRouter(StudentPage);
 

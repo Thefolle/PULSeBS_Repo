@@ -87,7 +87,7 @@ h1 {
     background-color: rgb(101, 196, 101);
 }
 
-#searchBar {
+#navbar {
     display: flex;
     height: 100px;
     justify-content: space-between;
