@@ -345,7 +345,7 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             else if ( rows ) resolve( rows );
-            else resolve( undefined );
+            else resolve(0);
         } );
     } ) );
 }
