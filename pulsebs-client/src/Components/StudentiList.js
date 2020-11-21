@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 
 const StudentList = ( props ) => {
     let {students,idl,getLectures } =props;
-    getLectures();
+    //getLectures();
     //let student = students.filter( e => e.lId === parseInt( idl ) );
     return (
         <Table className="table" id="lectures-table">
