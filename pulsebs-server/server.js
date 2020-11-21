@@ -16,7 +16,7 @@ const { response } = require('express');
 
 
 // Authorization error
-const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
+const authErrorObj = { errors: [{ 'param': 'Server', 'message': 'Authorization error' }] };
 
 checkPassword = function (user, password) {
     /*
@@ -92,12 +92,12 @@ app.post('/api/login', (req, res) => {
         .then((user) => {
             if (user === undefined) {
                 res.status(404).send({
-                    errors: [{ 'param': 'Server', 'msg': 'Invalid e-mail' }]
+                    errors: [{ 'param': 'Server', 'message': 'Invalid e-mail' }]
                 });
             } else {
                 if (!checkPassword(user, password)) {
                     res.status(401).send({
-                        errors: [{ 'param': 'Server', 'msg': 'Wrong password' }]
+                        errors: [{ 'param': 'Server', 'message': 'Wrong password' }]
                     });
                 } else {
                     //AUTHENTICATION SUCCESS
@@ -152,21 +152,6 @@ app.use(function (err, req, res, next) {
  * Protected APIs
  */
 
-const dbError = {
-    error: "db",
-    description: "Database error"
-}
-
-const authError = {
-    error: "auth",
-    description: "User not authenticated"
-}
-
-const validError = {
-    error: "validation",
-    description: "Data not valid"
-}
-
 /*TEACHER */
 
 app.get('/api/teacher/lectures', (req, res) => {
@@ -177,7 +162,7 @@ app.get('/api/teacher/lectures', (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                errors: [{ 'msg': err }],
+                errors: [{ 'message': err }],
             });
         });
 });
@@ -189,42 +174,56 @@ app.get('/api/getStudentsForLecture', (req, res) => {
             res.json(students);
         }).catch((err) => {
             res.status(500).json({
-                errors: [{ 'msg': err }],
+                errors: [{ 'message': err }],
             });
         });
 });
 
-app.post('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
+/*
+*   Update lecture
+*       request body:
+*           presence: has to be 0 in order to modify it accordingly; this information is redundant, but it sets the stage in case other
+*               properties will be modifiable in future;
+*/
+
+app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
     const user = req.user && req.user.user;
     const teacherId = req.params.teacherId;
     const lectureId = req.params.lectureId;
-    pulsebsDAO.turnLectureIntoOnline(lectureId).then((exitCode) => {
-        if (exitCode === 0) {
-            res.status(204).send({ message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." });
-        }
-    }).catch(exitCode => {
-        if (exitCode === -1) {
-            res.status(404).send({ message: "No lecture exists with id " + lectureId + " ." });
-        } else if (exitCode === -2) {
-            res.status(409).send({ message: "The selected lecture with id " + lectureId + " is not active yet." });
-        } else if (exitCode === -3) {
-            res.status(409).send({
-                message: "The selected lecture with id " + lectureId + " cannot be turnt to be online because " +
-                    "it is starting within 30 minutes as of now."
-            });
-        } else if (exitCode === -4) {
-            res.status(404).send(
-                {
-                    message:
-                        "Internal error, the lecture has not been turnt into online.\n" +
-                        "You can:\n" +
-                        "\tRetry this operation\n" +
-                        "\tRefresh the page and retry this operation\n" +
-                        "\tLog out and log in back and retry this operation\n"
-                }
-            );
-        }
-    });
+    const presence = req.body.presence;
+    if (presence === 1) {
+        res.status(409).json({ message: "The lecture cannot be turnt to be in presence." });
+    } else if (presence !== 0) {
+        res.status(422).json({ message: "The field presence has to be 0 and, moreover, it is compulsory." });
+    } else {
+        pulsebsDAO.turnLectureIntoOnline(lectureId).then((exitCode) => {
+            if (exitCode === 0) {
+                res.status(204).json({ message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." });
+            }
+        }).catch(exitCode => {
+            if (exitCode === -1) {
+                res.status(404).json({ message: "No lecture exists with id " + lectureId + " ." });
+            } else if (exitCode === -2) {
+                res.status(409).json({ message: "The selected lecture with id " + lectureId + " is not active yet." });
+            } else if (exitCode === -3) {
+                res.status(409).json({
+                    message: "The selected lecture with id " + lectureId + " cannot be turnt to be online because " +
+                        "it is starting within 30 minutes as of now."
+                });
+            } else if (exitCode === -4) {
+                res.status(500).json(
+                    {
+                        message:
+                            "Internal error, the lecture has not been turnt into online.\n" +
+                            "You can:\n" +
+                            "\tRetry this operation\n" +
+                            "\tRefresh the page and retry this operation\n" +
+                            "\tLog out and log in back and retry this operation\n"
+                    }
+                );
+            }
+        });
+    }
 });
 
 
@@ -241,7 +240,7 @@ app.get('/api/student/lectures', (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                errors: [{ 'msg': err }],
+                errors: [{ 'message': err }],
             });
         });
 });
@@ -257,7 +256,7 @@ app.post('/api/student/booking', (req, res) => {
         pulsebsDAO.bookSeat(lectureId, user)
             .then((response) => res.status(201).json({ response }))
             .catch((err) => {
-                res.status(500).json({ errors: [{ 'param': 'Server', 'msg': err }], })
+                res.status(500).json({ errors: [{ 'param': 'Server', 'message': err }], })
             });
     }
 });
@@ -274,7 +273,7 @@ app.get('/api/student/bookings', (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                errors: [{ 'msg': err }],
+                errors: [{ 'message': err }],
             });
         });
 })
@@ -290,16 +289,15 @@ app.delete('/api/student/bookings/:id', (req, res) => {
             .then((response) => res.status(201).json({ response }))
             .catch((err) => {
                 res.status(500).json({
-                    errors: [{ 'param': 'Server', 'msg': err }],
+                    errors: [{ 'param': 'Server', 'message': err }],
                 });
             });
     }
 });
 
+// Exported for E2E testing
+exports.server = app;
+exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`)) //comment to test
 
 
-if (process.env.TEST && process.env.TEST === '1')
-    module.exports = app; //uncomment to test
-else
-    app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`)) //comment to test
 

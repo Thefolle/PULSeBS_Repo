@@ -1,3 +1,4 @@
+const { default: fetch } = require("node-fetch");
 const DAO = require("../pulsebsDAO.js");
 
 //REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
@@ -94,46 +95,72 @@ test('Try to cancel a lecture', () => {
 });
 
 describe('Turn a lecture to be online instead of in presence', () => {
-    test('Turnable lecture', () => {
-        return DAO.turnLectureIntoOnline(1).then(exitCode => {
-            expect(exitCode).toBe(0);
-        }).catch(exitCode => {
-            // test failed because the lecture should have been turnable into online
-            console.log("Test failure message: ");
-            console.log(exitCode);
+    describe('Unit testing', () => {
+        test('Turnable lecture', () => {
+            return DAO.turnLectureIntoOnline(1).then(exitCode => {
+                expect(exitCode).toBe(0);
+            }).catch(exitCode => {
+                // test failed because the lecture should have been turnable into online
+                console.log("Test failure message: ");
+                console.log(exitCode);
+            });
+        });
+
+        test('Non-existing lecture', () => {
+            return DAO.turnLectureIntoOnline(300).then(exitCode => {
+                console.log("Test failure message: ");
+                console.log(exitCode);
+            }).catch(exitCode => {
+                // test failed because the lecture should have been turnable into online
+                expect(exitCode).toBe(-1);
+            });
+        });
+
+        test('Non-active lecture', () => {
+            return DAO.turnLectureIntoOnline(2).then(exitCode => {
+                console.log("Test failure message: ");
+                console.log(exitCode);
+            }).catch(exitCode => {
+                // test failed because the lecture should have been turnable into online
+                expect(exitCode).toBe(-2);
+            });
+        });
+
+        test('Lecture is starting within 30 minutes', () => {
+            return DAO.turnLectureIntoOnline(3).then(exitCode => {
+                console.log("Test failure message: ");
+                console.log(exitCode);
+            }).catch(exitCode => {
+                // test failed because the lecture should have been turnable into online
+                expect(exitCode).toBe(-3);
+            });
         });
     });
-
-    test('Non-existing lecture', () => {
-        return DAO.turnLectureIntoOnline(300).then(exitCode => {
-            console.log("Test failure message: ");
-            console.log(exitCode);
-        }).catch(exitCode => {
-            // test failed because the lecture should have been turnable into online
-            expect(exitCode).toBe(-1);
-        });
-    });
-
-    test('Non-active lecture', () => {
-        return DAO.turnLectureIntoOnline(2).then(exitCode => {
-            console.log("Test failure message: ");
-            console.log(exitCode);
-        }).catch(exitCode => {
-            // test failed because the lecture should have been turnable into online
-            expect(exitCode).toBe(-2);
-        });
-    });
-
-    test('Lecture is starting within 30 minutes', () => {
-        return DAO.turnLectureIntoOnline(3).then(exitCode => {
-            console.log("Test failure message: ");
-            console.log(exitCode);
-        }).catch(exitCode => {
-            // test failed because the lecture should have been turnable into online
-            expect(exitCode).toBe(-3);
-        });
-    });
-
     // Cannot test exitCode === -4
-});
 
+    describe('E2E testing/Integration testing', () => {
+        test('Turnable lecture', () => {
+            let teacherId = 1; // not really needed
+            let lectureId = 1;
+            return fetch('http://localhost:3001/api' + '/teachers/' + teacherId + '/lectures/' + lectureId, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ presence: 0 })
+            })
+                .then(async response => {
+                    if (response.status === 204) {
+                        expect(response.status).toBe(204);
+                    } else {
+                        console.log("Test failure message: ");
+                        console.log(response.status);
+                        console.log(await response.json());
+                    }
+                }).catch(NonHTTPErr => {
+                    console.log("Test failure message: ");
+                    console.log(NonHTTPErr);
+                });
+        });
+    });
+});

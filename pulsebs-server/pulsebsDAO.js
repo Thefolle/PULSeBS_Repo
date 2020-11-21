@@ -38,27 +38,27 @@ function loadData() {
 /*
 * Database Connection
 */
-if (!db) {
-    if (process.env.TEST && process.env.TEST === '1') {
-        //TEST DB
-        const dbname = 'pulsebs-test.db'
-        //Check for file existance
-        if (fs.existsSync(dbname)) {
-            fs.unlinkSync(dbname); //If true, delete file
-        }
-        //Create new db
-        db = new sqlite3.Database('pulsebs-test.db', (err) => {
-            if (err) return console.error(err.message);
-            else console.log('Connected to the in-memory TEST SQlite database.');
-        });
-        loadData();
-    } else {
+// if (!db) {
+//     if (process.env.TEST && process.env.TEST === '1') {
+//         //TEST DB
+//         const dbname = 'pulsebs-test.db'
+//         //Check for file existance
+//         if (fs.existsSync(dbname)) {
+//             fs.unlinkSync(dbname); //If true, delete file
+//         }
+//         //Create new db
+//         db = new sqlite3.Database('pulsebs-test.db', (err) => {
+//             if (err) return console.error(err.message);
+//             else console.log('Connected to the in-memory TEST SQlite database.');
+//         });
+//         loadData();
+//     } else {
         db = new sqlite3.Database('pulsebs.db', (err) => {
             if (err) return console.error(err.message);
             else console.log('Connected to the in-memory SQlite database.');
         });
-    }
-}
+//     }
+// }
 
 
 /*
