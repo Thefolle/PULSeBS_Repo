@@ -29,10 +29,10 @@ insert into subscription (ref_student, ref_course) VALUES (269901,2);
 insert into subscription (ref_student, ref_course) VALUES (269902,1);
 insert into subscription (ref_student, ref_course) VALUES (269902,4);
 
-insert into lecture (ref_course, ref_class, date) VALUES (1,1,1605526200000);
-insert into lecture (ref_course, ref_class, date) VALUES (1,2,1605699000000);
-insert into lecture (ref_course, ref_class, date) VALUES (1,1,1606131000000);
-insert into lecture (ref_course, ref_class, date) VALUES (1,2,1606303800000);
+insert into lecture (ref_course, ref_class, date, endTime) VALUES (1,1,1605526200000,1605531600000);
+insert into lecture (ref_course, ref_class, date, endTime) VALUES (1,2,1605699000000,1605709800000);
+insert into lecture (ref_course, ref_class, date, endTime) VALUES (1,1,1606131000000,1606136400000);
+insert into lecture (ref_course, ref_class, date, endTime) VALUES (1,2,1606303800000,1606320000000);
 
 insert into booking (ref_student, ref_lecture, date) values (269901,1,1605441600000);
 insert into booking (ref_student, ref_lecture, date) values (269901,2,1605445200000);
