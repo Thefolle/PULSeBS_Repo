@@ -142,31 +142,21 @@ async function getStudents(filter) {
     }
 }
 
-async function turnLectureIntoOnline(lectureId) {
-    
-
-    const response = await request(app)
-        .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
-        .set('Cookie', `token=${token}`)
-        .set('Content-Type', 'application/json')
-        .send({ presence: 0 });
-    console.log("Response body message: ");
-    console.log(response.body.message);
-    expect(response.status).toBe(204);
-    .then(response => {
-        let toBe = 204;
-        if (response.status != toBe) {
-            console.log("Test failure message: ");
-            console.log(response.type);
-        }
-        expect(response.status).toBe(toBe);
-    }).catch(NonHTTPErr => {
-        console.log("Test failure message: ");
-        console.log(NonHTTPErr);
-    });
+async function turnLectureIntoOnline(lectureId, teacherId = 0) {
+    // teacherId is useless, the lectureId is enough
+    let url = '/teachers/' + teacherId + '/lectures/' + lectureId;
+    let response;
+    try {
+        response = await fetch(baseURL + url);
+    } catch (networkError) {
+        throw {message: "Network error occured in " + turnLectureIntoOnline.name + ": " + networkError};
+    }
+    let message = (await response.json()).message;
+    if (response.status === 204) return message;
+    else throw {message: message};    
 }
 
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents, turnLectureIntoOnline };
 export default API;
