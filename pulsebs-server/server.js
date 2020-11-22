@@ -130,7 +130,7 @@ app.use(cookieParser());
  */
 
 app.post('/api/logout', (req, res) => {
-    res.clearCookie('token').end();
+    res.clearCookie('token').status(200).end();
 });
 
 
@@ -297,7 +297,7 @@ app.delete('/api/student/bookings/:id', (req, res) => {
 
 // Exported for E2E testing
 exports.server = app;
-exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`)) //comment to test
+exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`))
 
 
 

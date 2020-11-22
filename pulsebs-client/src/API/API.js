@@ -48,14 +48,14 @@ async function logout() {
 /****** STUDENT *******/
 
 async function getStudentLectures() {
-    let url = "/student/lectures";    
+    let url = "/student/lectures";
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
-    if(response.ok){
+    if (response.ok) {
         console.log(lecturesJson);
         return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.course, l.name, l.surname, l.class));
-        } else {
-        let err = {status: response.status, errObj:lecturesJson};
+    } else {
+        let err = { status: response.status, errObj: lecturesJson };
         throw err;  // An object with the error coming from the server
     }
 }
@@ -63,24 +63,24 @@ async function getStudentLectures() {
 
 async function bookSeat(lectureId) {
     return new Promise((resolve, reject) => {
-    fetch(baseURL + "/student/booking", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({lectureId : lectureId}), 
-    }).then((response) => {
-        if(response.ok) {
-            resolve(response);
-        } else {
-            // analyze the cause of error
-            console.log("errore msg");
-            response.json()
-            .then( (obj) => {reject(obj);} ) // error msg in the response body
-            .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
-        }
-    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
- });
+        fetch(baseURL + "/student/booking", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ lectureId: lectureId }),
+        }).then((response) => {
+            if (response.ok) {
+                resolve(response);
+            } else {
+                // analyze the cause of error
+                console.log("errore msg");
+                response.json()
+                    .then((obj) => { reject(obj); }) // error msg in the response body
+                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
 }
 
 
@@ -88,19 +88,19 @@ async function getStudentBookings() {
     let url = "/student/bookings";
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
-    if(response.ok){
+    if (response.ok) {
         console.log(bookingsJson);
-        return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence, b.active));
+        return bookingsJson.map((b) => new Booking(b.id, b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence, b.active));
     } else {
-        let err = {status: response.status, errObj:bookingsJson};
+        let err = { status: response.status, errObj: bookingsJson };
         throw err;  // An object with the error coming from the server
     }
 
 }
 
 
-async function cancelBooking(bookingId){
-    return new Promise((resolve, reject) =>{
+async function cancelBooking(bookingId) {
+    return new Promise((resolve, reject) => {
         fetch(baseURL + "/student/bookings/" + bookingId, {
             method: 'DELETE'
         }).then((response) => {
@@ -109,37 +109,61 @@ async function cancelBooking(bookingId){
             } else {
                 // analyze the cause of error
                 response.json()
-                .then( (obj) => {reject(obj);})
-                .catch( (err) => { reject({errors: [{ param: "Application", msg: "Cannot parse server response" }]})}); //something else
+                    .then((obj) => { reject(obj); })
+                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); //something else
             }
-        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     })
 }
 
 
 /****** TEACHER *******/
 async function getTeacherLectures() {
-    let url="/teacher/lectures";
-    const response=await fetch(baseURL+url);
-    const lecturesJson=await response.json();
-    if(response.ok){
-        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.presence, l.bookable));
-    }else{
-        let err = {status: response.status, errObj:lecturesJson};
+    let url = "/teacher/lectures";
+    const response = await fetch(baseURL + url);
+    const lecturesJson = await response.json();
+    if (response.ok) {
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id, l.lecId, l.date, l.presence, l.bookable));
+    } else {
+        let err = { status: response.status, errObj: lecturesJson };
         throw err;
     }
 }
 
-async function getStudents(filter){
-    let url="/getStudentsForLecture";
-    const response=await fetch(baseURL+url);
-    const idJson=await response.json();
-    if(response.ok){
+async function getStudents(filter) {
+    let url = "/getStudentsForLecture";
+    const response = await fetch(baseURL + url);
+    const idJson = await response.json();
+    if (response.ok) {
         return idJson;
     } else {
-        let err = {status: response.status, errObj:idJson};
+        let err = { status: response.status, errObj: idJson };
         throw err;  // An object with the error coming from the server
     }
+}
+
+async function turnLectureIntoOnline(lectureId) {
+    
+
+    const response = await request(app)
+        .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
+        .set('Cookie', `token=${token}`)
+        .set('Content-Type', 'application/json')
+        .send({ presence: 0 });
+    console.log("Response body message: ");
+    console.log(response.body.message);
+    expect(response.status).toBe(204);
+    .then(response => {
+        let toBe = 204;
+        if (response.status != toBe) {
+            console.log("Test failure message: ");
+            console.log(response.type);
+        }
+        expect(response.status).toBe(toBe);
+    }).catch(NonHTTPErr => {
+        console.log("Test failure message: ");
+        console.log(NonHTTPErr);
+    });
 }
 
 

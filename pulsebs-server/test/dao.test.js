@@ -1,4 +1,3 @@
-const { default: fetch } = require("node-fetch");
 const DAO = require("../pulsebsDAO.js");
 
 //REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
@@ -137,30 +136,4 @@ describe('Turn a lecture to be online instead of in presence', () => {
         });
     });
     // Cannot test exitCode === -4
-
-    describe('E2E testing/Integration testing', () => {
-        test('Turnable lecture', () => {
-            let teacherId = 1; // not really needed
-            let lectureId = 1;
-            return fetch('http://localhost:3001/api' + '/teachers/' + teacherId + '/lectures/' + lectureId, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ presence: 0 })
-            })
-                .then(async response => {
-                    if (response.status === 204) {
-                        expect(response.status).toBe(204);
-                    } else {
-                        console.log("Test failure message: ");
-                        console.log(response.status);
-                        console.log(await response.json());
-                    }
-                }).catch(NonHTTPErr => {
-                    console.log("Test failure message: ");
-                    console.log(NonHTTPErr);
-                });
-        });
-    });
 });

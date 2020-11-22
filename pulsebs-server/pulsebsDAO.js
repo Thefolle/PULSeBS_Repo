@@ -53,10 +53,10 @@ function loadData() {
 //         });
 //         loadData();
 //     } else {
-        db = new sqlite3.Database('pulsebs.db', (err) => {
-            if (err) return console.error(err.message);
-            else console.log('Connected to the in-memory SQlite database.');
-        });
+db = new sqlite3.Database('pulsebs.db', (err) => {
+    if (err) return console.error(err.message);
+    else console.log('Connected to the in-memory SQlite database.');
+});
 //     }
 // }
 
@@ -373,7 +373,7 @@ exports.getTomorrowLessonsStats = (test = false) => {
 *   30 minutes starting from the current time 
 * */
 exports.turnLectureIntoOnline = (lectureId) => {
-    return new Promise(((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let query1 = `SELECT active AS active, date AS date FROM lecture WHERE id = ?`;
         let query2 = `UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ? AND active = 1;`
         let now = moment().valueOf(); // in milliseconds
@@ -383,12 +383,12 @@ exports.turnLectureIntoOnline = (lectureId) => {
                 reject(-1);
             } else if (couple.active === 0) {
                 reject(-2);
-            } else if (now > couple.date - 1800000) {
+            } else if (now > couple.date - 1800000 && now < couple.date) {
                 reject(-3);
             } else if (err) {
                 console.log("Error in turnLectureIntoOnline");
                 console.log(err);
-                reject(-4); 
+                reject(-4);
             } else {
                 db.run(query2, [lectureId], function (err) {
                     if (err) {
@@ -401,8 +401,10 @@ exports.turnLectureIntoOnline = (lectureId) => {
             }
         });
 
-    }));
+    });
 }
+
+
 
 /*
 * Get all bookings to be grouped by week,month or single lecture
