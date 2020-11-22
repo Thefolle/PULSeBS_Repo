@@ -33,8 +33,8 @@ const LectureItem = ( props ) => {
 
         <tr>
             <td><Link
-                to={ "/teacher/" + idc + "/" + index + "/students" }>[{lecture.lecId}] { moment( lecture.date ).format( "DD MMM YYYY HH:mm" ) } -
-                    { moment( lecture.date ).add(1.5, "hours").format( "HH:mm" ) } | Classroom: {lecture.classC}
+                to={ "/teacher/" + idc + "/" + index + "/students" }>[{lecture.lecId}] { moment( lecture.date ).format( "DD MMM YYYY HH:mm" ) }-  
+                    {moment( lecture.endTime ).add(1.5, "hours").format( "HH:mm" )} | Classroom: {lecture.classC}
                 </Link>
             </td>
         </tr>

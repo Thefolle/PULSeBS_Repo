@@ -52,7 +52,7 @@ async function getStudentLectures() {
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
     if(response.ok){
-        console.log(lecturesJson);
+        //console.log(lecturesJson);
         return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.course, l.name, l.surname, l.class));
         } else {
         let err = {status: response.status, errObj:lecturesJson};
@@ -89,7 +89,7 @@ async function getStudentBookings() {
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if(response.ok){
-        console.log(bookingsJson);
+        //console.log(bookingsJson);
         return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence, b.active));
     } else {
         let err = {status: response.status, errObj:bookingsJson};
@@ -123,7 +123,7 @@ async function getTeacherLectures() {
     const response=await fetch(baseURL+url);
     const lecturesJson=await response.json();
     if(response.ok){
-        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.presence, l.bookable));
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable));
     }else{
         let err = {status: response.status, errObj:lecturesJson};
         throw err;

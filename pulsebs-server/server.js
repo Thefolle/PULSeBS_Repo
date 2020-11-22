@@ -5,6 +5,7 @@ const morgan = require( 'morgan' ); // logging middleware
 const jwt = require( 'express-jwt' );
 const jsonwebtoken = require( 'jsonwebtoken' );
 const cookieParser = require( 'cookie-parser' );
+const moment = require( 'moment' );
 
 const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
 const expireTime = 900; //seconds
@@ -37,6 +38,7 @@ app.use( morgan( 'tiny' ) );
 app.use( express.json() );
 
 // Transporter needed to send emails
+var mailOptions = null;
 let transporter = nodemailer.createTransport( {
                                                   service: 'gmail',
                                                   port: 587,
@@ -59,7 +61,7 @@ const j = schedule.scheduleJob( {hour: 23, minute: 0, second: 0}, () => {
               .then( ( lessons ) => {
                   if ( lessons != 0 ) { // There is at least one lesson
                       lessons.forEach( l => {
-                          var mailOptions = {
+                          mailOptions = {
                               from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
                               to: l.email,
                               subject: 'Tomorrow lesson (' + l.desc + ')',
@@ -221,8 +223,55 @@ app.post( '/api/student/booking', ( req, res ) => {
         res.status( 401 ).end();
     } else {
         const user = req.user && req.user.user;
+        // console.log("QUI");
+        // console.log(user);
+        // console.log(lectureId);
+        // console.log("QUI");
         pulsebsDAO.bookSeat( lectureId, user )
-                  .then( ( response ) => res.status( 201 ).json( {response} ) )
+                  .then( ( response ) => {
+                      pulsebsDAO.getLectureStats(lectureId)
+                        .then( ( lecture ) => {
+
+                            pulsebsDAO.getInfoByStudentId(user)
+                            .then((student) => {
+                                var email = student.email;
+                                var name = student.name;
+                                var surname = student.surname;
+
+                                console.log("QUI")
+                                console.log(student);
+                                console.log(user);
+                                console.log(email, name, surname);
+                                console.log(student.email, student.name, student.surname);
+                                console.log("QUI")
+                                                            
+                                // Send booking email to student
+                                    
+                                mailOptions = {
+                                    from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                    to: email,
+                                    subject: 'Booking confirmation (' + lecture.course + ')',
+                                    text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that you have successfully booked for this lesson:\n\n"
+                                        + "     - Course: '" + lecture.course + "'.\n     - Classroom: " + lecture.classroom + ".\n     - Date: " + moment(lecture.date).format("YYYY-MM-DD HH:mm") + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
+                                };
+
+                                transporter.sendMail( mailOptions, function ( error, info ) {
+                                    if ( error ) {
+                                        console.log( error );
+                                    } else {
+                                        console.log( 'Email sent to: ' + l.id + ", info: " + info.response );
+                                    }
+                        } ); 
+                            }).catch(( err ) => {
+                                console.log( err );
+                            });
+                        }).catch(( err ) => {
+                            console.log( err );
+                        });
+
+
+                      res.status( 201 ).json( {response} )
+                  })
                   .catch( ( err ) => {
                       res.status( 500 ).json( {errors: [ {'param': 'Server', 'msg': err} ],} )
                   } );
