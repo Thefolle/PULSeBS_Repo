@@ -3,7 +3,8 @@ import Route from 'react-router-dom/Route';
 import { withRouter } from 'react-router-dom';
 import LecturesList from './LecturesList';
 import BookingsList from './BookingsList';
-import UserNavBar from './Components/UserNavBar';
+import UserNavBar      from './Components/UserNavBar';
+import StudentCalendar from "./Components/StudentCalendar";
 
 import './App.css';
 import API from './API/API';
@@ -112,12 +113,17 @@ class StudentPage extends React.Component {
 
         return (
             <>
-                <UserNavBar></UserNavBar>
+                <UserNavBar/>
                 <div>
                     <Button className="btn btn-secondary" role="button" href="/StudentHome/lectures"
                         aria-expanded="false" aria-controls="collapseExample">
                         Lectures
                         <FaBookOpen className={"ml-1"} />
+                    </Button>
+                    <Button className="btn btn-secondary" role="button" href="/StudentHome/calendar"
+                            aria-expanded="false" aria-controls="collapseExample">
+                        My Calendar
+                        <FaCalendarAlt className={"ml-1"} />
                     </Button>
                     <a type="button" className="btn btn-secondary" role="button" href="/StudentHome/bookings"
                         aria-expanded="false" aria-controls="collapseExample">
@@ -132,6 +138,9 @@ class StudentPage extends React.Component {
                     <Route exact path={this.props.match.url + "/bookings"}>
                         <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
                     </Route>
+                    <Route exact path={this.props.match.url + "/calendar"}>
+                    <StudentCalendar bookings={this.state.bookings} />
+                </Route>
                 </Switch>
             </>
         );

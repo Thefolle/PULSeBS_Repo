@@ -4,16 +4,16 @@ import API from '../API/API';
 import Navbar from 'react-bootstrap/Navbar';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 
 import { BrowserRouter as Router } from 'react-router-dom';
-import Switch from 'react-router-dom/Switch';
-import Route from 'react-router-dom/Route';
-import Link from 'react-router-dom/Link';
+import Switch                      from 'react-router-dom/Switch';
+import Route                       from 'react-router-dom/Route';
+import Link                        from 'react-router-dom/Link';
 
 import '../App.css';
 import '../customStyle.css';
+import { FaHome }                  from "react-icons/fa";
 
 class UserNavBar extends React.Component {
 
@@ -39,7 +39,7 @@ class UserNavBar extends React.Component {
           </Tooltip>
         }
       >
-        <Image src="../logo.svg" width='60' height='60' rounded />
+        <FaHome />
       </OverlayTrigger>
 
     </Navbar.Brand>;
