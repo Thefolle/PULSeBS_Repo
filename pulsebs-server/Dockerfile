@@ -2,12 +2,13 @@ FROM node:13.12.0-alpine
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
-
 COPY package*.json ./
+COPY pulsebs.db ./
 
 RUN npm install --silent
 
 COPY . ./
 
-CMD ["node","server.js"]
+EXPOSE 3001
+
+CMD ["npm","start"]
