@@ -57,7 +57,7 @@ const j = schedule.scheduleJob( {hour: 23, minute: 0, second: 0}, () => {
     // TESTED
     pulsebsDAO.getTomorrowLessonsStats()
               .then( ( lessons ) => {
-                  if ( lessons != 0 ) { // There is at least one lesson
+                  if ( lessons !== 0 ) { // There is at least one lesson
                       lessons.forEach( l => {
                           var mailOptions = {
                               from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
