@@ -7,6 +7,8 @@ import User from './User';
 import LoginPage                   from './login';
 import StudentPage                 from './studentPage';
 import TeacherPage   from './Components/TeacherPage';
+import Header from './Components/Header';
+import Footer from './Components/Footer';
 
 import './App.css';
 
@@ -36,6 +38,7 @@ class PULSeBSApp extends React.Component {
 
     render() {
         return <>
+           <Header user={this.state.user}/>
             <Router>
                 <Switch>
                         <Route exact path='/Login'>
@@ -52,6 +55,7 @@ class PULSeBSApp extends React.Component {
                         </Route>
                 </Switch>
             </Router>
+            <Footer/>
         </>;
     }
 }

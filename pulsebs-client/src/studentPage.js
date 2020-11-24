@@ -3,14 +3,14 @@ import Route from 'react-router-dom/Route';
 import { withRouter } from 'react-router-dom';
 import LecturesList from './LecturesList';
 import BookingsList from './BookingsList';
-import UserNavBar      from './Components/UserNavBar';
+import UserNavBar from './Components/UserNavBar';
 import StudentCalendar from "./Components/StudentCalendar";
 
 import './App.css';
 import API from './API/API';
 
 import { FaBookOpen, FaCalendarAlt } from "react-icons/fa";
-import { Button } from "react-bootstrap";
+import { Button, Row, Col, Container, ListGroup, ListGroupItem } from "react-bootstrap";
 import Switch from 'react-router-dom/Switch';
 
 class StudentPage extends React.Component {
@@ -19,10 +19,10 @@ class StudentPage extends React.Component {
         super(props);
 
         this.state = {
-            id: this.props.id,
+            id: this.props.user.id,
             email: '',
-            name: this.props.name,
-            surname: this.props.surname,
+            name: this.props.user.name,
+            surname: this.props.user.surname,
             userType: 'student',
             lectures: [],
             bookings: [],
@@ -113,8 +113,8 @@ class StudentPage extends React.Component {
 
         return (
             <>
-                <UserNavBar/>
-                <div>
+                <UserNavBar userId={this.state.id} />
+                {/* <div>
                     <Button className="btn btn-secondary" role="button" href="/StudentHome/lectures"
                         aria-expanded="false" aria-controls="collapseExample">
                         Lectures
@@ -130,18 +130,35 @@ class StudentPage extends React.Component {
                         Bookings
                         <FaCalendarAlt className={"ml-1"} />
                     </a>
-                </div>
-                <Switch>
-                    <Route exact path={this.props.match.url + "/lectures"}>
-                        <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
-                    </Route>
-                    <Route exact path={this.props.match.url + "/bookings"}>
-                        <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
-                    </Route>
-                    <Route exact path={this.props.match.url + "/calendar"}>
-                    <StudentCalendar bookings={this.state.bookings} />
-                </Route>
-                </Switch>
+               </div> */}
+
+                <Container>
+                    <Row>
+                        <Col sm={3} bg="light" id="left-sidebar" className="collapse d-sm-block">
+                            <ListGroup className="sidebar" variant="flush">
+                                <ListGroup.Item>name: {this.state.name}</ListGroup.Item>
+                                <ListGroup.Item>surname: {this.state.surname}</ListGroup.Item>
+                                <ListGroup.Item>id: {this.state.id}</ListGroup.Item>
+                            </ListGroup>
+                        </Col>
+
+                        <Col xs={6}>
+
+                            <Switch>
+                                <Route exact path={this.props.match.url + "/lectures"}>
+                                    <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
+                                </Route>
+                                <Route exact path={this.props.match.url + "/bookings"}>
+                                    <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
+                                </Route>
+                                <Route exact path={this.props.match.url + "/calendar"}>
+                                    <StudentCalendar bookings={this.state.bookings} />
+                                </Route>
+                            </Switch>
+
+                        </Col>
+                    </Row>
+                </Container>
             </>
         );
     }

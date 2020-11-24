@@ -9,6 +9,10 @@ import ButtonTeacherHub from './ButtonTeacherHub';
 import UserNavBar from './UserNavBar';
 import { Link } from 'react-router-dom';
 
+
+import { Button, Row, Col, Container, ListGroup, ListGroupItem } from "react-bootstrap";
+import { FaBackward } from "react-icons/fa";
+
 import '../App.css';
 import '../customStyle.css';
 
@@ -16,7 +20,7 @@ class TeacherPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: this.props.id,
+            id: this.props.id, //should be this.props.user.id
             email: '',
             name: this.props.name,
             surname: this.props.surname,
@@ -25,6 +29,12 @@ class TeacherPage extends React.Component {
             courses: [],
             students: []
         };
+
+        this.goBack = this.goBack.bind(this); 
+    }
+    
+    goBack(){
+        this.props.history.goBack();
     }
 
     componentDidMount() {
@@ -94,23 +104,43 @@ class TeacherPage extends React.Component {
 
         return (
             <>
-                <UserNavBar />
-                <div className={"btn btn-primary"} style={{ margin: "10px" }}>
-                    <Link to='/teacher/courses' style={{ color: "white" }}>
-                        Lectures of my Courses
-                    </Link>
-                </div>
-                <Switch>
-                    <Route exact path={"/teacher/courses"}>
-                        <CourseList courses={this.state.courses} />
-                    </Route>
-                    <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                        <LectureList lectures={this.state.lectures} idc={match.params.courseId} getLectures={this.getTeacherLectures} />
-                    )} />
-                    <Route exact path={"/teacher/:courseId/:lectureId/students"} render={({ match }) => (
-                        <StudentList students={this.state.students} idl={match.params.lectureId} getLectures={this.getTeacherLectures} />
-                    )} />
-                </Switch>
+                <UserNavBar userId={this.state.id} />
+
+                   <Row>
+                        <Col sm={3}></Col>
+                        <Col sm={6}>
+                          <Button id="goback" onClick={this.goBack}> <FaBackward /> </Button>                      
+                        </Col>
+                    </Row>
+
+                <Container>
+                    <Row>
+                        <Col sm={3} bg="light" id="left-sidebar" className="collapse d-sm-block">
+                            <ListGroup className="sidebar" variant="flush">
+                                <ListGroup.Item>name: {this.state.name}</ListGroup.Item>
+                                <ListGroup.Item>surname: {this.state.surname}</ListGroup.Item>
+                                <ListGroup.Item>id: {this.state.id}</ListGroup.Item>
+                            </ListGroup>
+                        </Col>
+
+                        <Col xs={6}>
+                        
+
+                        <Switch>
+                            <Route exact path={"/teacher/courses"}>
+                                <CourseList courses={this.state.courses}/>
+                            </Route>
+                            <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
+                                <LectureList lectures={this.state.lectures} idc={match.params.courseId} getLectures={this.getTeacherLectures} />
+                            )} />
+                            <Route exact path={"/teacher/:courseId/:lectureId/students"} render={({ match }) => (
+                                <StudentList students={this.state.students} idl={match.params.lectureId} getLectures={this.getTeacherLectures} />
+                            )} />
+                        </Switch>
+
+                        </Col>
+                      </Row>
+                </Container>
             </>
 
         );

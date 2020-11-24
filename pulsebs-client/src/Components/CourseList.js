@@ -3,6 +3,7 @@ import { Link }  from 'react-router-dom';
 import { Table } from "react-bootstrap";
 
 const CourseList = ( props ) => {
+    
   let {courses,getLectures}=props;
 
 
