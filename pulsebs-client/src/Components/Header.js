@@ -11,6 +11,7 @@ const Header = (props) => {
       <>
     <header id="banner" class="header py-3">
         <img class='logo' id="logo-polito" src='/svg/polito.svg'  />
+        <div id="header-text"><h3>Portale della didattica</h3></div>
      </header>	
     {/*user &&		
         <div id="menu-top" class="nav-scroller py-1 mb-2">

@@ -6,7 +6,13 @@ const Footer = (props) => {
         <>
             <div id="footer" className="navbar navbar-inverse navbar-fixed-bottom">
                 <div class="container">
-                    <p class="navbar-text">© Write Something Here</p>
+                    <div>
+                      <p id="footer-text-left">Contatti</p>  
+                    </div>
+                    <div>
+                      <p id="footer-text-right"> © Politecnico di Torino </p>
+                      <p id="footer-text-right">Corso Duca degli Abruzzi, 24 - 10129 Torino, ITALY </p>
+                    </div>  
                 </div>
             </div>
         </>

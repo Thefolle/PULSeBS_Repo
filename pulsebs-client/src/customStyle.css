@@ -50,10 +50,11 @@ button[class*='btn-primary'] {
 }
 
 h1 {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 5em;
-    margin-top: 80px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
+    font-size: 3rem;
+    margin-top: 40px;
     margin-bottom: 40px;
+    color:  rgb(133, 44, 2);
 }
 
 .accordion {
@@ -91,41 +92,59 @@ h1 {
     background-color: rgb(175, 172, 172);
     padding-top: 1rem;
     margin-top: 3rem;
+    bottom: 0rem;
+    width: 100%;
+    margin-bottom: 0rem;
+    position: relative;
 }
 
+#footer-text-right {
+    font-size: 1rem;
+    text-align: right;
+    padding-bottom: 0.5;
+}
+
+#footer-text-left {
+    font-size: 1rem;
+    text-align: left;
+}
+
+#left-sidebar{
+    background-color: whitesmoke;
+    position: fixed;
+    left: -6rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    position: relative;    
+}
 
 .sidebar{
     height: 100%;
     width: 100%;
     font-size: 20px;    
     color: rgb(133, 44, 2);
-    padding-left: 2rem;
+    background-color: whitesmoke;
     padding-right: 2rem;
+    padding-left: 2rem;
 }
 
+.sidebar .listGroup-Item{
+    background-color:transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-color: rgb(133, 44, 2);
+    border-bottom-style: solid;
 
-#menu-navbar {
-    display: flex;
-    height: 100px;
-    justify-content: space-between;
-    margin-bottom: 10px;
 }
 
-#menu-navbar a{
-    color: white;
-}
-
-#menu-navbar a:hover{
-    color: white;
-    text-decoration: underline;
-}
 
 .header{
     display: flex;
     height: 100px;
     justify-content: space-between;
     background-color: whitesmoke; 
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 4px solid rgb(133, 44, 2);
 }
 
 .pb-3, .py-3 {
@@ -138,6 +157,16 @@ padding-top: 1rem !important;
 
 #logo-polito{
     height: 80px;
+    padding-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+#header-text{
+    height: 20px;
+    color: white;
+    padding-top: 40px;
+    padding-right: 2rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
 }
 
 .nav-scroller {
@@ -193,17 +222,30 @@ padding-top: 1rem !important;
     height: 2.75rem;
 }
 
+#menu-navbar a{
+    color: white;
+}
+
+#menu-navbar a:hover{
+    color: white;
+    text-decoration: underline;
+}
+
+
 #menu-navbar {
     display: -ms-flexbox !important;
     display: flex !important;
     height: 2.75rem !important;
     background-color: rgb(9, 97, 119);
+    justify-content: space-between;
+    margin-bottom: 5px;
 }
 
 
 .nav-link :hover{
     text-decoration: underline;
   }
+
 
 #loginForm {
     
@@ -222,6 +264,7 @@ tbody > tr:hover {
     color: rgb(9, 97, 119);
     height: 2rem;
     width: 2rem;
+    left: 50%;
 }
 
 a {

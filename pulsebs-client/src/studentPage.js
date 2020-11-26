@@ -19,10 +19,10 @@ class StudentPage extends React.Component {
         super(props);
 
         this.state = {
-            id: this.props.user.id,
+            id: this.props.id, //this.props.user.id
             email: '',
-            name: this.props.user.name,
-            surname: this.props.user.surname,
+            name: this.props.name,
+            surname: this.props.surname,
             userType: 'student',
             lectures: [],
             bookings: [],
@@ -134,15 +134,16 @@ class StudentPage extends React.Component {
 
                 <Container>
                     <Row>
-                        <Col sm={3} bg="light" id="left-sidebar" className="collapse d-sm-block">
+                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
                             <ListGroup className="sidebar" variant="flush">
-                                <ListGroup.Item>name: {this.state.name}</ListGroup.Item>
-                                <ListGroup.Item>surname: {this.state.surname}</ListGroup.Item>
-                                <ListGroup.Item>id: {this.state.id}</ListGroup.Item>
+                            <h5>POLITECNICO DI TORINO</h5>
+                                <ListGroup.Item className="listGroup-Item">name: {this.state.name}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">surname: {this.state.surname}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">id: {this.state.id}</ListGroup.Item>
                             </ListGroup>
                         </Col>
 
-                        <Col xs={6}>
+                        <Col sm={8}>
 
                             <Switch>
                                 <Route exact path={this.props.match.url + "/lectures"}>

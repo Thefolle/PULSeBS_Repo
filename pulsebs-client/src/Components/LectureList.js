@@ -29,7 +29,7 @@ const LectureItem = ( props ) => {
 
         <tr>
             <td><Link
-                to={ "/teacher/" + idc + "/" + index + "/students" }>{ moment( lecture.date ).format( "DD MMM YYYY HH:mm" ) }</Link>
+                to={ "/teacher/" + idc + "/lectures/" + index + "/students" }>{ moment( lecture.date ).format( "DD MMM YYYY HH:mm" ) }</Link>
             </td>
         </tr>
 

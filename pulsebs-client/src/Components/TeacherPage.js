@@ -105,27 +105,19 @@ class TeacherPage extends React.Component {
         return (
             <>
                 <UserNavBar userId={this.state.id} />
-
-                   <Row>
-                        <Col sm={3}></Col>
-                        <Col sm={6}>
-                          <Button id="goback" onClick={this.goBack}> <FaBackward /> </Button>                      
-                        </Col>
-                    </Row>
-
                 <Container>
                     <Row>
-                        <Col sm={3} bg="light" id="left-sidebar" className="collapse d-sm-block">
-                            <ListGroup className="sidebar" variant="flush">
-                                <ListGroup.Item>name: {this.state.name}</ListGroup.Item>
-                                <ListGroup.Item>surname: {this.state.surname}</ListGroup.Item>
-                                <ListGroup.Item>id: {this.state.id}</ListGroup.Item>
+                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                            <ListGroup className="sidebar" variant="flush" >
+                                <h5>POLITECNICO DI TORINO</h5>
+                                <ListGroup.Item className="listGroup-Item">name: {this.state.name}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">surname: {this.state.surname}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">id: {this.state.id}</ListGroup.Item>
                             </ListGroup>
                         </Col>
 
-                        <Col xs={6}>
-                        
-
+                        <Col sm={6}>
+                        <Button id="goback" onClick={this.goBack}> <FaBackward /> </Button>
                         <Switch>
                             <Route exact path={"/teacher/courses"}>
                                 <CourseList courses={this.state.courses}/>
@@ -133,7 +125,7 @@ class TeacherPage extends React.Component {
                             <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
                                 <LectureList lectures={this.state.lectures} idc={match.params.courseId} getLectures={this.getTeacherLectures} />
                             )} />
-                            <Route exact path={"/teacher/:courseId/:lectureId/students"} render={({ match }) => (
+                            <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                                 <StudentList students={this.state.students} idl={match.params.lectureId} getLectures={this.getTeacherLectures} />
                             )} />
                         </Switch>
