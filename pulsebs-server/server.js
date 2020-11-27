@@ -218,7 +218,7 @@ app.get( '/api/getStudentsForLecture', ( req, res ) => {
 *               properties will be modifiable in future;
 */
 
-app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
+/*app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
     const user = req.user && req.user.user;
     const teacherId = req.params.teacherId;
     const lectureId = req.params.lectureId;
@@ -256,7 +256,7 @@ app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
             }
         });
     }
-});
+});*/
 
 
 /****** STUDENT ******/
