@@ -1,6 +1,6 @@
 const DAO = require("../pulsebsDAO.js");
 
-//REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
+// //REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
 
 describe("Login test suite", () => {
     test('Try to login with < davide.calarco@gmail.com, password>', () => {
@@ -90,5 +90,23 @@ test('Try to cancel a booking', () => {
 test('Try to cancel a lecture', () => {
     return DAO.cancelLecture(2).then( result => {
         expect(result).toEqual(1);
+    })
+});
+
+// GET INFO BY STUDENT ID
+test('Try to see if student infos are correct', () => {
+    return DAO.getInfoByStudentId(269901).then(result => {
+        expect(result.email).toBe('davide.calarco@gmail.com');
+        expect(result.name).toBe('Davide');
+        expect(result.surname).toBe('Calarco');
+    })
+});
+
+// GET LECTURE STATS
+test('Try to see if lecture stats are the correct ones', () => {
+    return DAO.getLectureStats(1).then(result => {
+        expect(result.date).toBe(1605526200000);
+        expect(result.course).toBe('Analisi 1');
+        expect(result.classroom).toBe('12');
     })
 });

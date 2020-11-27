@@ -223,10 +223,6 @@ app.post( '/api/student/booking', ( req, res ) => {
         res.status( 401 ).end();
     } else {
         const user = req.user && req.user.user;
-        // console.log("QUI");
-        // console.log(user);
-        // console.log(lectureId);
-        // console.log("QUI");
         pulsebsDAO.bookSeat( lectureId, user )
                   .then( ( response ) => {
                       pulsebsDAO.getLectureStats(lectureId)
@@ -237,16 +233,8 @@ app.post( '/api/student/booking', ( req, res ) => {
                                 var email = student.email;
                                 var name = student.name;
                                 var surname = student.surname;
-
-                                console.log("QUI")
-                                console.log(student);
-                                console.log(user);
-                                console.log(email, name, surname);
-                                console.log(student.email, student.name, student.surname);
-                                console.log("QUI")
                                                             
                                 // Send booking email to student
-                                    
                                 mailOptions = {
                                     from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
                                     to: email,
@@ -313,8 +301,11 @@ app.delete('/api/student/bookings/:id', (req, res) => {
 });
 
 
-if ( process.env.TEST && process.env.TEST === '1' )
-    module.exports = app; //uncomment to test
-else
-    app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
+// if ( process.env.TEST && process.env.TEST === '1' )
+//     module.exports = app; //uncomment to test
+// else
+//     app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
 
+// Exported for E2E testing
+exports.server = app;
+exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`))
