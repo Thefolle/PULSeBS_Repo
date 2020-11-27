@@ -14,7 +14,7 @@ class StudentCalendar extends React.Component {
             events.push( {title: booking.course, date: moment( booking.date ).format()} );
         } )
 
-        return <Container>
+        return <Container id="calendar">
             <hr/>
             <FullCalendar
                 plugins={ [ dayGridPlugin ] }

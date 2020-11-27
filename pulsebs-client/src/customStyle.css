@@ -54,7 +54,7 @@ h1 {
     font-size: 3rem;
     margin-top: 40px;
     margin-bottom: 40px;
-    color:  rgb(133, 44, 2);
+    color:  #60000c;
 }
 
 .accordion {
@@ -122,7 +122,7 @@ h1 {
     height: 100%;
     width: 100%;
     font-size: 20px;    
-    color: rgb(133, 44, 2);
+    color: #60000c;
     background-color: whitesmoke;
     padding-right: 2rem;
     padding-left: 2rem;
@@ -133,7 +133,7 @@ h1 {
     border-top: none;
     border-left: none;
     border-right: none;
-    border-color: rgb(133, 44, 2);
+    border-color: #60000c;
     border-bottom-style: solid;
 
 }
@@ -143,8 +143,8 @@ h1 {
     display: flex;
     height: 100px;
     justify-content: space-between;
-    background-color: whitesmoke; 
-    border-bottom: 4px solid rgb(133, 44, 2);
+    background-color: #880012; 
+    border-bottom: 4px solid #60000c
 }
 
 .pb-3, .py-3 {
@@ -166,7 +166,6 @@ padding-top: 1rem !important;
     color: white;
     padding-top: 40px;
     padding-right: 2rem;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
 }
 
 .nav-scroller {
@@ -236,7 +235,7 @@ padding-top: 1rem !important;
     display: -ms-flexbox !important;
     display: flex !important;
     height: 2.75rem !important;
-    background-color: rgb(9, 97, 119);
+    background-color: #60000c;
     justify-content: space-between;
     margin-bottom: 5px;
 }
@@ -255,22 +254,44 @@ padding-top: 1rem !important;
 }
 
 tbody > tr:hover {
-    background-color: gainsboro;
+    background-color: lightgray;
 }
 
 #goback {
     background-color: white;
-    border: white;
-    color: rgb(9, 97, 119);
+    border: rgb(255, 255, 255);
+    color: rgb(2, 55, 68);
     height: 2rem;
     width: 2rem;
     left: 50%;
 }
 
-a {
-    color: rgb(9, 97, 119);
-}
 
 th {
-    color: rgb(133, 44, 2);
+    background-color: white;
+    color: #60000c;
+    border: 0.5px solid white;
+}
+
+
+tr:nth-child(odd){
+    background-color: whitesmoke;
+}
+
+tr{
+    padding: 2px;
+}
+
+table{
+    margin-top: 30px;
+}
+
+#calendar tr{
+    background-color: white;
+    border: gray;
+}
+
+#calendar th{
+    background-color: white;
+    border: gray !important;
 }
