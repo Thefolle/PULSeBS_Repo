@@ -63,7 +63,8 @@ const j = schedule.scheduleJob( {hour: 23, minute: 0, second: 0}, () => {
                       lessons.forEach( l => {
                           mailOptions = {
                               from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                              to: l.email,
+                              //to: l.email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
+                              to: 'teacher.team9@yopmail.com',
                               subject: 'Tomorrow lesson (' + l.desc + ')',
                               text: "Dear " + l.surname + " " + l.name + " (" + l.id + "), here are some useful informations about tomorrow lesson:\n\n"
                                   + "     - Class: " + l.class + ".\n     - Course: '" + l.desc + "'.\n     - Number of students attending: " + l.nStudents + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
@@ -237,7 +238,8 @@ app.post( '/api/student/booking', ( req, res ) => {
                                 // Send booking email to student
                                 mailOptions = {
                                     from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                                    to: email,
+                                    //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD
+                                    to: 'student.team9@yopmail.com',
                                     subject: 'Booking confirmation (' + lecture.course + ')',
                                     text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that you have successfully booked for this lesson:\n\n"
                                         + "     - Course: '" + lecture.course + "'.\n     - Classroom: " + lecture.classroom + ".\n     - Date: " + moment(lecture.date).format("YYYY-MM-DD HH:mm") + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
