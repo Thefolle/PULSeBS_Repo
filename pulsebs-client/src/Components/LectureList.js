@@ -2,22 +2,28 @@ import React    from 'react';
 import moment   from 'moment';
 import { Link } from 'react-router-dom';
 import { Table }    from "react-bootstrap";
+import { AuthContext } from '../auth/AuthContext';
 
 const LectureList = ( props ) => {
-  let {lectures,idc,getLectures } = props;
-  getLectures();
+  let {lectures,idc } = props;
 
     return (
-        <Table className="table" id="lectures-table">
-            <thead>
-            <tr>
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            { lectures.filter(l=>l.id===parseInt(idc)).map( ( l, id ) => <LectureItem key={ id } lecture={ l } idc={ idc } index={ l.lecId }/> ) }
-            </tbody>
-        </Table>
+      <AuthContext.Consumer>
+          {(context)=>(
+           <>
+            <Table className="table" id="lectures-table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                { lectures.filter(l=>l.id===parseInt(idc)).map( ( l, id ) => <LectureItem key={ id } lecture={ l } idc={ idc } index={ l.lecId }/> ) }
+                </tbody>
+            </Table>
+            </>
+          )}
+        </AuthContext.Consumer>
     );
 
 }

@@ -22,6 +22,21 @@ describe("Login test suite", () => {
     });
 });
 
+// Test authenticated user
+test('Try information about one user authenticated',()=>{
+    return DAO.getUserById('239901').then( result =>{
+       expect(result.name).toBe("Hyeronimus");
+    } );
+}   );
+
+test('Try information about one user authenticated 2',()=>{
+    return expect(DAO.getUserById('239900')).rejects.toBeUndefined();
+}   );
+
+test('Try information about one user authenticated 3',()=>{
+    return expect(DAO.getUserById()).rejects.toBeUndefined();
+}   );
+
 //BOOKING A SEAT
 test( 'Try to book a new seat', () => {
     return DAO.bookSeat( '2', '269901' ).then( result => {

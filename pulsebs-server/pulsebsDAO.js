@@ -98,6 +98,38 @@ exports.getUserByEmail = function ( email ) {
 };
 
 /*
+* Retrieve info about id
+* */
+
+exports.getUserById = function ( id ) {
+    return new Promise( ( resolve, reject ) => {
+        let nTimesUserNotFound = 0;
+
+        let sqls = [ `SELECT * FROM student WHERE id = ?`,
+                `SELECT * FROM teacher WHERE id = ?`,
+                `SELECT * FROM staff WHERE id = ?` ];
+
+        for ( let i = 0; i < sqls.length; i++ ) {
+            db.all( sqls[i], [ id ], ( err, rows ) => {
+                if ( err ) {
+                    reject( err );
+                } else if ( rows.length === 0 ) {
+                    // if none query succeeds, the email doesn't exist anywhere in the DB
+                    nTimesUserNotFound++;
+                    if ( nTimesUserNotFound === 3 ) reject( undefined );
+                    // email doesn't belong to a type-i user
+                } else {
+                    let row = rows[0];
+                    const user = new User( row.id, row.email, row.password, i, row.name, row.surname );
+                    resolve( user );
+                }
+            } );
+        }
+
+    } );
+};
+
+/*
 * Book a seat for a lecture
 * */
 
@@ -210,8 +242,8 @@ exports.getStudentsForLecture = ( lectureId ) => {
 
 exports.getStudentsForLecturev2 = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId 
-                     FROM booking B,course CO, lecture L 
+        let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId
+                     FROM booking B,course CO, lecture L
                      WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${ teacherId };`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );

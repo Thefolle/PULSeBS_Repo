@@ -167,6 +167,23 @@ const validError = {
     description: "Data not valid"
 }
 
+//API for check authenticated User
+app.get('/api/user', (req,res) => {
+    const user = req.user && req.user.user;
+    pulsebsDAO.getUserById(user)
+        .then((user) => {
+            res.json({id: user.id,
+                            name: user.name,
+                            surname: user.surname,
+                            type: user.type
+                          });
+        }).catch(
+        (err) => {
+         res.status(404).json(authErrorObj);
+        }
+      );
+});
+
 /*TEACHER */
 
 app.get( '/api/teacher/lectures', ( req, res ) => {
@@ -193,6 +210,53 @@ app.get( '/api/getStudentsForLecture', ( req, res ) => {
                                 } );
     } );
 } );
+
+/*
+*   Update lecture
+*       request body:
+*           presence: has to be 0 in order to modify it accordingly; this information is redundant, but it sets the stage in case other
+*               properties will be modifiable in future;
+*/
+
+app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
+    const user = req.user && req.user.user;
+    const teacherId = req.params.teacherId;
+    const lectureId = req.params.lectureId;
+    const presence = req.body.presence;
+    if (presence === 1) {
+        res.status(409).json({ message: "The lecture cannot be turnt to be in presence." });
+    } else if (presence !== 0) {
+        res.status(422).json({ message: "The field presence has to be 0 and, moreover, it is compulsory." });
+    } else {
+        pulsebsDAO.turnLectureIntoOnline(lectureId).then((exitCode) => {
+            if (exitCode === 0) {
+                res.status(204).json({ message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." });
+            }
+        }).catch(exitCode => {
+            if (exitCode === -1) {
+                res.status(404).json({ message: "No lecture exists with id " + lectureId + " ." });
+            } else if (exitCode === -2) {
+                res.status(409).json({ message: "The selected lecture with id " + lectureId + " is not active yet." });
+            } else if (exitCode === -3) {
+                res.status(409).json({
+                    message: "The selected lecture with id " + lectureId + " cannot be turnt to be online because " +
+                        "it is starting within 30 minutes as of now."
+                });
+            } else if (exitCode === -4) {
+                res.status(500).json(
+                    {
+                        message:
+                            "Internal error, the lecture has not been turnt into online.\n" +
+                            "You can:\n" +
+                            "\tRetry this operation\n" +
+                            "\tRefresh the page and retry this operation\n" +
+                            "\tLog out and log in back and retry this operation\n"
+                    }
+                );
+            }
+        });
+    }
+});
 
 
 /****** STUDENT ******/
@@ -264,8 +328,12 @@ app.delete('/api/student/bookings/:id', (req, res) => {
 });
 
 
-if ( process.env.TEST && process.env.TEST === '1' )
+/*if ( process.env.TEST && process.env.TEST === '1' )
     module.exports = app; //uncomment to test
 else
-    app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
-
+    app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test*/
+	
+	
+// Exported for E2E testing
+exports.server = app;
+exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`))
