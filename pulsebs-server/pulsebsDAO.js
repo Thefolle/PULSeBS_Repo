@@ -98,6 +98,25 @@ exports.getUserByEmail = function ( email ) {
 };
 
 /*
+* Get email by userId
+* */
+
+exports.getInfoByStudentId = (studentId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `SELECT email,
+                            name,
+                            surname
+                    FROM student
+                    WHERE id=${ studentId };`
+        db.all( query, [], ( err, rows ) => {
+        if ( err ) reject( err );
+        if ( rows ) resolve( rows[0] );
+        else resolve( 0 );
+        } );
+    }));
+}
+
+/*
 * Book a seat for a lecture
 * */
 
@@ -126,6 +145,30 @@ exports.bookSeat = ( lectureId, studentId ) => {
         } );
     } ) );
 }
+
+/*
+* Get lecture statistics
+* */
+
+exports.getLectureStats = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `SELECT date,
+                            CO.desc AS course,
+                            CL.desc AS classroom
+                       FROM lecture L,
+                            class CL,
+                            course CO
+                       WHERE L.ref_class = CL.id AND
+                             L.ref_course = CO.id AND
+                             L.id = ${ lectureId };`
+        db.all( query, [], ( err, rows ) => {
+        if ( err ) reject( err );
+        if ( rows ) resolve( rows[0] );
+        else resolve( 0 );
+        } );
+    }));
+}
+
 
 /*
 * Get list of student's lectures
@@ -173,6 +216,7 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 C.id as id,
                                 L.id as lecId,
                                 L.date,
+                                L.endTime,
                                 L.presence,
                                 L.bookable
                         FROM    lecture L,
@@ -183,7 +227,10 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 C.ref_teacher = ${ teacherId };`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) resolve( rows );
+            if ( rows ) {
+                resolve( rows );
+                console.log(rows);
+            }
             else resolve( 0 );
         } );
     } ) );

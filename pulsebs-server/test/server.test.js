@@ -1,94 +1,139 @@
-const express = require( 'express' );
-const request = require( "supertest" );
-const pulsebsDAO = require( '../pulsebsDAO' );
-const server = require( "../server" );
-const morgan = require( 'morgan' ); // logging middleware
-const jwt = require( 'express-jwt' );
-const jsonwebtoken = require( 'jsonwebtoken' );
-const cookieParser = require( 'cookie-parser' );
-
-const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
-const expireTime = 900; //seconds
-
-// Authorization error
-const authErrorObj = {errors: [ {'param': 'Server', 'msg': 'Authorization error'} ]};
-
-//Initializing server
-const app = express();
-const port = 3001;
-
-app.use( "/", server );
+const request = require("supertest");
+const { server, handleToCloseServer } = require("../server");
 
 let token;
-let session;
 
-beforeAll( ( done ) => {
+beforeAll((done) => {
 
-    const authdata = {
-        email: 'davide.calarco@gmail.com',
-        password: 'password'
-    };
-
-    const response = request( app )
-        .post( '/api/login' )
-        .send( {email: 'davide.calarco@gmail.com', password: 'password'} )
-        .end( ( err, response ) => {
+    request(server)
+        .post('/api/login')
+        .send({ email: 'davide.calarco@gmail.com', password: 'password' })
+        .end((error, response) => {
+            if (error) return done(error);
             token = response.body.token;
             done();
-        } );
-} );
+        });
+});
 
 
 //POST BOOK A SEAT
 
-describe( 'post /api/student/booking', () => {
-    it( 'POST should return a 1', async () => {
+describe('post /api/student/booking', () => {
+    it('POST should return a 1', async () => {
         const lectureId = 2;
 
-        await request( app )
-            .post( '/api/student/booking' )
-            .set( 'Cookie', `token=${ token }` )
-            .set( 'Content-Type', 'application/json' )
-            .send( {lectureId: lectureId} )
-            .then( ( res ) => {
-                expect( res.status ).toBe( 201 );
-                expect( res.body.response ).toBe( 1 );
-            } );
-    } );
+        await request(server)
+            .post('/api/student/booking')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send({ lectureId: lectureId })
+            .then((res) => {
+                expect(res.status).toBe(201);
+                expect(res.body.response).toBe(1);
+            });
+    });
 
-} );
+});
 
 
 //GET STUDENT LECTURES
 
-describe( 'get /api/student/lectures', () => {
-    it( 'should return a 200 if exists', async () => {
+describe('get /api/student/lectures', () => {
+    it('should return a 200 if exists', async () => {
 
-        const response = await request( app )
-            .get( '/api/student/lectures' )
-            .set( 'Cookie', `token=${ token }` )
-            .set( 'Content-Type', 'application/json' )
-            .set( 'Authorization', `Bearer ${ token }` )
-        expect( response.status ).toBe( 200 );
-        expect( response.body.length ).toEqual( 4 );
-    } );
+        const response = await request(server)
+            .get('/api/student/lectures')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`)
+        expect(response.status).toBe(200);
+        expect(response.body.length).toEqual(4);
+    });
 
-} );
+});
 
 
 //GET ALL STUDENT'S BOOKINGS
-describe( 'get /api/student/bookings', () => {
-    it( 'should return a 200 if exists', async () => {
+describe('get /api/student/bookings', () => {
+    it('should return a 200 if exists', async () => {
 
-        const response = await request( app )
-            .get( '/api/student/bookings' )
-            .set( 'Cookie', `token=${ token }` )
-            .set( 'Content-Type', 'application/json' )
-            .set( 'Authorization', `Bearer ${ token }` )
-        expect( response.status ).toBe( 200 );
-        expect( response.body.length ).toEqual( 3 );
-    } );
-} );
+        const response = await request(server)
+            .get('/api/student/bookings')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`)
+        expect(response.status).toBe(200);
+        expect(response.body.length).toEqual(3);
+    });
+});
+
+describe('E2E testing/Integration testing', () => {
+    test('Turnable lecture', async function () {
+        let teacherId = 1; // not really needed
+        let lectureId = 1;
+        let response = await request(server)
+            .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send({ presence: 0 });
+        expect(response.status).toBe(204);
+    });
 
 
-//app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`));
+    test('Non-existing lecture', function (done) {
+        let teacherId = 2;
+        let lectureId = 300;
+        request(server)
+            .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send({ presence: 0 })
+            .end(function (error, response) {
+                if (error) return done(error);
+                expect(response.status).toBe(404);
+                done();
+            });
+    });
+
+    test('Non-active lecture', function (done) {
+        let teacherId = 2;
+        let lectureId = 2;
+        request(server)
+            .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send({ presence: 0 })
+            .end(function (error, response) {
+                if (error) return done(error);
+                expect(response.status).toBe(409);
+                done();
+            });
+    });
+
+    test('Lecture is starting within 30 minutes', async function (done) {
+        let teacherId = 2;
+        let lectureId = 4;
+        request(server)
+            .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send({ presence: 0 })
+            .end(function (error, response) {
+                if (error) return done(error);
+                expect(response.status).toBe(409);
+                done();
+            });
+    });
+});
+
+// logout and server shutdown
+afterAll(async () => {
+    // Although logout works, being sure to close the server is needed to end the testing session gracefully; 
+    // await request(server)
+    //     .post('api/logout')
+    //     .set('Cookie', `token=${token}`);
+    // expect(response.status).toBe(200);
+    handleToCloseServer.close();
+}, 10);
+
+

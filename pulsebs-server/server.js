@@ -5,6 +5,7 @@ const morgan = require( 'morgan' ); // logging middleware
 const jwt = require( 'express-jwt' );
 const jsonwebtoken = require( 'jsonwebtoken' );
 const cookieParser = require( 'cookie-parser' );
+const moment = require( 'moment' );
 
 const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
 const expireTime = 900; //seconds
@@ -37,6 +38,7 @@ app.use( morgan( 'tiny' ) );
 app.use( express.json() );
 
 // Transporter needed to send emails
+var mailOptions = null;
 let transporter = nodemailer.createTransport( {
                                                   service: 'gmail',
                                                   port: 587,
@@ -59,9 +61,10 @@ const j = schedule.scheduleJob( {hour: 23, minute: 0, second: 0}, () => {
               .then( ( lessons ) => {
                   if ( lessons !== 0 ) { // There is at least one lesson
                       lessons.forEach( l => {
-                          var mailOptions = {
+                          mailOptions = {
                               from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                              to: l.email,
+                              //to: l.email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
+                              to: 'teacher.team9@yopmail.com',
                               subject: 'Tomorrow lesson (' + l.desc + ')',
                               text: "Dear " + l.surname + " " + l.name + " (" + l.id + "), here are some useful informations about tomorrow lesson:\n\n"
                                   + "     - Class: " + l.class + ".\n     - Course: '" + l.desc + "'.\n     - Number of students attending: " + l.nStudents + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
@@ -222,7 +225,43 @@ app.post( '/api/student/booking', ( req, res ) => {
     } else {
         const user = req.user && req.user.user;
         pulsebsDAO.bookSeat( lectureId, user )
-                  .then( ( response ) => res.status( 201 ).json( {response} ) )
+                  .then( ( response ) => {
+                      pulsebsDAO.getLectureStats(lectureId)
+                        .then( ( lecture ) => {
+
+                            pulsebsDAO.getInfoByStudentId(user)
+                            .then((student) => {
+                                var email = student.email;
+                                var name = student.name;
+                                var surname = student.surname;
+                                                            
+                                // Send booking email to student
+                                mailOptions = {
+                                    from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                    //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD
+                                    to: 'student.team9@yopmail.com',
+                                    subject: 'Booking confirmation (' + lecture.course + ')',
+                                    text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that you have successfully booked for this lesson:\n\n"
+                                        + "     - Course: '" + lecture.course + "'.\n     - Classroom: " + lecture.classroom + ".\n     - Date: " + moment(lecture.date).format("YYYY-MM-DD HH:mm") + ".\n\nHave a good lesson.\n\n - PULSeBS Team9."
+                                };
+
+                                transporter.sendMail( mailOptions, function ( error, info ) {
+                                    if ( error ) {
+                                        console.log( error );
+                                    } else {
+                                        console.log( 'Email sent to: ' + l.id + ", info: " + info.response );
+                                    }
+                        } ); 
+                            }).catch(( err ) => {
+                                console.log( err );
+                            });
+                        }).catch(( err ) => {
+                            console.log( err );
+                        });
+
+
+                      res.status( 201 ).json( {response} )
+                  })
                   .catch( ( err ) => {
                       res.status( 500 ).json( {errors: [ {'param': 'Server', 'msg': err} ],} )
                   } );
@@ -264,8 +303,11 @@ app.delete('/api/student/bookings/:id', (req, res) => {
 });
 
 
-if ( process.env.TEST && process.env.TEST === '1' )
-    module.exports = app; //uncomment to test
-else
-    app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
+// if ( process.env.TEST && process.env.TEST === '1' )
+//     module.exports = app; //uncomment to test
+// else
+//     app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
 
+// Exported for E2E testing
+exports.server = app;
+exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`))
