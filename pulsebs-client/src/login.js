@@ -52,7 +52,8 @@ class LoginPage extends React.Component {
               </Form.Group>
               {!context.authErr ? undefined :
                   context.authErr.status===401?
-                      <Jumbotron className='error'><p>Token expired.</p></Jumbotron>:<Jumbotron className='error'><p>Invalid email or password.</p></Jumbotron>
+                      //<Jumbotron className='error'><p>Token expired.</p></Jumbotron>:<Jumbotron className='error'><p>Invalid email or password.</p></Jumbotron>
+                      console.log("Token expired"):<Jumbotron className='error'><p>Invalid email or password.</p></Jumbotron>
               }
 
               <Button variant="primary" type="submit" disabled={!this.state.email.includes('@') || this.state.password.length === 0}>Log in</Button>
