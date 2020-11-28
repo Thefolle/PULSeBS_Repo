@@ -1,5 +1,6 @@
 import React       from 'react';
 import LectureItem from './LectureItem';
+import { Table }   from "react-bootstrap";
 import {AuthContext} from './auth/AuthContext';
 
 const LecturesList = ( props ) => {
@@ -11,7 +12,7 @@ const LecturesList = ( props ) => {
             {(context)=>(
               <>
                 { lectures.length !== 0 &&
-                <table className="table" id="lectures-table">
+                <Table className="table" id="lectures-table">
                     <thead>
                     <tr>
                         <th>Date</th>
@@ -26,7 +27,7 @@ const LecturesList = ( props ) => {
                     <tbody>
                     { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } bookings={bookings} bookSeat={ bookSeat } alreadyBooked={ alreadyBooked } /> ) }
                     </tbody>
-                </table>
+                </Table>
                 }
               </>
             )}

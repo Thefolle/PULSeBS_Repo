@@ -26,10 +26,10 @@ class TeacherPage extends React.Component {
             students: []
         };
 
-        this.goBack = this.goBack.bind(this); 
+        this.goBack = this.goBack.bind(this);
     }
-    
-    goBack(){
+
+    goBack=()=>{
         this.props.history.goBack();
     }
 
@@ -104,7 +104,7 @@ class TeacherPage extends React.Component {
 
         return (
             <AuthContext.Consumer>
-                {(context)=>( 
+                {(context)=>(
                     <>
                    {context.authUser && <>
                    <UserNavBar userId={context.authUser.id} />
