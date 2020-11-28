@@ -170,6 +170,23 @@ const validError = {
     description: "Data not valid"
 }
 
+//API for check authenticated User
+app.get('/api/user', (req,res) => {
+    const user = req.user && req.user.user;
+    pulsebsDAO.getUserById(user)
+        .then((user) => {
+            res.json({id: user.id,
+                            name: user.name,
+                            surname: user.surname,
+                            type: user.type
+                          });
+        }).catch(
+        (err) => {
+         res.status(404).json(authErrorObj);
+        }
+      );
+});
+
 /*TEACHER */
 
 app.get( '/api/teacher/lectures', ( req, res ) => {
@@ -196,7 +213,6 @@ app.get( '/api/getStudentsForLecture', ( req, res ) => {
                                 } );
     } );
 } );
-
 
 /****** STUDENT ******/
 
@@ -234,7 +250,7 @@ app.post( '/api/student/booking', ( req, res ) => {
                                 var email = student.email;
                                 var name = student.name;
                                 var surname = student.surname;
-                                                            
+
                                 // Send booking email to student
                                 mailOptions = {
                                     from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
@@ -251,7 +267,7 @@ app.post( '/api/student/booking', ( req, res ) => {
                                     } else {
                                         console.log( 'Email sent to: ' + l.id + ", info: " + info.response );
                                     }
-                        } ); 
+                        } );
                             }).catch(( err ) => {
                                 console.log( err );
                             });
@@ -303,10 +319,12 @@ app.delete('/api/student/bookings/:id', (req, res) => {
 });
 
 
-// if ( process.env.TEST && process.env.TEST === '1' )
-//     module.exports = app; //uncomment to test
-// else
-//     app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
+/*if ( process.env.TEST && process.env.TEST === '1' )
+    module.exports = app; //uncomment to test
+else
+    app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) ) //comment to test
+*/
+
 
 // Exported for E2E testing
 exports.server = app;

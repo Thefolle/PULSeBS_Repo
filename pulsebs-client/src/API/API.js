@@ -48,7 +48,7 @@ async function logout() {
 /****** STUDENT *******/
 
 async function getStudentLectures() {
-    let url = "/student/lectures";    
+    let url = "/student/lectures";
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
     if(response.ok){
@@ -68,7 +68,7 @@ async function bookSeat(lectureId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({lectureId : lectureId}), 
+        body: JSON.stringify({lectureId : lectureId}),
     }).then((response) => {
         if(response.ok) {
             resolve(response);
@@ -142,7 +142,19 @@ async function getStudents(filter){
     }
 }
 
+async function isAuthenticated(){
+    let url = "/user";
+    const response = await fetch(baseURL + url);
+    const userJson = await response.json();
+    if(response.ok){
+        return userJson;
+    } else {
+        let err = {status: response.status, errObj:userJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated };
 export default API;
