@@ -18,7 +18,7 @@ const LectureList = ( props ) => {
           <Table className="table" id="lectures-table">
               <thead>
               <tr>
-                  <th>Date</th>
+                  <th>{ courseName }</th>
               </tr>
               </thead>
               <tbody>
