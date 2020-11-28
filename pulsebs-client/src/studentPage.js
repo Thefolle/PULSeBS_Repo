@@ -3,16 +3,16 @@ import {Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import LecturesList from './LecturesList';
 import BookingsList from './BookingsList';
-import UserNavBar      from './Components/UserNavBar';
+import UserNavBar from './Components/UserNavBar';
 import StudentCalendar from "./Components/StudentCalendar";
 
 import './App.css';
 import API from './API/API';
 
 import { FaBookOpen, FaCalendarAlt } from "react-icons/fa";
-import { Button } from "react-bootstrap";
 import {Switch} from 'react-router-dom';
 import {AuthContext} from './auth/AuthContext';
+import { Button, Row, Col, Container, ListGroup, ListGroupItem } from "react-bootstrap";
 
 class StudentPage extends React.Component {
 
@@ -20,6 +20,7 @@ class StudentPage extends React.Component {
         super(props);
 
         this.state = {
+            userType: 'student',
             lectures: [],
             bookings: [],
             bookingFailed: ''
@@ -87,7 +88,7 @@ class StudentPage extends React.Component {
         API.bookSeat(lectureId).then((result) => {
             if (result.ok) {
                 this.setState({ failed: 0 });
-                this.props.history.push("/StudentHome/bookings");
+                this.props.history.push("/student/bookings");
             } else {
                 this.setState({ failed: 1 });
                 //error page
@@ -119,36 +120,39 @@ class StudentPage extends React.Component {
             return (
               <AuthContext.Consumer>
                   {(context)=>(
-                  <>
-                    <UserNavBar/>
-                    <div>
-                        <Button className="btn btn-secondary" role="button" href="/StudentHome/lectures"
-                            aria-expanded="false" aria-controls="collapseExample">
-                            Lectures
-                            <FaBookOpen className={"ml-1"} />
-                        </Button>
-                        <Button className="btn btn-secondary" role="button" href="/StudentHome/calendar"
-                                aria-expanded="false" aria-controls="collapseExample">
-                            My Calendar
-                            <FaCalendarAlt className={"ml-1"} />
-                        </Button>
-                        <a type="button" className="btn btn-secondary" role="button" href="/StudentHome/bookings"
-                            aria-expanded="false" aria-controls="collapseExample">
-                            Bookings
-                            <FaCalendarAlt className={"ml-1"} />
-                        </a>
-                    </div>
+                     <> 
+                  {context.authUser && <>
+                    <UserNavBar userId={context.authUser.id}/>
+                    <Container>
+                    <Row>
+                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                            <ListGroup className="sidebar" variant="flush">
+                            <h5>POLITECNICO DI TORINO</h5>
+                                <ListGroup.Item className="listGroup-Item">name: {context.authUser.name}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">surname: {context.authUser.surname}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">id: {context.authUser.id}</ListGroup.Item>
+                            </ListGroup>
+                        </Col>
+
+                        <Col sm={8}>
+                    
                     <Switch>
-                        <Route exact path={this.props.match.url + "/lectures"}>
-                            <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
-                        </Route>
-                        <Route exact path={this.props.match.url + "/bookings"}>
-                            <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
-                        </Route>
-                        <Route exact path={this.props.match.url + "/calendar"}>
-                        <StudentCalendar bookings={this.state.bookings} />
-                    </Route>
-                    </Switch>
+                                <Route exact path={this.props.match.url + "/lectures"}>
+                                    <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
+                                </Route>
+                                <Route exact path={this.props.match.url + "/bookings"}>
+                                    <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
+                                </Route>
+                                <Route exact path={this.props.match.url + "/calendar"}>
+                                    <StudentCalendar bookings={this.state.bookings} />
+                                </Route>
+                            </Switch>
+
+                        </Col>
+                    </Row>
+                </Container>
+                     </>
+                     }
                 </>
               )}
             </AuthContext.Consumer>

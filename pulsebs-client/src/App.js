@@ -8,6 +8,9 @@ import LoginPage                   from './login';
 import StudentPage                 from './studentPage';
 import TeacherPage   from './Components/TeacherPage';
 import { AuthContext } from './auth/AuthContext';
+import Header from './Components/Header';
+import Footer from './Components/Footer';
+
 import './App.css';
 import API from './API/API.js';
 
@@ -43,6 +46,7 @@ class PULSeBSApp extends React.Component {
     logout = () => {
     API.logout().then(() => {
       this.setState({authUser: null,authErr: null});
+      //this.props.history.push("/");
     });
   }
 
@@ -64,12 +68,13 @@ class PULSeBSApp extends React.Component {
     render() {
         return <>
         <AuthContext.Provider value={{authUser: this.state.authUser, authErr: this.state.authErr,loginUser: this.login,logoutUser: this.logout}}>
+           <Header/>
             <Router>
                 <Switch>
                         <Route exact path='/Login'>
                             <LoginPage />
                         </Route>
-                        <Route path='/StudentHome' >
+                        <Route path='/student'>
                          <StudentPage />
                         </Route>
                         <Route path='/teacher'>
@@ -80,6 +85,7 @@ class PULSeBSApp extends React.Component {
                         </Route>
                 </Switch>
             </Router>
+            <Footer/>
           </AuthContext.Provider>
         </>;
     }

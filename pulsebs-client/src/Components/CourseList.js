@@ -4,8 +4,8 @@ import { Table } from "react-bootstrap";
 import {AuthContext} from '../auth/AuthContext';
 
 const CourseList = ( props ) => {
-  let {courses}=props;
 
+  let {courses}=props;
 
     return (
       <AuthContext.Consumer>

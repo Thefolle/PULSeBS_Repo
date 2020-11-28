@@ -1,17 +1,19 @@
 import React from 'react';
 
 import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 
 import {Switch,Route,Link} from 'react-router-dom';
 
 import {AuthContext} from '../auth/AuthContext';
+import { FaBookOpen, FaCalendarAlt, FaHome, FaUserCircle } from "react-icons/fa";
 
 import '../App.css';
 import '../customStyle.css';
-import { FaHome }                  from "react-icons/fa";
 
 class UserNavBar extends React.Component {
 
@@ -21,56 +23,41 @@ class UserNavBar extends React.Component {
 
   render() {
 
-    let brand = <Navbar.Brand>
-      <OverlayTrigger
-        placement='bottom'
-        overlay={
-          <Tooltip>
-            Home
-          </Tooltip>
-        }
-      >
-        <FaHome />
-      </OverlayTrigger>
-
-    </Navbar.Brand>;
-
     return (
       <AuthContext.Consumer>
           {(context) => (
-              <>
-              <Navbar id="navbar" bg="light" variant="light">
-                <Switch>
-                  <Route path='/StudentHome'>
-                    <Link to='/StudentHome'>
-                      {brand}
-                    </Link>
-                  </Route>
-                  <Route exact path='/StudentHome'>
-                    {/* The property tabs has to be an array of div elements; each div is rendered as a group, while each div can contain multiple items */}
-                    {this.props.tabs}
-                  </Route>
-                  <Route path='/teacher'>
-                    <Link to='/teacher'>
-                      {brand}
-                    </Link>
-                  </Route>
-                  <Route exact path='/teacher'>
-                    {this.props.tabs}
-                  </Route>
-                </Switch>
-                <div>
-                  <label>Hello {context.authUser && context.authUser.name} </label>
-                  <Link to='/'>
-                    <Button onClick={event => context.logoutUser()}>Log out</Button>
-                  </Link>
-                </div>
-              </Navbar>
-              </>
-            )}
+              <> 
+              <Navbar id="menu-navbar" expand="sm" variant="dark">
+      <Switch>
+        <Route path='/student'>
+        <Navbar.Collapse id="basic-navbar-nav">
+         <Nav className="mr-auto">
+          {/*<Nav.Link href='/student'> Home <FaHome className={"ml-0.5"} /></Nav.Link>*/}
+          <Nav.Link href='/student/lectures'> Lectures <FaBookOpen className={"ml-0.5"} /> </Nav.Link>
+          <Nav.Link href='/student/bookings'> Bookings <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
+          <Nav.Link href='/student/calendar'> Calendar <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
+          </Nav>
+         </Navbar.Collapse> 
+        </Route>
+        <Route path='/teacher'>
+        <Navbar.Collapse id="basic-navbar-nav">
+         <Nav className="mr-auto">
+          <Nav.Link href='/teacher/courses'> Courses <FaBookOpen className={"ml-0.5"} /> </Nav.Link>
+          </Nav>
+         </Navbar.Collapse>
+        </Route>
+      </Switch>
+        <Navbar.Brand> <FaUserCircle className={"ml-1"}/> {this.props.userId} </Navbar.Brand>  
+       <div> 
+        <Link to='/'>
+          <Nav.Link id="logout-button" onClick={event => context.logoutUser()}>Log out</Nav.Link>
+        </Link>
+      </div>
+    </Navbar>
+    </>
+    )}
         </AuthContext.Consumer>
     );
-
   }
 }
 

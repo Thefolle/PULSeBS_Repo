@@ -9,6 +9,10 @@ import UserNavBar from './UserNavBar';
 import { Link } from 'react-router-dom';
 import {AuthContext} from '../auth/AuthContext';
 
+
+import { Button, Row, Col, Container, ListGroup, ListGroupItem } from "react-bootstrap";
+import { FaBackward } from "react-icons/fa";
+
 import '../App.css';
 import '../customStyle.css';
 
@@ -16,10 +20,17 @@ class TeacherPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            userType: 'teacher',
             lectures: [],
             courses: [],
             students: []
         };
+
+        this.goBack = this.goBack.bind(this); 
+    }
+    
+    goBack(){
+        this.props.history.goBack();
     }
 
     componentDidMount() {
@@ -93,29 +104,41 @@ class TeacherPage extends React.Component {
 
         return (
             <AuthContext.Consumer>
-                {(context)=>(
+                {(context)=>( 
                     <>
-                    <UserNavBar />
-                    <div className={"btn btn-primary"} style={{ margin: "10px" }}>
-                        <Link to='/teacher/courses' style={{ color: "white" }}>
-                            Lectures of my Courses
-                        </Link>
-                    </div>
-                    <Switch>
+                   {context.authUser && <>
+                   <UserNavBar userId={context.authUser.id} />
+                    <Container>
+                    <Row>
+                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                            <ListGroup className="sidebar" variant="flush" >
+                                <h5>POLITECNICO DI TORINO</h5>
+                                <ListGroup.Item className="listGroup-Item">name: {context.authUser.name}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">surname: {context.authUser.surname}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">id: {context.authUser.id}</ListGroup.Item>
+                            </ListGroup>
+                        </Col>
+                        <Col sm={8}>
+                        <Button id="goback" onClick={this.goBack}> <FaBackward /> </Button>
+                        <Switch>
                         <Route exact path={"/teacher/courses"}>
                             <CourseList courses={this.state.courses} />
                         </Route>
                         <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
                             <LectureList lectures={this.state.lectures} idc={match.params.courseId}  />
                         )} />
-                        <Route exact path={"/teacher/:courseId/:lectureId/students"} render={({ match }) => (
+                        <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                             <StudentList students={this.state.students} idl={match.params.lectureId} />
                         )} />
                     </Switch>
+                    </Col>
+                  </Row>
+                </Container>
                     </>
+                  }
+                  </>
                   )}
             </AuthContext.Consumer>
-
         );
     }
 }
