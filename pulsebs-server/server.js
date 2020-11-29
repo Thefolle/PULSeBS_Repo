@@ -12,7 +12,7 @@ const bcrypt = require('bcrypt');
 
 const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
-const { response } = require('express');
+const moment = require('moment');
 
 
 // Authorization error
@@ -84,7 +84,6 @@ const j = schedule.scheduleJob({ hour: 23, minute: 0, second: 0 }, () => {
 });
 
 // Authentication endpoint
-// TESTED
 app.post('/api/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -196,10 +195,38 @@ app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
     } else if (presence !== 0) {
         res.status(422).json({ message: "The field presence has to be 0 and, moreover, it is compulsory." });
     } else {
-        pulsebsDAO.turnLectureIntoOnline(lectureId).then((exitCode) => {
-            if (exitCode === 0) {
-                res.status(204).json({ message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." });
-            }
+
+        pulsebsDAO.turnLectureIntoOnline(lectureId).then((information) => {
+            // if success
+            res.status(204).json({
+                message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture.\n" +
+                    "Students booked for this lecture are going to be immediately informed of the change by email, if any is booked."
+            });
+
+            let mailOptions;
+            information.map(studentAndLectureInfo => {
+                mailOptions = {
+                    from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                    to: 'cdavide8@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                    subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
+                    text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
+                        " (" + studentAndLectureInfo.studentId + ")," +
+                        " the lesson of the course " + studentAndLectureInfo.courseDescription + "," +
+                        " planned to take place in class " + studentAndLectureInfo.lectureClass +
+                        " on " + moment.unix(studentAndLectureInfo.lectureDate).format('MMMM Do YYYY, h:mm:ss a') + "," +
+                        " has been just turnt to be online by the teacher." + "\n\n" +
+                        "Have a good virtual lesson.\n\n - PULSeBS Team9."
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log("Some error occured in sending the email to " + info.studentEmail + ": " + error);
+                    } else {
+                        console.log('Email sent to: ' + studentAndLectureInfo.studentId + ", info: " + info.response);
+                    }
+                });
+            })
+
+
         }).catch(exitCode => {
             if (exitCode === -1) {
                 res.status(404).json({ message: "No lecture exists with id " + lectureId + " ." });

@@ -1,3 +1,3 @@
 UPDATE lecture
-SET date = 1605906572000
-WHERE id = 5;
+SET ref_class = 2
+WHERE id = 4;

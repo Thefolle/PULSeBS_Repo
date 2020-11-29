@@ -97,6 +97,39 @@ exports.getUserByEmail = function (email) {
     });
 };
 
+
+/*
+* Get the email for each student provided
+* 
+* Comment on the implementation:
+*   The function could have been implemented to perform one query per studentId, but it would have been slow;
+*   Another solution could have been to parallelize queries, each one searching for a studentId, but Node is single-threaded so the
+*       function db.parallelize has no increased performance if a single thread executes it;
+*   The current implementation extracts all ids and emails from the table and performs the selection in JS.
+*/
+
+exports.mapUsersToTheirEmails = function (studentIds) {
+    return new Promise(((resolve, reject) => {
+        let query = 'SELECT id, email FROM student;'
+        db.all(query, [lectureId], (error, rows) => {
+            if (error) reject(error);
+            else if (!rows) resolve([]);
+            else resolve(rows.filter(row => studentIds.includes(row.id)).map(row => row.email));
+        });
+    }));
+}
+
+exports.getLectureInformation = function (lectureId) {
+    return new Promise(((resolve, reject) => {
+        let query = 'SELECT id, ref_course AS courseId, ref_class AS classId FROM student;'
+        db.all(query, [lectureId], (error, rows) => {
+            if (error) reject(error);
+            else if (!rows) resolve([]);
+            else resolve(rows.filter(row => studentIds.includes(row.id)).map(row => row.email));
+        });
+    }));
+}
+
 /*
 * Book a seat for a lecture
 * */
@@ -195,14 +228,17 @@ exports.getTeacherLectures = (teacherId) => {
 
 exports.getStudentsForLecture = (lectureId) => {
     return new Promise(((resolve, reject) => {
-        let query = `SELECT ref_student FROM booking B WHERE B.ref_lecture = ${lectureId};`
-        db.all(query, [], (err, rows) => {
-            if (err) reject(err);
-            if (rows) resolve(rows);
-            else resolve(0);
+        let query = 'SELECT ref_student AS studentId FROM booking B WHERE B.ref_lecture = ?;'
+        db.all(query, [lectureId], (error, rows) => {
+            if (error) reject(error);
+            else if (!rows) resolve([]);
+            else resolve(rows.map(row => row.studentId));
         });
     }));
 }
+
+
+
 
 /*
 * Get a list of students who will attend a lecture - Vincenzo's implementation
@@ -364,39 +400,56 @@ exports.getTomorrowLessonsStats = (test = false) => {
             the lecture is starting within 30 minutes as of now;
         -4: internal error;
 *   resolved:
-*       0: number of rows updated; it can be either 0 or 1 in this method
+*       
 *
 * Comments:
-*   this method executes two queries only for allowing to distinguish
-*   whether the eventual mismatch has occured because either the lecture
+*   this method executes two queries turning the lecture as online only for allowing
+*   to distinguish whether the eventual mismatch has occured because either the lecture
 *   is not active or if the lecture's start time is planned within the next
 *   30 minutes starting from the current time 
 * */
 exports.turnLectureIntoOnline = (lectureId) => {
     return new Promise((resolve, reject) => {
         let query1 = `SELECT active AS active, date AS date FROM lecture WHERE id = ?`;
-        let query2 = `UPDATE lecture SET presence = 0, ref_class = NULL WHERE id = ? AND active = 1;`
+        let query2 = `UPDATE lecture SET presence = 0 WHERE id = ? AND active = 1;`
         let now = moment().valueOf(); // in milliseconds
 
-        db.get(query1, [lectureId], function (err, couple) {
+        db.get(query1, [lectureId], function (error, couple) {
             if (couple === undefined) {
                 reject(-1);
             } else if (couple.active === 0) {
                 reject(-2);
             } else if (now > couple.date - 1800000 && now < couple.date) {
                 reject(-3);
-            } else if (err) {
+            } else if (error) {
                 console.log("Error in turnLectureIntoOnline");
-                console.log(err);
+                console.log(error);
                 reject(-4);
             } else {
-                db.run(query2, [lectureId], function (err) {
-                    if (err) {
+                db.run(query2, [lectureId], function (error) {
+                    if (error) {
                         console.log("Error in turnLectureIntoOnline");
-                        console.log(err);
+                        console.log(error);
                         reject(-4);
                     }
-                    else resolve(0);
+                    else {
+                        let getInformationToSendEmailsQuery =
+                            `SELECT L.date AS lectureDate, Co.desc AS courseDescription, Cl.desc AS lectureClass, S.name AS studentName, S.surname AS studentSurname, S.id AS studentId, S.email AS studentEmail
+                            FROM    booking B,
+                                    student S,
+                                    lecture L,
+                                    course Co,
+                                    class Cl
+                            WHERE   L.id = ? AND
+                                    B.ref_student = S.id AND
+                                    B.ref_lecture = L.id AND
+                                    L.ref_course = Co.id AND
+                                    L.ref_class = Cl.id`;
+                        db.all(getInformationToSendEmailsQuery, [lectureId], function (error, rows) {
+                            if (error) reject(-4);
+                            else resolve(rows);
+                        });
+                    }
                 });
             }
         });

@@ -96,8 +96,18 @@ test('Try to cancel a lecture', () => {
 describe('Turn a lecture to be online instead of in presence', () => {
     describe('Unit testing', () => {
         test('Turnable lecture', () => {
-            return DAO.turnLectureIntoOnline(1).then(exitCode => {
-                expect(exitCode).toBe(0);
+            return DAO.turnLectureIntoOnline(1).then(information => {
+                expect(information).toBe(
+                    [
+                        {
+                            "courseDescription": "Analisi 1",
+                            "lectureClass": "12",
+                            "lectureDate": 1607448177000,
+                            "studentEmail": "vincenzo.distasio@gmail.com",
+                            "studentId": 269903, "studentName": "Vincenzo",
+                            "studentSurname": "Di Stasio"
+                        }
+                    ]);
             }).catch(exitCode => {
                 // test failed because the lecture should have been turnable into online
                 console.log("Test failure message: ");
