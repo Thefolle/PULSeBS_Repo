@@ -154,7 +154,25 @@ async function isAuthenticated(){
     }
 }
 
+async function cancelLecture(lectureId){
+    return new Promise((resolve, reject) =>{
+        fetch(baseURL + "/teacher/lectures/" + lectureId, {
+            method: 'DELETE'
+        }).then((response) => {
+            if (response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);})
+                .catch( (err) => { reject({errors: [{ param: "Application", msg: "Cannot parse server response" }]})}); //something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    })
+}
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated };
+
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents, cancelLecture, isAuthenticated };
 export default API;

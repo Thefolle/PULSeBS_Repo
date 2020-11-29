@@ -318,6 +318,22 @@ app.delete('/api/student/bookings/:id', (req, res) => {
     }
 });
 
+app.delete('/api/teacher/lectures/:id', (req, res) => {
+    const lectureId = req.params.id;
+    if (!lectureId) {
+        res.status(401).end();
+    } else{
+        // const user = req.user && req.user.user;
+        pulsebsDAO.cancelLecture(lectureId)
+            .then((response) => res.status(201).json({response}))
+            .catch((err) => {
+                res.status(500).json({
+                    errors: [{'param': 'Server', 'msg': err}],
+                });
+        });
+    }
+});
+
 
 /*if ( process.env.TEST && process.env.TEST === '1' )
     module.exports = app; //uncomment to test

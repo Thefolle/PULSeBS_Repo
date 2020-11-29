@@ -100,6 +100,19 @@ class TeacherPage extends React.Component {
           });
     }
 
+    cancelLecture = (lectureId) => {
+        API.cancelLecture(lectureId)
+        .then(() => {
+            //get the updated list of tasks from the server
+            API.getTeacherLectures().then((lectures) => this.setState({ lectures : lectures }));
+          })
+          .catch((errorObj) => {
+            this.handleErrors(errorObj);
+          });
+      }
+      
+    
+
     render() {
 
         return (
@@ -125,7 +138,7 @@ class TeacherPage extends React.Component {
                             <CourseList courses={this.state.courses} />
                         </Route>
                         <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                            <LectureList lectures={this.state.lectures} idc={match.params.courseId}  />
+                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture}  />
                         )} />
                         <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                             <StudentList students={this.state.students} idl={match.params.lectureId} />
