@@ -76,7 +76,7 @@ describe('E2E testing/Integration testing', () => {
             .set('Cookie', `token=${token}`)
             .set('Content-Type', 'application/json')
             .send({ presence: 0 });
-        expect(response.status).toBe(204);
+        expect(response.status).toBe(200);
     });
 
 

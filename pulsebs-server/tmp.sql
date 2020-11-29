@@ -1,3 +1,3 @@
 UPDATE lecture
-SET ref_class = 2
-WHERE id = 4;
+SET presence = 1
+WHERE id = 5;

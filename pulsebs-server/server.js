@@ -13,7 +13,6 @@ const bcrypt = require('bcrypt');
 
 const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
-const moment = require('moment');
 
 
 // Authorization error
@@ -221,9 +220,9 @@ app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
 
         pulsebsDAO.turnLectureIntoOnline(lectureId).then((information) => {
             // if success
-            res.status(204).json({
-                message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture.\n" +
-                    "Students booked for this lecture are going to be immediately informed of the change by email, if any is booked."
+            res.status(200).json({
+                message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." +
+                    " Students booked for this lecture are going to be immediately informed of the change by email, if any is booked."
             });
 
             let mailOptions;
@@ -379,11 +378,6 @@ app.delete('/api/student/bookings/:id', (req, res) => {
             });
     }
 });
-
-// Exported for E2E testing
-exports.server = app;
-exports.handleToCloseServer = app.listen(port, () => console.log(`REST API server listening at http://localhost:${port}`))
-
 
 
 // Exported for E2E testing

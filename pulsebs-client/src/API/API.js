@@ -148,7 +148,7 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
     let response;
     try {
         response = await fetch(baseURL + url, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -157,7 +157,12 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
     } catch (networkError) {
         throw {message: "Network error occured in " + turnLectureIntoOnline.name + ": " + networkError};
     }
-    let message = (await response.json()).message;
+    let message;
+    try {
+        message = (await response.json()).message;
+    } catch (parseError) {
+        console.log("Parse error occured in " + turnLectureIntoOnline.name + parseError);
+    }
     if (response.status === 204) return message;
     else throw {message: message};
 }
