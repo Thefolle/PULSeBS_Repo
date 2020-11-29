@@ -1,0 +1,11 @@
+.fc-col-header-cell-cushion {
+    color: black;
+}
+
+.fc tr:hover {
+    background-color: transparent;
+}
+
+.fc a:hover {
+    text-decoration: none;
+}

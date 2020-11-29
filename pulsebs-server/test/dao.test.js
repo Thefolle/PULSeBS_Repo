@@ -1,6 +1,6 @@
 const DAO = require("../pulsebsDAO.js");
 
-//REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
+// //REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
 
 describe("Login test suite", () => {
     test('Try to login with < davide.calarco@gmail.com, password>', () => {
@@ -21,6 +21,21 @@ describe("Login test suite", () => {
         });
     });
 });
+
+// Test authenticated user
+test('Try information about one user authenticated',()=>{
+    return DAO.getUserById('239901').then( result =>{
+       expect(result.name).toBe("Hyeronimus");
+    } );
+}   );
+
+test('Try information about one user authenticated 2',()=>{
+    return expect(DAO.getUserById('239900')).rejects.toBeUndefined();
+}   );
+
+test('Try information about one user authenticated 3',()=>{
+    return expect(DAO.getUserById()).rejects.toBeUndefined();
+}   );
 
 //BOOKING A SEAT
 test('Try to book a new seat', () => {
@@ -146,4 +161,21 @@ describe('Turn a lecture to be online instead of in presence', () => {
         });
     });
     // Cannot test exitCode === -4
+});
+// GET INFO BY STUDENT ID
+test('Try to see if student infos are correct', () => {
+    return DAO.getInfoByStudentId(269901).then(result => {
+        expect(result.email).toBe('davide.calarco@gmail.com');
+        expect(result.name).toBe('Davide');
+        expect(result.surname).toBe('Calarco');
+    })
+});
+
+// GET LECTURE STATS
+test('Try to see if lecture stats are the correct ones', () => {
+    return DAO.getLectureStats(1).then(result => {
+        expect(result.date).toBe(1605526200000);
+        expect(result.course).toBe('Analisi 1');
+        expect(result.classroom).toBe('12');
+    })
 });

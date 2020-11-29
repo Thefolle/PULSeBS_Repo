@@ -56,6 +56,7 @@ create table lecture
     ref_course INTEGER not null references course,
     ref_class  INTEGER references class,
     date       INTEGER,
+    endTime    INTEGER,
     presence   INTEGER default 1 not null,
     bookable   INTEGER default 1 not null,
     active     INTEGER default 1 not null

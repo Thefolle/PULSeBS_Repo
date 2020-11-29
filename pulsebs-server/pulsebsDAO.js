@@ -131,6 +131,57 @@ exports.getLectureInformation = function (lectureId) {
 }
 
 /*
+* Get email by userId
+* */
+
+exports.getInfoByStudentId = (studentId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `SELECT email,
+                            name,
+                            surname
+                    FROM student
+                    WHERE id=${ studentId };`
+        db.all( query, [], ( err, rows ) => {
+        if ( err ) reject( err );
+        if ( rows ) resolve( rows[0] );
+        else resolve( 0 );
+        } );
+    }));
+}
+
+/*
+* Retrieve info about id
+* */
+
+exports.getUserById = function ( id ) {
+    return new Promise( ( resolve, reject ) => {
+        let nTimesUserNotFound = 0;
+
+        let sqls = [ `SELECT * FROM student WHERE id = ?`,
+                `SELECT * FROM teacher WHERE id = ?`,
+                `SELECT * FROM staff WHERE id = ?` ];
+
+        for ( let i = 0; i < sqls.length; i++ ) {
+            db.all( sqls[i], [ id ], ( err, rows ) => {
+                if ( err ) {
+                    reject( err );
+                } else if ( rows.length === 0 ) {
+                    // if none query succeeds, the email doesn't exist anywhere in the DB
+                    nTimesUserNotFound++;
+                    if ( nTimesUserNotFound === 3 ) reject( undefined );
+                    // email doesn't belong to a type-i user
+                } else {
+                    let row = rows[0];
+                    const user = new User( row.id, row.email, row.password, i, row.name, row.surname );
+                    resolve( user );
+                }
+            } );
+        }
+
+    } );
+};
+
+/*
 * Book a seat for a lecture
 * */
 
@@ -159,6 +210,30 @@ exports.bookSeat = (lectureId, studentId) => {
         });
     }));
 }
+
+/*
+* Get lecture statistics
+* */
+
+exports.getLectureStats = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `SELECT date,
+                            CO.desc AS course,
+                            CL.desc AS classroom
+                       FROM lecture L,
+                            class CL,
+                            course CO
+                       WHERE L.ref_class = CL.id AND
+                             L.ref_course = CO.id AND
+                             L.id = ${ lectureId };`
+        db.all( query, [], ( err, rows ) => {
+        if ( err ) reject( err );
+        if ( rows ) resolve( rows[0] );
+        else resolve( 0 );
+        } );
+    }));
+}
+
 
 /*
 * Get list of student's lectures
@@ -206,6 +281,7 @@ exports.getTeacherLectures = (teacherId) => {
                                 C.id as id,
                                 L.id as lecId,
                                 L.date,
+                                L.endTime,
                                 L.presence,
                                 L.bookable
                         FROM    lecture L,
@@ -244,14 +320,14 @@ exports.getStudentsForLecture = (lectureId) => {
 * Get a list of students who will attend a lecture - Vincenzo's implementation
 * */
 
-exports.getStudentsForLecturev2 = (teacherId) => {
-    return new Promise(((resolve, reject) => {
-        let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId 
-                     FROM booking B,course CO, lecture L 
-                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${teacherId};`
-        db.all(query, [], (err, rows) => {
-            if (err) reject(err);
-            if (rows) resolve(rows);
+exports.getStudentsForLecturev2 = ( teacherId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId
+                     FROM booking B,course CO, lecture L
+                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${ teacherId };`
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
             else resolve(0);
         });
     }));

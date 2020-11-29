@@ -1,13 +1,17 @@
 import React from 'react';
-import { withRouter, Switch, Route } from 'react-router-dom';
+import { withRouter, Switch, Route} from 'react-router-dom';
 
 import API from '../API/API';
 import CourseList from './CourseList';
 import LectureList from './LectureList';
 import StudentList from './StudentiList';
-import ButtonTeacherHub from './ButtonTeacherHub';
 import UserNavBar from './UserNavBar';
 import { Link } from 'react-router-dom';
+import {AuthContext} from '../auth/AuthContext';
+
+
+import { Button, Row, Col, Container, ListGroup, ListGroupItem } from "react-bootstrap";
+import { FaBackward } from "react-icons/fa";
 
 import '../App.css';
 import '../customStyle.css';
@@ -16,35 +20,41 @@ class TeacherPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: this.props.id,
-            email: '',
-            name: this.props.name,
-            surname: this.props.surname,
             userType: 'teacher',
             lectures: [],
             courses: [],
             students: []
         };
+
+        this.goBack = this.goBack.bind(this);
+    }
+
+    goBack=()=>{
+        this.props.history.goBack();
     }
 
     componentDidMount() {
-        API.getTeacherLectures()
-            .then((lectures) => {
-                this.setState({
-                    lectures: lectures,
-                    courses: this.getCourses(lectures).sort()
-                });
-                this.getStudentsByLecture();
-            })
-            .catch((err) => {
-                this.handleErrors(err);
-            });
+      API.getTeacherLectures()
+          .then((lectures) => {
+              this.setState({
+                  lectures: lectures
+              });
+              this.getStudentsByLecture();
+              this.getCourses(lectures);
+          })
+          .catch((err) => {
+              this.handleErrors(err);
+          });
     }
 
     handleErrors = (err) => {
         if (err) {
             if (err.status && err.status === 401) {
+                this.setState({ authErr: err });
                 this.props.history.push("/");
+            }else{
+                //other errors that may happens and choose the page in which are displayed
+                this.setState({ authErr: err });
             }
         }
         console.log("Error occured. Check the handleErrors method in teacherPage.");
@@ -63,56 +73,72 @@ class TeacherPage extends React.Component {
                 });
             }
         }
-        console.log("Courses:");
-        console.log(result);
-        return result;
+
+        this.setState({courses:result.sort()});
     }
 
 
     getStudentsByLecture = () => {
-        API.getStudents()
-            .then((student) => {
-                this.setState({ students: student });
-            })
-            .catch((err) => {
-                this.handleErrors(err);
-            });
+      API.getStudents()
+          .then((student) => {
+              this.setState({ students: student });
+          })
+          .catch((err) => {
+              this.handleErrors(err);
+          });
     }
 
     getTeacherLectures = () => {
-        API.getTeacherLectures()
-            .then((lectures) => {
-                this.setState({ lectures: lectures, courses: this.getCourses(lectures).sort() });
-                this.getStudentsByLecture();
-            })
-            .catch((errorObj) => {
-                this.handleErrors(errorObj);
-            });
+      API.getTeacherLectures()
+          .then((lectures) => {
+              this.setState({ lectures: lectures });
+              this.getCourses(lectures);
+              this.getStudentsByLecture();
+          })
+          .catch((errorObj) => {
+              this.handleErrors(errorObj);
+          });
     }
 
     render() {
 
         return (
-            <>
-                <UserNavBar />
-                <div className={"btn btn-primary"} style={{ margin: "10px" }}>
-                    <Link to='/teacher/courses' style={{ color: "white" }}>
-                        Lectures of my Courses
-                    </Link>
-                </div>
-                <Switch>
-                    <Route exact path={"/teacher/courses"}>
-                        <CourseList courses={this.state.courses} />
-                    </Route>
-                    <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                        <LectureList lectures={this.state.lectures} idc={match.params.courseId} getLectures={this.getTeacherLectures} />
-                    )} />
-                    <Route exact path={"/teacher/:courseId/:lectureId/students"} render={({ match }) => (
-                        <StudentList students={this.state.students} idl={match.params.lectureId} getLectures={this.getTeacherLectures} />
-                    )} />
-                </Switch>
-            </>
-
+            <AuthContext.Consumer>
+                {(context)=>(
+                    <>
+                   {context.authUser && <>
+                   <UserNavBar userId={context.authUser.id} />
+                    <Container>
+                    <Row>
+                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                            <ListGroup className="sidebar" variant="flush" >
+                                <h5>POLITECNICO DI TORINO</h5>
+                                <ListGroup.Item className="listGroup-Item">name: {context.authUser.name}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">surname: {context.authUser.surname}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">id: {context.authUser.id}</ListGroup.Item>
+                            </ListGroup>
+                        </Col>
+                        <Col sm={8}>
+                        <Button id="goback" onClick={this.goBack}> <FaBackward /> </Button>
+                        <Switch>
+                        <Route exact path={"/teacher/courses"}>
+                            <CourseList courses={this.state.courses} />
+                        </Route>
+                        <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
+                            <LectureList lectures={this.state.lectures} idc={match.params.courseId}  />
+                        )} />
+                        <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
+                            <StudentList students={this.state.students} idl={match.params.lectureId} />
+                        )} />
+                    </Switch>
+                    </Col>
+                  </Row>
+                </Container>
+                    </>
+                  }
+                  </>
+                  )}
+            </AuthContext.Consumer>
         );
     }
 }
