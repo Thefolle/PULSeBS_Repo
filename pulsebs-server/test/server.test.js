@@ -29,7 +29,7 @@ describe('post /api/student/booking', () => {
             .send({ lectureId: lectureId })
             .then((res) => {
                 expect(res.status).toBe(201);
-                expect(res.body.response).toBe(1);
+                expect(res.body.response.length).toBe(1);
             });
     });
 
@@ -56,7 +56,7 @@ describe('get /api/student/lectures', () => {
 //GET ALL STUDENT'S BOOKINGS
 describe('get /api/student/bookings', () => {
     it('should return a 201 if succed', async () => {
-        
+
         let lectureId = 2;
         const response = await request(server)
             .delete('/api/teacher/lectures/' + lectureId)
@@ -144,7 +144,7 @@ describe('E2E testing/Integration testing', () => {
 
 // logout and server shutdown
 afterAll(async () => {
-    // Although logout works, being sure to close the server is needed to end the testing session gracefully; 
+    // Although logout works, being sure to close the server is needed to end the testing session gracefully;
     // await request(server)
     //     .post('api/logout')
     //     .set('Cookie', `token=${token}`);

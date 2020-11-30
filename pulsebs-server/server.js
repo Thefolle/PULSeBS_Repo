@@ -168,6 +168,7 @@ app.get('/api/teacher/lectures', (req, res) => {
         });
 });
 
+//TODO: change this route according to REST best practice
 app.get('/api/getStudentsForLecture', (req, res) => {
     const user = req.user && req.user.user;
     pulsebsDAO.getStudentsForLecturev2(user)
