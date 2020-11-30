@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/test/server.test.js">
+    <testCase name="post /api/student/booking POST should return a 1" duration="44"/>
+    <testCase name="get /api/student/lectures should return a 200 if exists" duration="17"/>
+    <testCase name="get /api/student/bookings should return a 201 if succed" duration="37"/>
+    <testCase name="delete /api/teacher/lectures/:id should return a 201 if exists" duration="4"/>
+    <testCase name="E2E testing/Integration testing Turnable lecture" duration="8">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 204
+Received: 404
+    at Object.<anonymous> (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/test/server.test.js:95:33)
+    at process._tickCallback (internal/process/next_tick.js:68:7)]]></failure>
+    </testCase>
+    <testCase name="E2E testing/Integration testing Non-existing lecture" duration="3"/>
+    <testCase name="E2E testing/Integration testing Non-active lecture" duration="12">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 409
+Received: 404
+    at Test.<anonymous> (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/test/server.test.js:124:41)
+    at Test.Object.<anonymous>.Test.assert (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/node_modules/supertest/lib/test.js:183:6)
+    at Server.localAssert (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/node_modules/supertest/lib/test.js:133:12)
+    at Object.onceWrapper (events.js:286:20)
+    at Server.emit (events.js:198:13)
+    at emitCloseNT (net.js:1619:8)
+    at process._tickCallback (internal/process/next_tick.js:63:19)]]></failure>
+    </testCase>
+    <testCase name="E2E testing/Integration testing Lecture is starting within 30 minutes" duration="4">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 409
+Received: 404
+    at Test.<anonymous> (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/test/server.test.js:139:41)
+    at Test.Object.<anonymous>.Test.assert (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/node_modules/supertest/lib/test.js:183:6)
+    at Server.localAssert (/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/node_modules/supertest/lib/test.js:133:12)
+    at Object.onceWrapper (events.js:286:20)
+    at Server.emit (events.js:198:13)
+    at emitCloseNT (net.js:1619:8)
+    at process._tickCallback (internal/process/next_tick.js:63:19)]]></failure>
+    </testCase>
+  </file>
+  <file path="/home/elisa/Scrivania/proj/PULSeBS_Repo/pulsebs-server/test/dao.test.js">
+    <testCase name="Login test suite Try to login with &lt; davide.calarco@gmail.com, password&gt;" duration="56"/>
+    <testCase name="Login test suite Try to login with &lt; hyeronimus.bosch@gmail.com, password&gt;" duration="1"/>
+    <testCase name="Login test suite Try to login with &lt; harry.houdini@gmail.com, password&gt;" duration="4"/>
+    <testCase name="Try information about one user authenticated" duration="2"/>
+    <testCase name="Try information about one user authenticated 2" duration="2"/>
+    <testCase name="Try information about one user authenticated 3" duration="2"/>
+    <testCase name="Try to book a new seat" duration="9"/>
+    <testCase name="Try to get a student&apos;s lectures" duration="1"/>
+    <testCase name="Try to get a teacher&apos;s lectures" duration="1"/>
+    <testCase name="Try to get students booked for lectures of 1 professor" duration="2"/>
+    <testCase name="Try to get all student&apos;s bookings" duration="4"/>
+    <testCase name="Try to get all students booked for tomorrow lectures" duration="3"/>
+    <testCase name="Try to put a lecture in remote" duration="12"/>
+    <testCase name="Try to cancel a booking" duration="12"/>
+    <testCase name="Try to cancel a lecture" duration="15"/>
+    <testCase name="Try to see if student infos are correct" duration="1"/>
+    <testCase name="Try to see if lecture stats are the correct ones" duration="2"/>
+  </file>
+</testExecutions>

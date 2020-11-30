@@ -250,7 +250,8 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 L.date,
                                 L.endTime,
                                 L.presence,
-                                L.bookable
+                                L.bookable,
+                                L.active
                         FROM    lecture L,
                                 course C,
                                 class CL

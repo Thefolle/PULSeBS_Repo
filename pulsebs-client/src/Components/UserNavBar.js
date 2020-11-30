@@ -2,15 +2,11 @@ import React from 'react';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import Image from 'react-bootstrap/Image';
-import Button from 'react-bootstrap/Button';
 import { LinkContainer } from "react-router-bootstrap";
-import {Switch,Route,Link} from 'react-router-dom';
+import {Switch,Route} from 'react-router-dom';
 
 import {AuthContext} from '../auth/AuthContext';
-import { FaBookOpen, FaCalendarAlt, FaHome, FaUserCircle } from "react-icons/fa";
+import { FaBookOpen, FaCalendarAlt, FaUserCircle } from "react-icons/fa";
 
 import '../App.css';
 import '../customStyle.css';

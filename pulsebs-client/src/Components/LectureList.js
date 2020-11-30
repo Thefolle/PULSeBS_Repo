@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Table }    from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
 import Image from 'react-bootstrap/Image';
+import { MdDeleteForever } from "react-icons/md"
 
 const LectureList = ( props ) => {
   let {lectures, idc, cancelLecture } = props;
@@ -46,15 +47,10 @@ const LectureItem = ( props ) => {
                     {moment( lecture.endTime ).add(1.5, "hours").format( "HH:mm" )} | Classroom: {lecture.classC}
                 </Link>
               </td>
-            {moment(lecture.date).isAfter(moment().add(1, 'hours')) &&
+            {moment(lecture.date).isAfter(moment().add(1, 'hours')) && lecture.active===1 ?
                <td><Image
-                   width="30" height="30" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(lecture.lecId)}/>
-               </td>
-            }
-             {moment(lecture.date).isBefore(moment().add(1, 'hours')) &&
-               <td><Image 
-                   width="30" height="30" className="img-button-disabled" type="button disabled" src="/svg/delete.svg" alt =""/>
-               </td>
+                   width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(lecture.lecId)}/>
+               </td>  : <td><MdDeleteForever size={25}/></td>
             }
   
         </tr>

@@ -123,7 +123,7 @@ async function getTeacherLectures() {
     const response=await fetch(baseURL+url);
     const lecturesJson=await response.json();
     if(response.ok){
-        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable));
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable, l.active));
     }else{
         let err = {status: response.status, errObj:lecturesJson};
         throw err;

@@ -6,11 +6,10 @@ import CourseList from './CourseList';
 import LectureList from './LectureList';
 import StudentList from './StudentiList';
 import UserNavBar from './UserNavBar';
-import { Link } from 'react-router-dom';
 import {AuthContext} from '../auth/AuthContext';
 
 
-import { Button, Row, Col, Container, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Button, Row, Col, Container, ListGroup } from "react-bootstrap";
 import { FaBackward } from "react-icons/fa";
 
 import '../App.css';
@@ -126,9 +125,9 @@ class TeacherPage extends React.Component {
                         <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
                             <ListGroup className="sidebar" variant="flush" >
                                 <h5>POLITECNICO DI TORINO</h5>
-                                <ListGroup.Item className="listGroup-Item">name: {context.authUser.name}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item">surname: {context.authUser.surname}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item">id: {context.authUser.id}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
                             </ListGroup>
                         </Col>
                         <Col sm={8}>
