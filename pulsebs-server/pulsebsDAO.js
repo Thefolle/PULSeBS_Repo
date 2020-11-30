@@ -259,16 +259,15 @@ exports.getTeacherLectures = ( teacherId ) => {
 /*
 * Get a list of students who will attend a lecture
 * */
-
-exports.getStudentsForLecture = ( lectureId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = 'SELECT ref_student AS studentId FROM booking B WHERE B.ref_lecture = ?;'
-        db.all( query, [ lectureId ], ( error, rows ) => {
-            if ( error ) reject( error );
-            else if ( !rows ) resolve( [] );
-            else resolve( rows.map( row => row.studentId ) );
-        } );
-    } ) );
+exports.getStudentsForLecture = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `SELECT S.id,S.email,S.name,S.surname FROM booking B, student S WHERE B.ref_student=S.id AND B.ref_lecture = ${lectureId};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 
@@ -442,7 +441,7 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
 * */
 exports.turnLectureIntoOnline = ( teacherId, lectureId ) => {
     return new Promise( ( resolve, reject ) => {
-        let query1 = `  SELECT  active, date 
+        let query1 = `  SELECT  active, date
                         FROM lecture L, course C
                         WHERE L.ref_course = C.id AND L.id = ${lectureId} AND C.ref_teacher = ${teacherId}`;
         let query2 = `UPDATE lecture SET presence = 0 WHERE id = ${lectureId} AND active = 1;`
@@ -466,9 +465,9 @@ exports.turnLectureIntoOnline = ( teacherId, lectureId ) => {
                                 `SELECT L.date AS lectureDate,
                                     Co.desc AS courseDescription,
                                     Cl.desc AS lectureClass,
-                                    S.name AS studentName, 
-                                    S.surname AS studentSurname, 
-                                    S.id AS studentId, 
+                                    S.name AS studentName,
+                                    S.surname AS studentSurname,
+                                    S.id AS studentId,
                                     S.email AS studentEmail
                             FROM    booking B,
                                     student S,

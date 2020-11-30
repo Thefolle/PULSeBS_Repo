@@ -63,6 +63,31 @@ test( 'Try to get students booked for lectures of 1 professor', () => {
     } );
 } );
 
+// GET STUDENTS BOOKED FOR 1 LECTURE
+test('Try to get students booked for lecture 1', () => {
+    return DAO.getStudentsForLecture('1').then(result => {
+        expect(result.length).toBe(1);
+    })
+
+});
+
+test('Try to get students booked for lecture 2', () => {
+    return DAO.getStudentsForLecture('1').then(result => {
+        expect(result[0].id).toBe(269901);
+    })
+
+});
+
+test('Try to get students booked for lecture 3', () => {
+    return expect(DAO.getUserById('0')).rejects.toBeUndefined();
+
+});
+
+test('Try to get students booked for lecture 4', () => {
+    return expect(DAO.getUserById()).rejects.toBeUndefined();
+
+});
+
 //GET ALL STUDENT'S BOOKINGS
 test( 'Try to get all student\'s bookings', () => {
     return DAO.getStudentBookings( '269901' ).then( result => {

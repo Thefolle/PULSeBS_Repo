@@ -384,6 +384,53 @@ app.delete( '/api/student/bookings/:id', ( req, res ) => {
     }
 } );
 
+app.delete('/api/teacher/lectures/:id', (req, res) => {
+    const lectureId = req.params.id;
+    const lectureName = req.body.name;
+    if (!lectureId) {
+        res.status(401).end();
+    } else {
+        // const user = req.user && req.user.user;
+        pulsebsDAO.cancelLecture(lectureId)
+            .then((response) => {
+                pulsebsDAO.getStudentsForLecture(lectureId)
+                    .then((students) => {
+                        if (students.length !== 0) {
+                            students.forEach(s => {
+                                var email = s.email;
+                                var name = s.name;
+                                var surname = s.surname;
+                                var user = s.id;
+                                mailOptions = {
+                                    from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                    //to: l.email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
+                                    to: 'student.team9@yopmail.com',
+                                    subject: 'Cancel Lecture (' + lectureName + ')',
+                                    text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + lectureName + " is cancelled.\n\n"
+                                        + "Have a good day.\n\n - PULSeBS Team9."
+                                };
+                                transporter.sendMail(mailOptions, function (error, info) {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        console.log('Email sent to: ' + user + ", info: " + info.response);
+                                    }
+                                });
+                            });
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                res.status(201).json({ response });
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    errors: [{ 'param': 'Server', 'msg': err }],
+                });
+            });
+    }
+} );
+
 app.delete( '/api/teacher/lectures/:id', ( req, res ) => {
     const lectureId = req.params.id;
     if ( !lectureId ) {
@@ -399,6 +446,7 @@ app.delete( '/api/teacher/lectures/:id', ( req, res ) => {
                   } );
     }
 } );
+
 
 
 // Exported for E2E testing

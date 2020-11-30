@@ -168,10 +168,14 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
 }
 
 
-async function cancelLecture(lectureId){
-    return new Promise((resolve, reject) =>{
+async function cancelLecture(lectureId, courseName) {
+    return new Promise((resolve, reject) => {
         fetch(baseURL + "/teacher/lectures/" + lectureId, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: courseName })
         }).then((response) => {
             if (response.ok) {
                 resolve(null);
