@@ -7,8 +7,12 @@ import User from './User';
 import LoginPage                   from './login';
 import StudentPage                 from './studentPage';
 import TeacherPage   from './Components/TeacherPage';
+import { AuthContext } from './auth/AuthContext';
+import Header from './Components/Header';
+import Footer from './Components/Footer';
 
 import './App.css';
+import API from './API/API.js';
 
 function App() {
     return (
@@ -23,35 +27,66 @@ function App() {
 class PULSeBSApp extends React.Component {
     constructor( props ) {
         super( props );
-        this.state = {user: undefined};
-        this.setFullName = this.setFullName.bind( this );
+        this.state = {};
+
     }
 
-    // called by LoginPage, this method sets the fullname of the user at this level; it may be useful for presentation
-    // purposes
-    setFullName( id, name, surname, type ) {
-        this.setState({user: new User(id, name, surname, type) });
+    componentDidMount() {
+        API.isAuthenticated().then(
+            (user) => {
+                this.setState({authUser: user});
+            }
+        ).catch((err) => {
+            this.setState({authErr: err});
+        });
+
+
     }
+
+    logout = () => {
+    API.logout().then(() => {
+      this.setState({authUser: null,authErr: null});
+      //this.props.history.push("/");
+    });
+  }
+
+   login=(email,password)=> {
+
+      API.login(email,password).then((user) => {
+        //this.setFullName(user.id, user.name, user.surname, user.type);
+        this.setState({authUser: new User(user.id, user.name, user.surname, user.type),authErr:null });
+
+      }).catch((err) => {
+        console.log(err);
+        this.setState({ authErr:err});
+      });
+
+    }
+
 
 
     render() {
         return <>
+        <AuthContext.Provider value={{authUser: this.state.authUser, authErr: this.state.authErr,loginUser: this.login,logoutUser: this.logout}}>
+           <Header/>
             <Router>
                 <Switch>
                         <Route exact path='/Login'>
-                            <LoginPage setFullName={ this.setFullName }/>
+                            <LoginPage />
                         </Route>
-                        <Route path='/StudentHome' >
-                         <StudentPage user={this.state.user} />
+                        <Route path='/student'>
+                         <StudentPage />
                         </Route>
                         <Route path='/teacher'>
-                            <TeacherPage id={ this.state.id } user={this.state.user} name={ this.state.name } surname={ this.state.surname }/>
+                            <TeacherPage />
                         </Route>
                         <Route exact path='/'>
                             <Redirect to='Login'/>
                         </Route>
                 </Switch>
             </Router>
+            <Footer/>
+          </AuthContext.Provider>
         </>;
     }
 }

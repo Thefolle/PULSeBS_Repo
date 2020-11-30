@@ -1,6 +1,8 @@
 
 
 /* TABLES */
+
+-- id number 0 is dedicated to virtual classrooms
 create table class
 (
     id   INTEGER primary key,
@@ -42,6 +44,11 @@ create table course
     desc        TEXT    not null,
     ref_teacher INTEGER not null references teacher
 );
+
+-- if presence is 0, ref_class can be:
+--     0 (virtual classroom): this means that the lecture has always been online;
+--     another lecture id: it means that the lecture has been turnt to be online
+--         and so this id refers to the class that was planned to host the lecture;
 
 create table lecture
 (

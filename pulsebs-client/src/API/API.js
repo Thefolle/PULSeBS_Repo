@@ -48,14 +48,14 @@ async function logout() {
 /****** STUDENT *******/
 
 async function getStudentLectures() {
-    let url = "/student/lectures";    
+    let url = "/student/lectures";
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
     if(response.ok){
-        console.log(lecturesJson);
+        //console.log(lecturesJson);
         return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.course, l.name, l.surname, l.class));
-        } else {
-        let err = {status: response.status, errObj:lecturesJson};
+    } else {
+        let err = { status: response.status, errObj: lecturesJson };
         throw err;  // An object with the error coming from the server
     }
 }
@@ -68,7 +68,7 @@ async function bookSeat(lectureId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({lectureId : lectureId}), 
+        body: JSON.stringify({lectureId : lectureId}),
     }).then((response) => {
         if(response.ok) {
             resolve(response);
@@ -89,19 +89,88 @@ async function getStudentBookings() {
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if(response.ok){
-        console.log(bookingsJson);
+        //console.log(bookingsJson);
         return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence, b.active));
     } else {
-        let err = {status: response.status, errObj:bookingsJson};
+        let err = { status: response.status, errObj: bookingsJson };
         throw err;  // An object with the error coming from the server
     }
 
 }
 
 
-async function cancelBooking(bookingId){
-    return new Promise((resolve, reject) =>{
+async function cancelBooking(bookingId) {
+    return new Promise((resolve, reject) => {
         fetch(baseURL + "/student/bookings/" + bookingId, {
+            method: 'DELETE'
+        }).then((response) => {
+            if (response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                    .then((obj) => { reject(obj); })
+                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); //something else
+            }
+        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    })
+}
+
+
+/****** TEACHER *******/
+async function getTeacherLectures() {
+    let url="/teacher/lectures";
+    const response=await fetch(baseURL+url);
+    const lecturesJson=await response.json();
+    if(response.ok){
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable, l.active));
+    }else{
+        let err = {status: response.status, errObj:lecturesJson};
+        throw err;
+    }
+}
+
+async function getStudents(filter) {
+    let url = "/getStudentsForLecture";
+    const response = await fetch(baseURL + url);
+    const idJson = await response.json();
+    if (response.ok) {
+        return idJson;
+    } else {
+        let err = { status: response.status, errObj: idJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function turnLectureIntoOnline(lectureId, teacherId = 0) {
+    // teacherId is useless, the lectureId is enough
+    let url = '/teachers/' + teacherId + '/lectures/' + lectureId;
+    let response;
+    try {
+        response = await fetch(baseURL + url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ presence: 0 })
+        });
+    } catch (networkError) {
+        throw {message: "Network error occured in " + turnLectureIntoOnline.name + ": " + networkError};
+    }
+    let message;
+    try {
+        message = (await response.json()).message;
+    } catch (parseError) {
+        console.log("Parse error occured in " + turnLectureIntoOnline.name + parseError);
+    }
+    if (response.status === 204) return message;
+    else throw {message: message};
+}
+
+
+async function cancelLecture(lectureId){
+    return new Promise((resolve, reject) =>{
+        fetch(baseURL + "/teacher/lectures/" + lectureId, {
             method: 'DELETE'
         }).then((response) => {
             if (response.ok) {
@@ -117,32 +186,20 @@ async function cancelBooking(bookingId){
 }
 
 
-/****** TEACHER *******/
-async function getTeacherLectures() {
-    let url="/teacher/lectures";
-    const response=await fetch(baseURL+url);
-    const lecturesJson=await response.json();
+async function isAuthenticated(){
+    let url = "/user";
+    const response = await fetch(baseURL + url);
+    const userJson = await response.json();
     if(response.ok){
-        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.presence, l.bookable));
-    }else{
-        let err = {status: response.status, errObj:lecturesJson};
-        throw err;
-    }
-}
-
-async function getStudents(filter){
-    let url="/getStudentsForLecture";
-    const response=await fetch(baseURL+url);
-    const idJson=await response.json();
-    if(response.ok){
-        return idJson;
+        return userJson;
     } else {
-        let err = {status: response.status, errObj:idJson};
+        let err = {status: response.status, errObj:userJson};
         throw err;  // An object with the error coming from the server
     }
 }
 
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture };
 export default API;

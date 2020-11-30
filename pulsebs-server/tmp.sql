@@ -1,4 +1,3 @@
-insert into teacher (id, email, password, name, surname) VALUES (239901,'hyeronimus.bosch@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Hyeronimus', 'Bosch');
-insert into teacher (id, email, password, name, surname) VALUES (239902,'dalmau.sala@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Dalmau', 'Sala');
-insert into teacher (id, email, password, name, surname) VALUES (239903,'kaitlin.whittier@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Kaitlin', 'Whittier');
-insert into teacher (id, email, password, name, surname) VALUES (239904,'montserrat.wilder@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Montserrat', 'Wilder');
+UPDATE lecture
+SET presence = 1
+WHERE id = 5;

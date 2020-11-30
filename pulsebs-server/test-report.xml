@@ -1,77 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\dao.test.js">
-    <testCase name="Login test suite Try to login with &lt; davide.calarco@gmail.com, password&gt;" duration="5">
-      <failure message="Error: SQLITE_ERROR: table class already exists"><![CDATA[Error: SQLITE_ERROR: table class already exists]]></failure>
-    </testCase>
-    <testCase name="Login test suite Try to login with &lt; hyeronimus.bosch@gmail.com, password&gt;" duration="1">
-      <failure message="Error: SQLITE_ERROR: table staff already exists"><![CDATA[Error: SQLITE_ERROR: table staff already exists]]></failure>
-    </testCase>
-    <testCase name="Login test suite Try to login with &lt; harry.houdini@gmail.com, password&gt;" duration="1">
-      <failure message="Error: SQLITE_ERROR: table student already exists"><![CDATA[Error: SQLITE_ERROR: table student already exists]]></failure>
-    </testCase>
-    <testCase name="Try to book a new seat" duration="1">
-      <failure message="Error: SQLITE_ERROR: table teacher already exists"><![CDATA[Error: SQLITE_ERROR: table teacher already exists]]></failure>
-    </testCase>
-    <testCase name="Try to get a student&apos;s lectures" duration="1">
-      <failure message="Error: SQLITE_ERROR: table course already exists"><![CDATA[Error: SQLITE_ERROR: table course already exists]]></failure>
-    </testCase>
-    <testCase name="Try to get a teacher&apos;s lectures" duration="1">
-      <failure message="Error: SQLITE_ERROR: table lecture already exists"><![CDATA[Error: SQLITE_ERROR: table lecture already exists]]></failure>
-    </testCase>
-    <testCase name="Try to get students booked for lectures of 1 professor" duration="0">
-      <failure message="Error: SQLITE_ERROR: table booking already exists"><![CDATA[Error: SQLITE_ERROR: table booking already exists]]></failure>
-    </testCase>
-    <testCase name="Try to get all student&apos;s bookings" duration="1">
-      <failure message="Error: SQLITE_ERROR: table subscription already exists"><![CDATA[Error: SQLITE_ERROR: table subscription already exists]]></failure>
-    </testCase>
-    <testCase name="Try to get all students booked for tomorrow lectures" duration="4">
-      <failure message="Error: SQLITE_MISUSE: not an error"><![CDATA[Error: SQLITE_MISUSE: not an error]]></failure>
-    </testCase>
-    <testCase name="Try to put a lecture in remote" duration="1">
-      <failure message="Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: class.desc"><![CDATA[Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: class.desc]]></failure>
-    </testCase>
-    <testCase name="Try to cancel a booking" duration="1">
-      <failure message="Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: class.desc"><![CDATA[Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: class.desc]]></failure>
-    </testCase>
-    <testCase name="Try to cancel a lecture" duration="0">
-      <failure message="Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: class.desc"><![CDATA[Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: class.desc]]></failure>
-    </testCase>
-  </file>
-  <file path="C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js">
-    <testCase name="post /api/student/booking POST should return a 1" duration="11">
+  <file path="C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js">
+    <testCase name="Login test suite Try to login with &lt; davide.calarco@gmail.com, password&gt;" duration="53"/>
+    <testCase name="Login test suite Try to login with &lt; hyeronimus.bosch@gmail.com, password&gt;" duration="1"/>
+    <testCase name="Login test suite Try to login with &lt; harry.houdini@gmail.com, password&gt;" duration="2"/>
+    <testCase name="Try to book a new seat" duration="7">
       <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
 
 Expected: 1
 Received: 0
-    at C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js:55:45
-    at processTicksAndRejections (internal/process/task_queues.js:93:5)
-    at Object.<anonymous> (C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js:48:9)]]></failure>
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:28:24]]></failure>
     </testCase>
-    <testCase name="get /api/student/lectures should return a 200 if exists" duration="6">
+    <testCase name="Try to get a student&apos;s lectures" duration="3">
       <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
 
 Expected: 4
-Received: 12
-    at Object.<anonymous> (C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js:73:40)
+Received: 5
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:35:31]]></failure>
+    </testCase>
+    <testCase name="Try to get a teacher&apos;s lectures" duration="1">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 4
+Received: 5
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:42:31]]></failure>
+    </testCase>
+    <testCase name="Try to get students booked for lectures of 1 professor" duration="2">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 2
+Received: 3
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:49:31]]></failure>
+    </testCase>
+    <testCase name="Try to get all student&apos;s bookings" duration="2">
+      <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
+
+Expected: 3
+Received: 1
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:64:31]]></failure>
+    </testCase>
+    <testCase name="Try to get all students booked for tomorrow lectures" duration="2">
+      <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
+
+Expected: 1
+Received: 0
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:71:31]]></failure>
+    </testCase>
+    <testCase name="Try to put a lecture in remote" duration="1">
+      <failure message="TypeError: DAO.setPresenceLecture is not a function"><![CDATA[TypeError: DAO.setPresenceLecture is not a function
+    at Object.<anonymous> (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:77:16)
+    at Object.asyncJestTest (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\node_modules\jest-jasmine2\build\jasmineAsyncInstall.js:106:37)
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\node_modules\jest-jasmine2\build\queueRunner.js:45:12
+    at new Promise (<anonymous>)
+    at mapper (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\node_modules\jest-jasmine2\build\queueRunner.js:28:19)
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\node_modules\jest-jasmine2\build\queueRunner.js:75:41]]></failure>
+    </testCase>
+    <testCase name="Try to cancel a booking" duration="2">
+      <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
+
+Expected: 1
+Received: 0
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\dao.test.js:85:24]]></failure>
+    </testCase>
+    <testCase name="Try to cancel a lecture" duration="1"/>
+    <testCase name="Turn a lecture to be online instead of in presence Unit testing Turnable lecture" duration="14"/>
+    <testCase name="Turn a lecture to be online instead of in presence Unit testing Non-existing lecture" duration="5"/>
+    <testCase name="Turn a lecture to be online instead of in presence Unit testing Non-active lecture" duration="1"/>
+    <testCase name="Turn a lecture to be online instead of in presence Unit testing Lecture is starting within 30 minutes" duration="4"/>
+  </file>
+  <file path="C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\server.test.js">
+    <testCase name="post /api/student/booking POST should return a 1" duration="16">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: 0
+    at C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\server.test.js:32:43
+    at processTicksAndRejections (internal/process/task_queues.js:93:5)
+    at Object.<anonymous> (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\server.test.js:25:9)]]></failure>
+    </testCase>
+    <testCase name="get /api/student/lectures should return a 200 if exists" duration="8">
+      <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
+
+Expected: 4
+Received: 5
+    at Object.<anonymous> (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\server.test.js:50:38)
     at processTicksAndRejections (internal/process/task_queues.js:93:5)]]></failure>
     </testCase>
     <testCase name="get /api/student/bookings should return a 200 if exists" duration="6">
       <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
 
 Expected: 3
-Received: 6
-    at Object.<anonymous> (C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js:89:40)
+Received: 1
+    at Object.<anonymous> (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\server.test.js:66:38)
     at processTicksAndRejections (internal/process/task_queues.js:93:5)]]></failure>
     </testCase>
-    <testCase name="/api/student/bookings/:id should return a 200 if exists" duration="5">
+    <testCase name="E2E testing/Integration testing Turnable lecture" duration="18"/>
+    <testCase name="E2E testing/Integration testing Non-existing lecture" duration="18"/>
+    <testCase name="E2E testing/Integration testing Non-active lecture" duration="6"/>
+    <testCase name="E2E testing/Integration testing Lecture is starting within 30 minutes" duration="9">
       <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
 
-Expected: 201
-Received: 404
-    at C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js:103:38
-    at processTicksAndRejections (internal/process/task_queues.js:93:5)
-    at Object.<anonymous> (C:\Users\拾夕\SE2\Pub_V2\PULSeBS_Repo\pulsebs-server\test\server.test.js:98:11)]]></failure>
+Expected: 409
+Received: 204
+    at Test.<anonymous> (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\test\server.test.js:123:41)
+    at Test.Object.<anonymous>.Test.assert (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\node_modules\supertest\lib\test.js:183:6)
+    at Server.localAssert (C:\Users\Acer\Desktop\Studio\Magistrale\Secondo anno\Software Engineering II\PULSeBS\PULSeBS_Repo\pulsebs-server\node_modules\supertest\lib\test.js:133:12)
+    at Object.onceWrapper (events.js:421:28)
+    at Server.emit (events.js:315:20)
+    at emitCloseNT (net.js:1659:8)
+    at processTicksAndRejections (internal/process/task_queues.js:79:21)]]></failure>
     </testCase>
   </file>
 </testExecutions>
