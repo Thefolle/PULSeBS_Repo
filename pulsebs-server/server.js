@@ -219,7 +219,7 @@ app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
         res.status(422).json({ message: "The field presence has to be 0 and, moreover, it is compulsory." });
     } else {
 
-        pulsebsDAO.turnLectureIntoOnline(lectureId).then((information) => {
+        pulsebsDAO.turnLectureIntoOnline(teacherId, lectureId).then((information) => {
             // if success
             res.status(200).json({
                 message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." +
@@ -277,7 +277,6 @@ app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
 });
 
 /****** STUDENT ******/
-
 
 //GET /student/lectures
 app.get('/api/student/lectures', (req, res) => {

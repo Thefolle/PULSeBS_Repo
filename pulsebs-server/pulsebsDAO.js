@@ -6,60 +6,28 @@ const User = require( './User' );
 
 let db;
 
-function loadData() {
-    //Running setup.sql and data.sql
-    const setup = fs.readFileSync( "setup.sql" ).toString();
-    const data = fs.readFileSync( "data.sql" ).toString();
-    const createStmts = setup.toString().split( ";" );
-    const insertStmts = data.toString().split( ";" );
-    db.serialize( () => {
-        db.run( "PRAGMA foreign_keys=OFF;" );
-        db.run( "BEGIN TRANSACTION;" );
-        createStmts.forEach( query => {
-            if ( query ) {
-                query += ";";
-                db.run( query, err => {
-                    if ( err ) throw err;
-                } );
-            }
-        } );
-        insertStmts.forEach( query => {
-            if ( query ) {
-                query += ";";
-                db.run( query, err => {
-                    if ( err ) throw err;
-                } );
-            }
-        } );
-        db.run( "COMMIT;" );
+function openDB (dbName) {
+    return new sqlite3.Database( dbName, ( err ) => {
+        if ( err ) return console.error( err.message );
     } );
 }
 
 /*
 * Database Connection
 */
-// if (!db) {
-//     if (process.env.TEST && process.env.TEST === '1') {
-//         //TEST DB
-//         const dbname = 'pulsebs-test.db'
-//         //Check for file existance
-//         if (fs.existsSync(dbname)) {
-//             fs.unlinkSync(dbname); //If true, delete file
-//         }
-//         //Create new db
-//         db = new sqlite3.Database('pulsebs-test.db', (err) => {
-//             if (err) return console.error(err.message);
-//             else console.log('Connected to the in-memory TEST SQlite database.');
-//         });
-//         loadData();
-//     } else {
-db = new sqlite3.Database( 'pulsebs.db', ( err ) => {
-    if ( err ) return console.error( err.message );
-    else console.log( 'Connected to the in-memory SQlite database.' );
-} );
-//     }
-// }
-
+if ( !db ) {
+    if ( process.env.TEST && process.env.TEST === '1' ) {
+        //TEST DB
+        const dbName = 'pulsebs-test.db'
+        //Check for file existance
+        if ( fs.existsSync( dbName ) ) fs.unlinkSync( dbName ); //If true, delete file
+        //Create new db
+        fs.copyFile('pulsebs-backup.db', 'pulsebs-test.db', (err) => {
+            if (err) throw err;
+        });
+        db = openDB(dbName);
+    } else db = openDB('pulsebs.db');
+}
 
 /*
 * DAO Methods
@@ -107,17 +75,6 @@ exports.getUserByEmail = function ( email ) {
 *       function db.parallelize has no increased performance if a single thread executes it;
 *   The current implementation extracts all ids and emails from the table and performs the selection in JS.
 */
-
-exports.mapUsersToTheirEmails = function ( studentIds ) {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = 'SELECT id, email FROM student;'
-        db.all( query, [ lectureId ], ( error, rows ) => {
-            if ( error ) reject( error );
-            else if ( !rows ) resolve( [] );
-            else resolve( rows.filter( row => studentIds.includes( row.id ) ).map( row => row.email ) );
-        } );
-    } ) );
-}
 
 exports.getLectureInformation = function ( lectureId ) {
     return new Promise( ( ( resolve, reject ) => {
@@ -292,7 +249,6 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 L.ref_class = CL.id AND
                                 C.ref_teacher = ${ teacherId };`
         db.all( query, [], ( err, rows ) => {
-            console.log( rows );
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
@@ -484,13 +440,15 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
 *   is not active or if the lecture's start time is planned within the next
 *   30 minutes starting from the current time
 * */
-exports.turnLectureIntoOnline = ( lectureId ) => {
+exports.turnLectureIntoOnline = ( teacherId, lectureId ) => {
     return new Promise( ( resolve, reject ) => {
-        let query1 = `SELECT active, date FROM lecture WHERE id = ?`;
-        let query2 = `UPDATE lecture SET presence = 0 WHERE id = ? AND active = 1;`
+        let query1 = `  SELECT  active, date 
+                        FROM lecture L, course C
+                        WHERE L.ref_course = C.id AND L.id = ${lectureId} AND C.ref_teacher = ${teacherId}`;
+        let query2 = `UPDATE lecture SET presence = 0 WHERE id = ${lectureId} AND active = 1;`
         let now = moment().valueOf(); // in milliseconds
 
-        db.get( query1, [ lectureId ], function ( error, couple ) {
+        db.get( query1, [], function ( error, couple ) {
             if ( couple === undefined ) {
                 reject( -1 );
             } else if ( couple.active === 0 ) {
@@ -498,14 +456,10 @@ exports.turnLectureIntoOnline = ( lectureId ) => {
             } else if ( now > couple.date - 1800000 && now < couple.date ) {
                 reject( -3 );
             } else if ( error ) {
-                console.log( "Error in turnLectureIntoOnline" );
-                console.log( error );
                 reject( -4 );
             } else {
-                db.run( query2, [ lectureId ], function ( error ) {
+                db.run( query2, [], function ( error ) {
                     if ( error ) {
-                        console.log( "Error in turnLectureIntoOnline" );
-                        console.log( error );
                         reject( -4 );
                     } else {
                         let getInformationToSendEmailsQuery =
@@ -521,12 +475,12 @@ exports.turnLectureIntoOnline = ( lectureId ) => {
                                     lecture L,
                                     course Co,
                                     class Cl
-                            WHERE   L.id = ? AND
+                            WHERE   L.id = ${lectureId} AND
                                     B.ref_student = S.id AND
                                     B.ref_lecture = L.id AND
                                     L.ref_course = Co.id AND
                                     L.ref_class = Cl.id`;
-                        db.all( getInformationToSendEmailsQuery, [ lectureId ], function ( error, rows ) {
+                        db.all( getInformationToSendEmailsQuery, [], function ( error, rows ) {
                             if ( error ) reject( -4 );
                             else resolve( rows );
                         } );

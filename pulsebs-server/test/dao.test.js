@@ -1,7 +1,5 @@
 const DAO = require( "../pulsebsDAO.js" );
 
-// //REMEMBER TO CLEAR DATABASE BEFORE TESTING IN ORDER TO AVOID POSSIBLE ERRORS DUE TO CONFLICTS
-
 describe( "Login test suite", () => {
     test( 'Try to login with < davide.calarco@gmail.com, password>', () => {
         return DAO.getUserByEmail( 'davide.calarco@gmail.com' ).then( result => {
@@ -82,7 +80,7 @@ test( 'Try to get all students booked for tomorrow lectures', () => {
 describe( 'Turn a lecture to be online instead of in presence', () => {
     describe( 'Unit testing', () => {
         test( 'Turnable lecture', () => {
-            return DAO.turnLectureIntoOnline( 1 ).then( information => {
+            return DAO.turnLectureIntoOnline( 269901,1 ).then( information => {
                 expect( information ).toEqual(
                     [
                         {
@@ -113,7 +111,7 @@ describe( 'Turn a lecture to be online instead of in presence', () => {
         } );
 
         test( 'Non-active lecture', () => {
-            return DAO.turnLectureIntoOnline( 2 ).then( exitCode => {
+            return DAO.turnLectureIntoOnline( 239901,2 ).then( exitCode => {
                 console.log( "Test failure message: " );
                 console.log( exitCode );
             } ).catch( exitCode => {
@@ -123,7 +121,7 @@ describe( 'Turn a lecture to be online instead of in presence', () => {
         } );
 
         test( 'Lecture is starting within 30 minutes', () => {
-            return DAO.turnLectureIntoOnline( 3 ).then( exitCode => {
+            return DAO.turnLectureIntoOnline( 239901,3 ).then( exitCode => {
                 console.log( "Test failure message: " );
                 console.log( exitCode );
             } ).catch( exitCode => {

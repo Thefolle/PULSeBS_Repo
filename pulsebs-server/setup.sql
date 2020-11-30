@@ -1,5 +1,3 @@
-
-
 /* TABLES */
 
 -- id number 0 is dedicated to virtual classrooms
