@@ -1,6 +1,6 @@
 class LectureTeacher{   
 
-    constructor(course,classC,id,lecId,date, endTime, presence, bookable){
+    constructor(course,classC,id,lecId,date, endTime, presence, bookable, active){
         this.course = course;
         this.classC = classC;
         this.id=id;
@@ -9,7 +9,7 @@ class LectureTeacher{
         this.endTime=endTime;
         this.presence = presence;
         this.bookable = bookable;
-        
+        this.active = active;
         
     }
 }
