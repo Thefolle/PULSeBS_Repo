@@ -22,15 +22,14 @@ describe('post /api/student/booking', () => {
     it('POST should return a 1', async () => {
         const lectureId = 2;
 
-        await request(server)
+        const res = await request(server)
             .post('/api/student/booking')
             .set('Cookie', `token=${token}`)
             .set('Content-Type', 'application/json')
-            .send({ lectureId: lectureId })
-            .then((res) => {
-                expect(res.status).toBe(201);
-                expect(res.body.response.length).toBe(1);
-            });
+            .send({ lectureId: lectureId });
+        expect(res.status).toBe(201);
+        expect(res.body.response).toBe(1);
+
     });
 
 });
@@ -85,7 +84,7 @@ describe('delete /api/teacher/lectures/:id', () => {
 
 describe('E2E testing/Integration testing', () => {
     test('Turnable lecture', async function () {
-        let teacherId = 1; // not really needed
+        let teacherId = 239901; // not really needed
         let lectureId = 1;
         let response = await request(server)
             .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
@@ -112,7 +111,7 @@ describe('E2E testing/Integration testing', () => {
     });
 
     test('Non-active lecture', function (done) {
-        let teacherId = 2;
+        let teacherId = 239901;
         let lectureId = 2;
         request(server)
             .put('/api/teachers/' + teacherId + '/lectures/' + lectureId)
@@ -126,6 +125,7 @@ describe('E2E testing/Integration testing', () => {
             });
     });
 
+    //Maybe this test couldn't be done
     test('Lecture is starting within 30 minutes', async function (done) {
         let teacherId = 2;
         let lectureId = 4;
