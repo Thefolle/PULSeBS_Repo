@@ -1,7 +1,7 @@
 import React       from 'react';
 import moment      from 'moment';
 import Image       from 'react-bootstrap/Image';
-import { ImCross } from "react-icons/im";
+import { BiCalendarX } from "react-icons/bi";
 
 const LectureItem = ( props ) => {
 
@@ -27,7 +27,7 @@ const LectureItem = ( props ) => {
             <td>{ lecture.teacherName + " " + lecture.teacherSurname }</td>
             { lecture.bookable === 1 && alreadyBooked(lecture.id) === 0 && lecture.date > moment().valueOf() ?
             <td><Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt=""
-                       onClick={ () => bookSeat( lecture.id ) }/></td> : <td><ImCross/></td>
+                       onClick={ () => bookSeat( lecture.id ) }/></td> : <td><BiCalendarX size={25}/></td>
                 /*do something if it fails*/
             }
         </tr>

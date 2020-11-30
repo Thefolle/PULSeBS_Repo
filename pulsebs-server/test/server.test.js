@@ -55,16 +55,32 @@ describe('get /api/student/lectures', () => {
 
 //GET ALL STUDENT'S BOOKINGS
 describe('get /api/student/bookings', () => {
-    it('should return a 200 if exists', async () => {
+    it('should return a 201 if succed', async () => {
+        
+        let lectureId = 2;
+        const response = await request(server)
+            .delete('/api/teacher/lectures/' + lectureId)
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`)
+        expect(response.status).toBe(201);
+    });
+});
+
+
+//DELETE TEACHER'S LECTURE
+describe('delete /api/teacher/lectures/:id', () => {
+    it('should return a 201 if exists', async () => {
 
         const response = await request(server)
-            .get('/api/student/bookings')
+            .get('/api/student/lectures')
             .set('Cookie', `token=${token}`)
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${token}`)
         expect(response.status).toBe(200);
-        expect(response.body.length).toEqual(3);
+        expect(response.body.length).toEqual(4);
     });
+
 });
 
 describe('E2E testing/Integration testing', () => {

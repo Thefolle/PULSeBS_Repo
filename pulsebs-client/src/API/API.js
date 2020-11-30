@@ -123,7 +123,7 @@ async function getTeacherLectures() {
     const response=await fetch(baseURL+url);
     const lecturesJson=await response.json();
     if(response.ok){
-        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable));
+        return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable, l.active));
     }else{
         let err = {status: response.status, errObj:lecturesJson};
         throw err;
@@ -167,6 +167,25 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
     else throw {message: message};
 }
 
+
+async function cancelLecture(lectureId){
+    return new Promise((resolve, reject) =>{
+        fetch(baseURL + "/teacher/lectures/" + lectureId, {
+            method: 'DELETE'
+        }).then((response) => {
+            if (response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);})
+                .catch( (err) => { reject({errors: [{ param: "Application", msg: "Cannot parse server response" }]})}); //something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    })
+}
+
+
 async function isAuthenticated(){
     let url = "/user";
     const response = await fetch(baseURL + url);
@@ -181,5 +200,6 @@ async function isAuthenticated(){
 
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture };
 export default API;

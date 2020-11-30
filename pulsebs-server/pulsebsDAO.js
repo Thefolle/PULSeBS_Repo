@@ -283,7 +283,8 @@ exports.getTeacherLectures = (teacherId) => {
                                 L.date,
                                 L.endTime,
                                 L.presence,
-                                L.bookable
+                                L.bookable,
+                                L.active
                         FROM    lecture L,
                                 course C,
                                 class CL
@@ -291,6 +292,7 @@ exports.getTeacherLectures = (teacherId) => {
                                 L.ref_class = CL.id AND
                                 C.ref_teacher = ${teacherId};`
         db.all(query, [], (err, rows) => {
+            console.log(rows);
             if (err) reject(err);
             if (rows) resolve(rows);
             else resolve(0);
