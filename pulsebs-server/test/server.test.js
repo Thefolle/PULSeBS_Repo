@@ -79,7 +79,7 @@ describe( 'get /api/student/lectures', () => {
 //GET ALL STUDENT'S BOOKINGS
 describe( 'get /api/student/bookings', () => {
     it( 'should return a 200 if exists', async () => {
-
+        
         const response = await request( app )
             .get( '/api/student/bookings' )
             .set( 'Cookie', `token=${ token }` )
@@ -87,6 +87,22 @@ describe( 'get /api/student/bookings', () => {
             .set( 'Authorization', `Bearer ${ token }` )
         expect( response.status ).toBe( 200 );
         expect( response.body.length ).toEqual( 3 );
+    } );
+} );
+
+
+//  DELETE cancle the lecture that already booked
+describe( '/api/student/bookings/:id', () => {
+    it( 'should return a 200 if exists', async () => {
+
+          await request( app )
+            .delete( '/api/student/booking/1' )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 201 );
+                expect( res.body.response ).toBe( 1 );
+            } );
     } );
 } );
 
