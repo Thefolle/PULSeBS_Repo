@@ -18,12 +18,12 @@ beforeAll((done) => {
 
 //POST BOOK A SEAT
 
-describe('post /api/student/booking', () => {
+describe('post /api/students/:studentId/booking', () => {
     it('POST should return a 1', async () => {
         const lectureId = 2;
 
         const res = await request(server)
-            .post('/api/student/booking')
+            .post('/api/students/269901/booking')
             .set('Cookie', `token=${token}`)
             .set('Content-Type', 'application/json')
             .send({ lectureId: lectureId });
@@ -67,11 +67,11 @@ describe('get /api/student/bookings', () => {
 });
 
 //  DELETE cancle the lecture that already booked
-describe( '/api/student/bookings/:id', () => {
+describe( '/api/students/:studentId/bookings/:bookingId', () => {
     it( 'should return a 200 if exists', async () => {
 
           await request( app )
-            .delete( '/api/student/booking/1' )
+            .delete( '/api/students/269901/bookings/1' )
             .set( 'Cookie', `token=${ token }` )
             .set( 'Content-Type', 'application/json' )
             .then( ( res ) => {
@@ -83,11 +83,11 @@ describe( '/api/student/bookings/:id', () => {
 
 
 //DELETE TEACHER'S LECTURE
-describe('delete /api/teacher/lectures/:id', () => {
+describe('delete /api/teachers/:teacherId/lectures/:lectureId', () => {
     it('should return a 201 if exists', async () => {
 
         const response = await request(server)
-            .get('/api/student/lectures')
+            .delete('/api/teachers/239901/lectures/1')
             .set('Cookie', `token=${token}`)
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${token}`)
