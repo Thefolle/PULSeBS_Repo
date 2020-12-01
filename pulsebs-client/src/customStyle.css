@@ -95,7 +95,10 @@ h1 {
     bottom: 0rem;
     width: 100%;
     margin-bottom: 0rem;
-    position: relative;
+    position:absolute;
+left:0;
+bottom:0;
+right:0;
 }
 
 #footer-text-right {
