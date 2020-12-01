@@ -4,6 +4,8 @@ pulsebs-client/node_modules/
 pulsebs-server/node_modules/
 pulsebs-server/pulsebs.db
 pulsebs-server/pulsebs-test.db
+pulsebs-server/*.xml
+pulsebs-server/coverage/
 
 # dependencies
 /node_modules

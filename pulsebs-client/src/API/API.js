@@ -167,11 +167,15 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
     else throw {message: message};
 }
 
-// FIXME:
-async function cancelLecture(teacherId, lectureId){
-    return new Promise((resolve, reject) =>{
+
+async function cancelLecture(teacherId, lectureId, courseName) {
+    return new Promise((resolve, reject) => {
         fetch(baseURL + "/teachers/" + teacherId + "lectures/" + lectureId, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: courseName })
         }).then((response) => {
             if (response.ok) {
                 resolve(null);

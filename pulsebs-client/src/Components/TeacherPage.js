@@ -98,19 +98,21 @@ class TeacherPage extends React.Component {
               this.handleErrors(errorObj);
           });
     }
-// FIXME:
-    cancelLecture = (teacherId, lectureId) => {
-        API.cancelLecture(teacherId, lectureId)
-        .then(() => {
-            //get the updated list of tasks from the server
-            API.getTeacherLectures().then((lectures) => this.setState({ lectures : lectures }));
-          })
-          .catch((errorObj) => {
-            this.handleErrors(errorObj);
-          });
-      }
-      
-    
+
+    cancelLecture = (teacherId, lectureId, courseName) => {
+        API.cancelLecture(teacherId, lectureId, courseName)
+            .then(() => {
+                //get the updated list of tasks from the server
+                API.getTeacherLectures().then((lectures) => this.setState({ lectures: lectures }))
+                    .catch((err) => {
+                        this.handleErrors(err);
+                    });
+            })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
+    }
+
 
     render() {
 
