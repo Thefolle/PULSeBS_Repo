@@ -390,7 +390,7 @@ app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
 // FIXME:
 app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
     const lectureId = req.params.lectureId;
-    const teacherId = req.params.teacherId
+    const teacherId = req.params.teacherId;
     if (!lectureId) {
         res.status(401).end();
     } else {

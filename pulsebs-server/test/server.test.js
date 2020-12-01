@@ -17,7 +17,7 @@ beforeAll((done) => {
 
 
 //POST BOOK A SEAT
-
+// FIXME:
 describe('post /api/students/:studentId/booking', () => {
     it('POST should return a 1', async () => {
         const lectureId = 2;
@@ -67,6 +67,7 @@ describe('get /api/student/bookings', () => {
 });
 
 //  DELETE cancle the lecture that already booked
+// FIXME:
 describe( '/api/students/:studentId/bookings/:bookingId', () => {
     it( 'should return a 200 if exists', async () => {
 
@@ -83,6 +84,7 @@ describe( '/api/students/:studentId/bookings/:bookingId', () => {
 
 
 //DELETE TEACHER'S LECTURE
+// FIXME:
 describe('delete /api/teachers/:teacherId/lectures/:lectureId', () => {
     it('should return a 201 if exists', async () => {
 
