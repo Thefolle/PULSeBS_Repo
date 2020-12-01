@@ -82,9 +82,9 @@ class StudentPage extends React.Component {
             });
     }
 
-
-    bookSeat = (lectureId) => {
-        API.bookSeat(lectureId).then((result) => {
+// FIXME:
+    bookSeat = (studentId, lectureId) => {
+        API.bookSeat(studentId, lectureId).then((result) => {
             if (result.ok) {
                 this.setState({ failed: 0 });
                 this.props.history.push("/student/bookings");
@@ -101,8 +101,9 @@ class StudentPage extends React.Component {
 
 
     //add Delete method in mybookings
-    cancelBooking = (bookingID) => {
-        API.cancelBooking(bookingID)
+    // FIXME:   already successfully refactor the URI 
+    cancelBooking = (studentId, bookingId) => {
+        API.cancelBooking(studentId, bookingId)
             .then(() => {
                 //get the updated list of tasks from the server
                 API.getStudentBookings().then((bookings) => this.setState({ bookings: bookings }));

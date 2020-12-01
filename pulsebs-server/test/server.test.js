@@ -67,6 +67,21 @@ describe('get /api/student/bookings', () => {
     });
 });
 
+//  DELETE cancle the lecture that already booked
+describe( '/api/student/bookings/:id', () => {
+    it( 'should return a 200 if exists', async () => {
+
+          await request( app )
+            .delete( '/api/student/booking/1' )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 201 );
+                expect( res.body.response ).toBe( 1 );
+            } );
+    } );
+} );
+
 
 //DELETE TEACHER'S LECTURE
 describe('delete /api/teacher/lectures/:id', () => {

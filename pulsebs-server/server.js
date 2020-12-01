@@ -278,7 +278,8 @@ app.put('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
 /****** STUDENT ******/
 
 
-//GET /student/lectures
+// GET /student/lectures
+
 app.get('/api/student/lectures', (req, res) => {
     const user = req.user && req.user.user;
     // const user = 269901;
@@ -295,8 +296,10 @@ app.get('/api/student/lectures', (req, res) => {
 
 
 //POST /student/booking
-app.post('/api/student/booking', (req, res) => {
+// FIXME: refactor
+app.post('/api/students/:studentId/booking', (req, res) => {
     const lectureId = req.body.lectureId;
+    const studentId = req.params.studentId;
     if (!lectureId) {
         res.status(401).end();
     } else {
@@ -363,8 +366,10 @@ app.get('/api/student/bookings', (req, res) => {
 })
 
 // DELETE /student/bookings
-app.delete('/api/student/bookings/:id', (req, res) => {
-    const bookingId = req.params.id;
+//FIXME: refactor
+app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+    const studentId = req.params.studentId;
+    const bookingId = req.params.bookingId;
     if (!bookingId) {
         res.status(401).end();
     } else {
@@ -378,9 +383,10 @@ app.delete('/api/student/bookings/:id', (req, res) => {
             });
     }
 });
-
-app.delete('/api/teacher/lectures/:id', (req, res) => {
-    const lectureId = req.params.id;
+// FIXME:
+app.delete('/api/teachers/:teacherId/lectures/:studentId', (req, res) => {
+    const lectureId = req.params.studentId;
+    const teacherId = req.params.teacherId
     if (!lectureId) {
         res.status(401).end();
     } else{

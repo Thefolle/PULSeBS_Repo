@@ -60,10 +60,10 @@ async function getStudentLectures() {
     }
 }
 
-
-async function bookSeat(lectureId) {
+// FIXME:
+async function bookSeat(studentId, lectureId) {
     return new Promise((resolve, reject) => {
-    fetch(baseURL + "/student/booking", {
+    fetch(baseURL + "/students/" + studentId + "/booking", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -98,10 +98,10 @@ async function getStudentBookings() {
 
 }
 
-
-async function cancelBooking(bookingId) {
+// FIXME: already successfully refactor the URI 
+async function cancelBooking(studentId, bookingId) {
     return new Promise((resolve, reject) => {
-        fetch(baseURL + "/student/bookings/" + bookingId, {
+        fetch(baseURL + '/students/' + studentId + '/bookings/' + bookingId, {
             method: 'DELETE'
         }).then((response) => {
             if (response.ok) {
@@ -167,10 +167,10 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
     else throw {message: message};
 }
 
-
-async function cancelLecture(lectureId){
+// FIXME:
+async function cancelLecture(teacherId, lectureId){
     return new Promise((resolve, reject) =>{
-        fetch(baseURL + "/teacher/lectures/" + lectureId, {
+        fetch(baseURL + "/teachers/" + teacherId + "lectures/" + lectureId, {
             method: 'DELETE'
         }).then((response) => {
             if (response.ok) {

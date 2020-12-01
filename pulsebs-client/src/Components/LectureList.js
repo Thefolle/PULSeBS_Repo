@@ -54,24 +54,27 @@ const LectureItem = (props) => {
 
 
   return (
-
-    <tr>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.date).format("DD MMM YYYY")}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.date).format("HH:mm")}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{lecture.presence === 1 ? 'yes' : 'no'}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{lecture.classC}</Link></td>
-      <td>
-        {lecture.presence === 1 ?
-        <Image width="50" height="50" className="img-button" type="button" src="/svg/fromPresenceToOnline2.png" alt=""
-          onClick={() => turnLectureIntoOnline(index)}/>
-        : undefined}
-      </td>
-      {moment(lecture.date).isAfter(moment().add(1, 'hours')) && lecture.active===1 ?
-               <td><Image
-                   width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(lecture.lecId)}/>
-               </td>  : <td><MdDeleteForever size={25}/></td>
-            }
-    </tr>
+    <AuthContext.Consumer>
+      {(context)=>(
+            <tr>
+              <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.date).format("DD MMM YYYY")}</Link></td>
+              <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.date).format("HH:mm")}</Link></td>
+              <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{lecture.presence === 1 ? 'yes' : 'no'}</Link></td>
+              <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{lecture.classC}</Link></td>
+              <td>
+                {lecture.presence === 1 ?
+                <Image width="50" height="50" className="img-button" type="button" src="/svg/fromPresenceToOnline2.png" alt=""
+                  onClick={() => turnLectureIntoOnline(index)}/>
+                : undefined}
+              </td>
+              {moment(lecture.date).isAfter(moment().add(1, 'hours')) && lecture.active===1 ?
+                      <td><Image
+                          width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(context.authUser.id, lecture.lecId)}/>
+                      </td>  : <td><MdDeleteForever size={25}/></td>
+                    }
+            </tr>
+      )}
+    </AuthContext.Consumer>
   );
 }
 
