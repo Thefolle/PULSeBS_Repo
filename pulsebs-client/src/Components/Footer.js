@@ -4,7 +4,7 @@ const Footer = (props) => {
 
     return (
         <>
-            <div id="footer" className="navbar navbar-inverse navbar-fixed-bottom">
+            <div id="footer" className="navbar navbar-inverse">
                 <div className="container">
                     <div>
                       <p id="footer-text-left">Contatti</p>
