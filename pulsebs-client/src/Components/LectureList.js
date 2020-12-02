@@ -1,16 +1,18 @@
 import React from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { Table } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
 import Image from 'react-bootstrap/Image';
 import { MdDeleteForever } from "react-icons/md"
 import API from '../API/API.js';
 
+import { FaBackward } from "react-icons/fa";
+
 import '../customStyle.css';
 
 const LectureList = (props) => {
-  let { lectures, idc, cancelLecture } = props;
+  let { lectures, idc, cancelLecture, goBack } = props;
   let courseName;
   if (lectures.filter(l => l.id === parseInt(idc))[0] !== undefined) { // Avoid to loose courseName after reload: override variable only if available.
     courseName = lectures.filter(l => l.id === parseInt(idc))[0].course;
@@ -20,6 +22,7 @@ const LectureList = (props) => {
     <AuthContext.Consumer>
       {(context) => (
         <>
+          <Button id="goback" onClick={goBack}> <FaBackward /> </Button> 
           <Table className="table" id="lectures-table">
             <thead>
               <tr>

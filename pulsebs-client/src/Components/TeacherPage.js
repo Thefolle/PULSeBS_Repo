@@ -133,16 +133,15 @@ class TeacherPage extends React.Component {
                             </ListGroup>
                         </Col>
                         <Col sm={8}>
-                        <Button id="goback" onClick={this.goBack}> <FaBackward /> </Button>
                         <Switch>
                         <Route exact path={"/teacher/courses"}>
-                            <CourseList courses={this.state.courses} />
+                           <CourseList courses={this.state.courses} />
                         </Route>
                         <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture}  />
+                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} goBack={this.goBack}  />
                         )} />
                         <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
-                            <StudentList students={this.state.students} idl={match.params.lectureId} />
+                            <StudentList students={this.state.students} idl={match.params.lectureId}  goBack={this.goBack} />
                         )} />
                     </Switch>
                     </Col>
