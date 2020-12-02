@@ -82,12 +82,13 @@ class StudentPage extends React.Component {
             });
     }
 
-// FIXME:
+
     bookSeat = (studentId, lectureId) => {
         API.bookSeat(studentId, lectureId).then((result) => {
             if (result.ok) {
-                this.setState({ failed: 0 });
-                this.props.history.push("/student/bookings");
+               //get the updated list of tasks from the server
+               API.getStudentBookings().then((bookings) => this.setState({ bookings: bookings }));
+               this.props.history.push("/student/bookings");
             } else {
                 this.setState({ failed: 1 });
                 //error page
