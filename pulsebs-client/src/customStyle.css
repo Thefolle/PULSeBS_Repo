@@ -88,29 +88,6 @@ h1 {
     background-color: rgb(101, 196, 101);
 }
 
-#footer {
-    background-color: rgb(175, 172, 172);
-    padding-top: 1rem;
-    margin-top: 3rem;
-    bottom: 0rem;
-    width: 100%;
-    margin-bottom: 0rem;
-    position:absolute;
-left:0;
-bottom:0;
-right:0;
-}
-
-#footer-text-right {
-    font-size: 1rem;
-    text-align: right;
-    padding-bottom: 0.5;
-}
-
-#footer-text-left {
-    font-size: 1rem;
-    text-align: left;
-}
 
 #left-sidebar{
     background-color: whitesmoke;

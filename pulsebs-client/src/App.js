@@ -9,7 +9,6 @@ import StudentPage                 from './studentPage';
 import TeacherPage   from './Components/TeacherPage';
 import { AuthContext } from './auth/AuthContext';
 import Header from './Components/Header';
-import Footer from './Components/Footer';
 
 import './App.css';
 import API from './API/API.js';
@@ -85,7 +84,6 @@ class PULSeBSApp extends React.Component {
                         </Route>
                 </Switch>
             </Router>
-            <Footer/>
           </AuthContext.Provider>
         </>;
     }
