@@ -1,15 +1,18 @@
 import React from 'react';
-import { Table } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
 
+import { FaBackward } from "react-icons/fa";
+
 const StudentList = (props) => {
-    let { students, idl } = props;
+    let { students, idl, goBack } = props;
 
     //let student = students.filter( e => e.lId === parseInt( idl ) );
     return (
         <AuthContext.Consumer>
             {(context) => (
                 <>
+                 <Button id="goback" onClick={goBack}> <FaBackward /> </Button>
                     { students.filter(e => e.lId === parseInt(idl)).length === 0 &&
                         <h5>no students booked for this lecture.</h5>
                     }
