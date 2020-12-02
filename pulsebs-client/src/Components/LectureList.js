@@ -23,6 +23,7 @@ const LectureList = (props) => {
       {(context) => (
         <>
           <Button id="goback" onClick={goBack}> <FaBackward /> </Button>
+          <h4>{courseName}</h4>
           <Table className="table" id="lectures-table">
             <thead>
               <tr>

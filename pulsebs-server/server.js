@@ -410,7 +410,7 @@ app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
                                               var user = s.id;
                                               mailOptions = {
                                                   from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                                                  //to: l.email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
+                                                  //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
                                                   to: 'student.team9@yopmail.com',
                                                   subject: 'Cancel Lecture (' + lecture.course + ')',
                                                   text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + lecture.course + " in Classroom: " + lecture.classroom + " and Date: " + moment( lecture.date ).format( "YYYY-MM-DD HH:mm" ) +" is cancelled.\n\n"
