@@ -26,10 +26,23 @@ class TeacherPage extends React.Component {
         };
 
         this.goBack = this.goBack.bind(this);
+        this.turnLectureIntoOnline = this.turnLectureIntoOnline.bind(this);
     }
 
     goBack=()=>{
         this.props.history.goBack();
+    }
+
+    // Update the front end instead of retreiving all lectures again, after
+    // that a lecture has been turnt to be online (after the click)
+    turnLectureIntoOnline = (lectureId, teacherId) => {
+        API.turnLectureIntoOnline(lectureId, teacherId).then(result => {
+            API.getTeacherLectures().then((lectures) => {
+                this.setState({lectures: lectures});
+            });
+          }).catch(error => {
+            console.log(error);
+          });
     }
 
     componentDidMount() {
@@ -138,7 +151,7 @@ class TeacherPage extends React.Component {
                            <CourseList courses={this.state.courses} />
                         </Route>
                         <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} goBack={this.goBack}  />
+                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} goBack={this.goBack} turnLectureIntoOnline={this.turnLectureIntoOnline} />
                         )} />
                         <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                             <StudentList students={this.state.students} idl={match.params.lectureId}  goBack={this.goBack} />

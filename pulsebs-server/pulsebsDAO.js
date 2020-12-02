@@ -444,7 +444,7 @@ exports.turnLectureIntoOnline = ( teacherId, lectureId ) => {
         let query1 = `  SELECT  active, date
                         FROM lecture L, course C
                         WHERE L.ref_course = C.id AND L.id = ${lectureId} AND C.ref_teacher = ${teacherId}`;
-        let query2 = `UPDATE lecture SET presence = 0 WHERE id = ${lectureId} AND active = 1;`
+        let query2 = `UPDATE lecture SET presence = 0, ref_class = 0 WHERE id = ${lectureId} AND active = 1;`
         let now = moment().valueOf(); // in milliseconds
 
         db.get( query1, [], function ( error, couple ) {

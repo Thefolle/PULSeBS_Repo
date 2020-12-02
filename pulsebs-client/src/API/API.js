@@ -163,7 +163,7 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
     } catch (parseError) {
         console.log("Parse error occured in " + turnLectureIntoOnline.name + parseError);
     }
-    if (response.status === 204) return message;
+    if (response.status === 200) return message;
     else throw {message: message};
 }
 
