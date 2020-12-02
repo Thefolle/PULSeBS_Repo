@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Table, Button } from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
 import Image from 'react-bootstrap/Image';
@@ -12,7 +12,7 @@ import { FaBackward } from "react-icons/fa";
 import '../customStyle.css';
 
 const LectureList = (props) => {
-  let { lectures, idc, cancelLecture, goBack, turnLectureIntoOnline } = props;
+  let { lectures, idc, cancelLecture, goBack } = props;
   let courseName;
   if (lectures.filter(l => l.id === parseInt(idc))[0] !== undefined) { // Avoid to loose courseName after reload: override variable only if available.
     courseName = lectures.filter(l => l.id === parseInt(idc))[0].course;
@@ -50,17 +50,22 @@ const LectureList = (props) => {
 
 const LectureItem = (props) => {
   let { lecture, turnLectureIntoOnline, idc, index, cancelLecture } = props;
+  let [redirect, setRedirect] = useState('');
+
+  if (redirect !== '') {
+    return <Redirect to={redirect} />;
+  }
 
   return (
     <AuthContext.Consumer>
       {(context) => (
         <>
-    <tr>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.date).format("DD MMM YYYY")}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.date).format("HH:mm")}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{moment(lecture.endTime).format("HH:mm")}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{lecture.presence === 1 ? 'yes' : 'no'}</Link></td>
-      <td><Link to={"/teacher/" + idc + "/lectures/" + index + "/students"}>{lecture.classC}</Link></td>
+    <tr onClick={() => setRedirect("/teacher/" + idc + "/lectures/" + index + "/students")}>
+      <td>{moment(lecture.date).format("DD MMM YYYY")}</td>
+      <td>{moment(lecture.date).format("HH:mm")}</td>
+      <td>{moment(lecture.endTime).format("HH:mm")}</td>
+      <td>{lecture.presence === 1 ? 'yes' : 'no'}</td>
+      <td>{lecture.classC}</td>
       <td>
         {lecture.presence === 1 && lecture.active === 1 && moment(lecture.date).isAfter(moment().add(30, 'minute')) ?
         <Image width="50" height="50" className="img-button" type="button" src="/svg/fromPresenceToOnline2.png" alt=""

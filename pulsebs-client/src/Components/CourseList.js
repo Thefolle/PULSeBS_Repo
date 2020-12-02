@@ -1,5 +1,5 @@
-import React     from 'react';
-import { Link }  from 'react-router-dom';
+import React, { useState }     from 'react';
+import { Link, Redirect }  from 'react-router-dom';
 import { Table } from "react-bootstrap";
 import {AuthContext} from '../auth/AuthContext';
 
@@ -29,10 +29,15 @@ const CourseList = ( props ) => {
 
 const CourseItem = ( props ) => {
     let {course, index} = props;
+    let [redirect, setRedirect] = useState('');
+
+    if (redirect !== '') {
+        return <Redirect to={redirect} />
+    }
 
     return (
-        <tr>
-            <td><Link to={ "/teacher/" + index + "/lectures" }>{ course.course }</Link></td>
+        <tr onClick={() => setRedirect("/teacher/" + index + "/lectures")}>
+            <td>{course.course}</td>
         </tr>
 
     );
