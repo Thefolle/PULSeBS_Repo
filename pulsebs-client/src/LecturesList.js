@@ -1,7 +1,7 @@
-import React       from 'react';
-import LectureItem from './LectureItem';
-import { Table }   from "react-bootstrap";
-import {AuthContext} from './auth/AuthContext';
+import React              from 'react';
+import LectureItem        from './LectureItem';
+import { Table }          from "react-bootstrap";
+import {AuthContext}      from './auth/AuthContext';
 
 const LecturesList = ( props ) => {
 
