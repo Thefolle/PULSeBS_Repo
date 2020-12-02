@@ -10,7 +10,6 @@ import {AuthContext} from '../auth/AuthContext';
 
 
 import { Button, Row, Col, Container, ListGroup } from "react-bootstrap";
-import { FaBackward } from "react-icons/fa";
 
 import '../App.css';
 import '../customStyle.css';
@@ -25,13 +24,10 @@ class TeacherPage extends React.Component {
             students: []
         };
 
-        this.goBack = this.goBack.bind(this);
         this.turnLectureIntoOnline = this.turnLectureIntoOnline.bind(this);
     }
 
-    goBack=()=>{
-        this.props.history.goBack();
-    }
+    
 
     // Update the front end instead of retreiving all lectures again, after
     // that a lecture has been turnt to be online (after the click)
@@ -151,10 +147,10 @@ class TeacherPage extends React.Component {
                            <CourseList courses={this.state.courses} />
                         </Route>
                         <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} goBack={this.goBack} turnLectureIntoOnline={this.turnLectureIntoOnline} />
+                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} turnLectureIntoOnline={this.turnLectureIntoOnline} />
                         )} />
                         <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
-                            <StudentList students={this.state.students} idl={match.params.lectureId}  goBack={this.goBack} />
+                            <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
                         )} />
                     </Switch>
                     </Col>
