@@ -99,8 +99,8 @@ class TeacherPage extends React.Component {
           });
     }
 
-    cancelLecture = (lectureId, courseName) => {
-        API.cancelLecture(lectureId, courseName)
+    cancelLecture = (teacherId, lectureId, courseName) => {
+        API.cancelLecture(teacherId, lectureId, courseName)
             .then(() => {
                 //get the updated list of tasks from the server
                 API.getTeacherLectures().then((lectures) => this.setState({ lectures: lectures }))

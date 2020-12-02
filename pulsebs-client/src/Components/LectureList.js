@@ -74,7 +74,7 @@ const LectureItem = (props) => {
       </td>
       {moment(lecture.date).isAfter(moment().add(1, 'hours')) && lecture.active===1 ?
                <td><Image
-                   width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(lecture.lecId,lecture.course)}/>
+                   width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(context.authUser.id, lecture.lecId,lecture.course)}/>
                </td>  : <td><MdDeleteForever size={25}/></td>
             }
     </tr>

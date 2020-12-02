@@ -297,10 +297,12 @@ app.get( '/api/student/lectures', ( req, res ) => {
 
 
 //POST /student/booking
-app.post( '/api/student/booking', ( req, res ) => {
+// FIXME: refactor
+app.post('/api/students/:studentId/booking', (req, res) => {
     const lectureId = req.body.lectureId;
-    if ( !lectureId ) {
-        res.status( 401 ).end();
+    const studentId = req.params.studentId;
+    if (!lectureId) {
+        res.status(401).end();
     } else {
         const user = req.user && req.user.user;
         pulsebsDAO.bookSeat( lectureId, user )
@@ -368,10 +370,12 @@ app.get( '/api/student/bookings', ( req, res ) => {
 } )
 
 // DELETE /student/bookings
-app.delete( '/api/student/bookings/:id', ( req, res ) => {
-    const bookingId = req.params.id;
-    if ( !bookingId ) {
-        res.status( 401 ).end();
+//FIXME: refactor
+app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+    const studentId = req.params.studentId;
+    const bookingId = req.params.bookingId;
+    if (!bookingId) {
+        res.status(401).end();
     } else {
         // const user = req.user && req.user.user;
         pulsebsDAO.cancelBooking( bookingId )
@@ -382,11 +386,11 @@ app.delete( '/api/student/bookings/:id', ( req, res ) => {
                                               } );
                   } );
     }
-} );
-
-app.delete('/api/teacher/lectures/:id', (req, res) => {
-    const lectureId = req.params.id;
-    const lectureName = req.body.name;
+});
+// FIXME:
+app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
+    const lectureId = req.params.lectureId;
+    const teacherId = req.params.teacherId;
     if (!lectureId) {
         res.status(401).end();
     } else {
