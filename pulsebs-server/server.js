@@ -169,7 +169,7 @@ app.get( '/api/teacher/lectures', ( req, res ) => {
 } );
 
 //TODO: change this route according to REST best practice
-app.get( '/api/getStudentsForLecture', ( req, res ) => {
+app.get( '/api/teacher/getStudentsForLecture', ( req, res ) => {
     const user = req.user && req.user.user;
     pulsebsDAO.getStudentsForLecturev2( user )
               .then( ( students ) => {
@@ -397,35 +397,42 @@ app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
         // const user = req.user && req.user.user;
         pulsebsDAO.cancelLecture(lectureId)
             .then((response) => {
-                pulsebsDAO.getStudentsForLecture(lectureId)
-                    .then((students) => {
-                        if (students.length !== 0) {
-                            students.forEach(s => {
-                                var email = s.email;
-                                var name = s.name;
-                                var surname = s.surname;
-                                var user = s.id;
-                                mailOptions = {
-                                    from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                                    //to: l.email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
-                                    to: 'student.team9@yopmail.com',
-                                    subject: 'Cancel Lecture (' + lectureName + ')',
-                                    text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + lectureName + " is cancelled.\n\n"
-                                        + "Have a good day.\n\n - PULSeBS Team9."
-                                };
-                                transporter.sendMail(mailOptions, function (error, info) {
-                                    if (error) {
-                                        console.log(error);
-                                    } else {
-                                        console.log('Email sent to: ' + user + ", info: " + info.response);
-                                    }
-                                });
-                            });
-                        }
-                    }).catch((err) => {
-                        console.log(err);
-                    });
-                res.status(201).json({ response });
+              if ( process.env.TEST && process.env.TEST === '0') {
+                  pulsebsDAO.getLectureStats( lectureId )
+                      .then( ( lecture ) => {
+                              pulsebsDAO.getStudentsForLecture(lectureId)
+                                  .then((students) => {
+                                      if (students.length !== 0) {
+                                          students.forEach(s => {
+                                              var email = s.email;
+                                              var name = s.name;
+                                              var surname = s.surname;
+                                              var user = s.id;
+                                              mailOptions = {
+                                                  from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                                  //to: l.email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
+                                                  to: 'student.team9@yopmail.com',
+                                                  subject: 'Cancel Lecture (' + lecture.course + ')',
+                                                  text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + lecture.course + " in Classroom: " + lecture.classroom + " and Date: " + moment( lecture.date ).format( "YYYY-MM-DD HH:mm" ) +" is cancelled.\n\n"
+                                                      + "Have a good day.\n\n - PULSeBS Team9."
+                                              };
+                                              transporter.sendMail(mailOptions, function (error, info) {
+                                                  if (error) {
+                                                      console.log(error);
+                                                  } else {
+                                                      console.log('Email sent to: ' + user + ", info: " + info.response);
+                                                  }
+                                              });
+                                          });
+                                      }
+                                       }).catch((err) => {
+                                              console.log(err);
+                                          });
+                }).catch( ( err ) => {
+                        console.log( err );
+                    } );
+                 }
+              res.status(201).json({ response });
             })
             .catch((err) => {
                 res.status(500).json({

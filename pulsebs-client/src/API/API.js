@@ -98,7 +98,7 @@ async function getStudentBookings() {
 
 }
 
-// FIXME: already successfully refactor the URI 
+// FIXME: already successfully refactor the URI
 async function cancelBooking(studentId, bookingId) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + '/students/' + studentId + '/bookings/' + bookingId, {
@@ -131,7 +131,7 @@ async function getTeacherLectures() {
 }
 
 async function getStudents(filter) {
-    let url = "/getStudentsForLecture";
+    let url = "/teacher/getStudentsForLecture";
     const response = await fetch(baseURL + url);
     const idJson = await response.json();
     if (response.ok) {
@@ -168,16 +168,12 @@ async function turnLectureIntoOnline(lectureId, teacherId = 0) {
 }
 
 
-async function cancelLecture(teacherId, lectureId, courseName) {
+async function cancelLecture(teacherId, lectureId) {
     console.log(teacherId);
     console.log(lectureId);
     return new Promise((resolve, reject) => {
         fetch(baseURL + "/teachers/" + teacherId + "/lectures/" + lectureId, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name: courseName })
         }).then((response) => {
             if (response.ok) {
                 resolve(null);
