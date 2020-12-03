@@ -36,7 +36,7 @@ const LectureList = (props) => {
               </tr>
             </thead>
             <tbody>
-              {lectures.filter(l => l.id === parseInt(idc)).map((l, id) => <LectureItem key={id} lecture={l} turnLectureIntoOnline={props.turnLectureIntoOnline} idc={idc} index={l.lecId} cancelLecture={ cancelLecture } />)}
+              {lectures.filter(l => l.id === parseInt(idc)).map((l, id) => <LectureItem key={id} lecture={l} turnLectureIntoOnline={props.turnLectureIntoOnline} idc={idc} index={l.lecId} cancelLecture={cancelLecture} />)}
             </tbody>
           </Table>
         </>
@@ -60,25 +60,32 @@ const LectureItem = (props) => {
     <AuthContext.Consumer>
       {(context) => (
         <>
-    <tr onClick={() => setRedirect("/teacher/" + idc + "/lectures/" + index + "/students")}>
-      <td>{moment(lecture.date).format("DD MMM YYYY")}</td>
-      <td>{moment(lecture.date).format("HH:mm")}</td>
-      <td>{moment(lecture.endTime).format("HH:mm")}</td>
-      <td>{lecture.presence === 1 ? 'yes' : 'no'}</td>
-      <td>{lecture.classC}</td>
-      <td>
-        {lecture.presence === 1 && lecture.active === 1 && moment(lecture.date).isAfter(moment().add(30, 'minute')) ?
-        <Image width="50" height="50" className="img-button" type="button" src="/svg/fromPresenceToOnline2.png" alt=""
-          onClick={() => turnLectureIntoOnline(index, context.authUser.id)}/>
-        : undefined}
-      </td>
-      {moment(lecture.date).isAfter(moment().add(1, 'hours')) === true && lecture.active===1 ?
-               <td><Image
-                   width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>cancelLecture(context.authUser.id, lecture.lecId)}/>
-               </td>  : <td><MdDeleteForever size={25}/></td>
+          <tr onClick={(event) => {
+            if (event.currentTarget.tagName === 'tr') {
+              setRedirect("/teacher/" + idc + "/lectures/" + index + "/students");
             }
-    </tr>
-    </>
+          }}>
+            <td>{moment(lecture.date).format("DD MMM YYYY")}</td>
+            <td>{moment(lecture.date).format("HH:mm")}</td>
+            <td>{moment(lecture.endTime).format("HH:mm")}</td>
+            <td>{lecture.presence === 1 ? 'yes' : 'no'}</td>
+            <td>{lecture.classC}</td>
+            <td>
+              {lecture.presence === 1 && lecture.active === 1 && moment(lecture.date).isAfter(moment().add(30, 'minute')) ?
+                <Image width="50" height="50" className="img-button" type="button" src="/svg/fromPresenceToOnline2.png" alt=""
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    turnLectureIntoOnline(index, context.authUser.id);
+                  }} />
+                : undefined}
+            </td>
+            {moment(lecture.date).isAfter(moment().add(1, 'hours')) === true && lecture.active === 1 ?
+              <td><Image
+                width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt="" onClick={() => cancelLecture(context.authUser.id, lecture.lecId)} />
+              </td> : <td><MdDeleteForever size={25} /></td>
+            }
+          </tr>
+        </>
       )}
     </AuthContext.Consumer>
   );
