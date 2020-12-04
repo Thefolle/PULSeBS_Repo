@@ -232,7 +232,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                 information.map( studentAndLectureInfo => {
                     mailOptions = {
                         from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                        to: 'cdavide8@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                        to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
                         subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
                         text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
                             " (" + studentAndLectureInfo.studentId + ")," +
