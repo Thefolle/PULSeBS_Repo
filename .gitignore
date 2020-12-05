@@ -7,6 +7,9 @@ pulsebs-server/pulsebs-test.db
 pulsebs-server/*.xml
 /pulsebs-server/coverage/
 
+.scannerwork/
+pulsebs-server/.scannerwork/
+
 # dependencies
 /node_modules
 /.pnp
