@@ -4,6 +4,7 @@
   "description": "PULSeBS REST API server",
   "main": "server.js",
   "scripts": {
+    "test": "cross-env TEST=1 jest --coverage",
     "testDao": "cross-env TEST=1 jest --coverage -- dao.test.js",
     "testServer": "cross-env TEST=1 jest --coverage -- server.test.js",
     "run": "cross-env TEST=0 npx nodemon server.js"

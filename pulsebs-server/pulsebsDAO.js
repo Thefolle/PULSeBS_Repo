@@ -439,9 +439,9 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
 *   is not active or if the lecture's start time is planned within the next
 *   30 minutes starting from the current time
 * */
-exports.turnLectureIntoOnline = ( teacherId, lectureId ) => {
+exports.turnLectureIntoOnline = ( teacherId = 0, lectureId ) => {
     return new Promise( ( resolve, reject ) => {
-        let query1 = `  SELECT  active, date
+        let query1 = `  SELECT  L.active as active, L.date as date
                         FROM lecture L, course C
                         WHERE L.ref_course = C.id AND L.id = ${lectureId} AND C.ref_teacher = ${teacherId}`;
         let query2 = `UPDATE lecture SET presence = 0, ref_class = 0 WHERE id = ${lectureId} AND active = 1;`
@@ -462,7 +462,7 @@ exports.turnLectureIntoOnline = ( teacherId, lectureId ) => {
                         reject( -4 );
                     } else {
                         let getInformationToSendEmailsQuery =
-                                `SELECT L.date AS lectureDate,
+                                `SELECT DISTINCT L.date AS lectureDate,
                                     Co.desc AS courseDescription,
                                     Cl.desc AS lectureClass,
                                     S.name AS studentName,

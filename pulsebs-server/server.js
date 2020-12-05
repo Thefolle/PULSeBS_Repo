@@ -432,7 +432,7 @@ app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
                         console.log( err );
                     } );
                  }
-              res.status(201).json({ response });
+              res.status(200).json({ response });
             })
             .catch((err) => {
                 res.status(500).json({
