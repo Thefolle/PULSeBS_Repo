@@ -200,8 +200,6 @@ app.get( '/api/user', ( req, res ) => {
     );
 } );
 
-/*TEACHER */
-
 /*
 *   Update lecture
 *       request body:
@@ -277,6 +275,20 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
         } );
     }
 } );
+
+app.get('/api/teachers/:teacherId/courses/:courseId/bookings', (req, res) => {
+    const user = req.user && req.user.user;
+    const teacherId = req.params.teacherId;
+    const courseId = req.params.courseId;
+    const groupBy = req.query.groupBy;
+
+    pulsebsDAO.getTeacherBookingStatistics(teacherId, courseId, groupBy).then( statistics => {
+        res.status(200).json(statistics);
+    }).catch(error => {
+        console.log(error);
+        res.status(500).end();
+    });
+})
 
 /****** STUDENT ******/
 

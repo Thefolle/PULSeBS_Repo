@@ -160,6 +160,24 @@ describe('E2E testing/Integration testing', () => {
     // });
 });
 
+describe('[PUL 11] Get teacher statistics', () => {
+    test('Check returned status', function(done) {
+        let teacherId = 239903;
+        let courseId = 5;
+        request(server)
+            .get('/api/teachers/' + teacherId + '/courses/' + courseId + '/bookings')
+            .query({groupBy: 'lecture'})
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .end(function (error, response) {
+                if (error) return done(error);
+                expect(response.status).toBe(200);
+                expect(response.body)
+                done();
+            });
+    });
+});
+
 // logout and server shutdown
 afterAll(async () => {
     // Although logout works, being sure to close the server is needed to end the testing session gracefully;

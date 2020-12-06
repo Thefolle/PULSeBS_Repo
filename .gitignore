@@ -10,6 +10,10 @@ pulsebs-server/*.xml
 .scannerwork/
 pulsebs-server/.scannerwork/
 
+## Davide personal files
+pulsebs-server/mypulsebs.db
+pulsebs-server/prova.js
+
 # dependencies
 /node_modules
 /.pnp
