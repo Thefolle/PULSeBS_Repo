@@ -1,12 +1,13 @@
 import React from 'react';
-import { withRouter, Switch, Route} from 'react-router-dom';
+import { withRouter, Switch, Route } from 'react-router-dom';
 
 import API from '../API/API';
 import CourseList from './CourseList';
 import LectureList from './LectureList';
 import StudentList from './StudentiList';
 import UserNavBar from './UserNavBar';
-import {AuthContext} from '../auth/AuthContext';
+import { AuthContext } from '../auth/AuthContext';
+import TeacherStatistics from './TeacherStatistics';
 
 
 import { Button, Row, Col, Container, ListGroup } from "react-bootstrap";
@@ -27,32 +28,32 @@ class TeacherPage extends React.Component {
         this.turnLectureIntoOnline = this.turnLectureIntoOnline.bind(this);
     }
 
-    
+
 
     // Update the front end instead of retreiving all lectures again, after
     // that a lecture has been turnt to be online (after the click)
     turnLectureIntoOnline = (lectureId, teacherId) => {
         API.turnLectureIntoOnline(lectureId, teacherId).then(result => {
             API.getTeacherLectures().then((lectures) => {
-                this.setState({lectures: lectures});
+                this.setState({ lectures: lectures });
             });
-          }).catch(error => {
+        }).catch(error => {
             console.log(error);
-          });
+        });
     }
 
     componentDidMount() {
-      API.getTeacherLectures()
-          .then((lectures) => {
-              this.setState({
-                  lectures: lectures
-              });
-              this.getStudentsByLecture();
-              this.getCourses(lectures);
-          })
-          .catch((err) => {
-              this.handleErrors(err);
-          });
+        API.getTeacherLectures()
+            .then((lectures) => {
+                this.setState({
+                    lectures: lectures
+                });
+                this.getStudentsByLecture();
+                this.getCourses(lectures);
+            })
+            .catch((err) => {
+                this.handleErrors(err);
+            });
     }
 
     handleErrors = (err) => {
@@ -60,7 +61,7 @@ class TeacherPage extends React.Component {
             if (err.status && err.status === 401) {
                 this.setState({ authErr: err });
                 this.props.history.push("/");
-            }else{
+            } else {
                 //other errors that may happens and choose the page in which are displayed
                 this.setState({ authErr: err });
             }
@@ -82,30 +83,30 @@ class TeacherPage extends React.Component {
             }
         }
 
-        this.setState({courses:result.sort()});
+        this.setState({ courses: result.sort() });
     }
 
 
     getStudentsByLecture = () => {
-      API.getStudents()
-          .then((student) => {
-              this.setState({ students: student });
-          })
-          .catch((err) => {
-              this.handleErrors(err);
-          });
+        API.getStudents()
+            .then((student) => {
+                this.setState({ students: student });
+            })
+            .catch((err) => {
+                this.handleErrors(err);
+            });
     }
 
     getTeacherLectures = () => {
-      API.getTeacherLectures()
-          .then((lectures) => {
-              this.setState({ lectures: lectures });
-              this.getCourses(lectures);
-              this.getStudentsByLecture();
-          })
-          .catch((errorObj) => {
-              this.handleErrors(errorObj);
-          });
+        API.getTeacherLectures()
+            .then((lectures) => {
+                this.setState({ lectures: lectures });
+                this.getCourses(lectures);
+                this.getStudentsByLecture();
+            })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
     }
 
     cancelLecture = (teacherId, lectureId) => {
@@ -127,39 +128,42 @@ class TeacherPage extends React.Component {
 
         return (
             <AuthContext.Consumer>
-                {(context)=>(
+                {(context) => (
                     <>
-                   {context.authUser && <>
-                   <UserNavBar userId={context.authUser.id} />
-                    <Container>
-                    <Row>
-                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
-                            <ListGroup className="sidebar" variant="flush" >
-                                <h5>POLITECNICO DI TORINO</h5>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
-                            </ListGroup>
-                        </Col>
-                        <Col sm={8}>
-                        <Switch>
-                        <Route exact path={"/teacher/courses"}>
-                           <CourseList courses={this.state.courses} />
-                        </Route>
-                        <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
-                            <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} turnLectureIntoOnline={this.turnLectureIntoOnline} />
-                        )} />
-                        <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
-                            <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
-                        )} />
-                    </Switch>
-                    </Col>
-                  </Row>
-                </Container>
+                        {context.authUser && <>
+                            <UserNavBar userId={context.authUser.id} />
+                            <Container>
+                                <Row>
+                                    <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                                        <ListGroup className="sidebar" variant="flush" >
+                                            <h5>POLITECNICO DI TORINO</h5>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                        </ListGroup>
+                                    </Col>
+                                    <Col sm={8}>
+                                        <Switch>
+                                            <Route exact path={"/teacher/courses"}>
+                                                <CourseList courses={this.state.courses} />
+                                            </Route>
+                                            <Route exact path={"/teacher/:courseId/lectures"} render={({ match }) => (
+                                                <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} turnLectureIntoOnline={this.turnLectureIntoOnline} />
+                                            )} />
+                                            <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
+                                                <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
+                                            )} />
+                                            <Route path={"/teacher/:teacherId/statistics"} render={({ match }) => (
+                                                <TeacherStatistics courses={this.state.courses}/>
+                                            )} />
+                                        </Switch>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </>
+                        }
                     </>
-                  }
-                  </>
-                  )}
+                )}
             </AuthContext.Consumer>
         );
     }

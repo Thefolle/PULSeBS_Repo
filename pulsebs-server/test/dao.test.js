@@ -201,7 +201,7 @@ test('Try to see if lecture stats are the correct ones', () => {
 
 // Jest for this story requires that:
 //      - the locale of moment is set to 'it' from the beginning of pulsebsDAO, not in the function itself;
-describe('[PUL 11] Get teacher statistics', () => {
+describe('[PUL 10] Get teacher statistics', () => {
     test('per lecture', () => {
         DAO.getTeacherBookingStatistics(239903, 5, 'lecture').then(statistics => {
             expect(statistics).toEqual(

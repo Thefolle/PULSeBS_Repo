@@ -276,7 +276,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
     }
 } );
 
-app.get('/api/teachers/:teacherId/courses/:courseId/bookings', (req, res) => {
+app.get('/api/teachers/:teacherId/statistics/courses/:courseId', (req, res) => {
     const user = req.user && req.user.user;
     const teacherId = req.params.teacherId;
     const courseId = req.params.courseId;
