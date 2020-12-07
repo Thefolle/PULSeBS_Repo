@@ -172,7 +172,6 @@ describe('[PUL 10] Get teacher statistics', () => {
             .end(function (error, response) {
                 if (error) return done(error);
                 expect(response.status).toBe(200);
-                expect(response.body)
                 done();
             });
     });

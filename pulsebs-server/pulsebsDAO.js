@@ -27,7 +27,7 @@ if (!db) {
             if (err) throw err;
         });
         db = openDB(dbName);
-    } else db = openDB('pulsebs.db');
+    } else db = openDB('mypulsebs.db');
 }
 
 /*
@@ -516,7 +516,9 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                             C.ref_teacher = ? AND
                             C.id = ? AND
                             L.presence = 1
-                    GROUP BY lectureId;`
+                    GROUP BY lectureId
+                    ORDER BY lectureDate
+                    ;`
             db.all(perLectureQuery, [teacherId, courseId], (error, rows) => {
                 if (error) reject(error);
                 else resolve(rows);
@@ -548,6 +550,7 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                                 L.date >= ? AND
                                 L.date < ? AND
                                 L.presence = 1
+                        ORDER BY sampleDate
                     ;`
                     let statistics = [];
                     // the number of callbacks equals the number of loops in the while cycle; this property
@@ -606,6 +609,7 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                                 L.date >= ? AND
                                 L.date < ? AND
                                 L.presence = 1
+                        ORDER BY sampleDate
                     ;`
                     let statistics = [];
                     // the number of callbacks equals the number of loops in the while cycle; this property
