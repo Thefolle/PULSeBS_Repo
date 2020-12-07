@@ -160,6 +160,112 @@ describe('E2E testing/Integration testing', () => {
     // });
 });
 
+describe( 'CSV loading tests', () => {
+    let data = {
+        "classes": [
+            {
+                "id": "15",
+                "desc": "12A",
+                "seats": "72"
+            }
+        ],
+        "teachers": [
+            {
+                "id": "239910",
+                "email": "abc@gmail.com",
+                "password": "hash123",
+                "name": "nome",
+                "surname": "cognome"
+            }
+        ],
+        "students": [
+            {
+                "id": "269910",
+                "email": "abc@gmail.com",
+                "password": "hash123",
+                "name": "nome",
+                "surname": "cognome"
+            }
+        ],
+        "courses": [
+            {
+                "id": "90",
+                "desc": "ABC course",
+                "ref_teacher": "239910"
+            }
+        ],
+        "subscriptions": [
+            {
+                "ref_student": "269910",
+                "ref_course": "90"
+            }
+        ],
+        "lectures": [
+            {
+                "ref_course": "90",
+                "ref_class": "15",
+                "date": "123456789",
+                "endTime": "123456789",
+                "presence": "0",
+                "bookable": "0 ",
+                "active": "0"
+            }
+        ]
+    };
+
+    test( "Try to load a correct CSV file content", async function () {
+        let response = await request(server)
+            .put('/api/sofficer/')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send(data);
+        expect(response.status).toBe(200);
+    } );
+
+    test( "Try to load a wrong CSV file content", async function () {
+        data = {
+            "students": [
+                {
+                    "id": "269901",
+                    "email": "abc@gmail.com",
+                    "password": "hash123",
+                    "name": "nome",
+                    "surname": "cognome"
+                }
+            ],
+            "courses": [
+                {
+                    "id": "90",
+                    "desc": "ABC course",
+                    "ref_teacher": "239910"
+                }
+            ],
+            "subscriptions": [
+                {
+                    "ref_student": "269910",
+                    "ref_course": "90"
+                }
+            ],
+            "lectures": [
+                {
+                    "ref_course": "90",
+                    "date": "123456789",
+                    "endTime": "123456789",
+                    "presence": "0",
+                    "bookable": "0 ",
+                    "active": "0"
+                }
+            ]
+        };
+        let response = await request(server)
+            .put('/api/sofficer/')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send(data);
+        expect(response.status).toBe(400);
+    } );
+} );
+
 // logout and server shutdown
 afterAll(async () => {
     // Although logout works, being sure to close the server is needed to end the testing session gracefully;

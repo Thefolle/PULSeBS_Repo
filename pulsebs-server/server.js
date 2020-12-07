@@ -18,6 +18,7 @@ const nodemailer = require( 'nodemailer' );
 // Authorization error
 const authErrorObj = {errors: [ {'param': 'Server', 'message': 'Authorization error'} ]};
 const databaseErrorObj = {errors: [ {'param': 'Server', 'message': 'Error during DB execution'} ]};
+const dataErrorObj = {errors: [ {'param': 'Server', 'message': 'Data sent is not correct'} ]};
 
 checkPassword = function ( user, password ) {
     /*
@@ -449,9 +450,18 @@ app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
 * Thi API parse a JSON object and execute statements on DB.
 * */
 app.put( '/api/sofficer/', ( req, res ) => {
-    pulsebsDAO.loadCsvData( req.body )
+    //Ligh validation body
+    if('classes' in req.body &&
+        'courses' in req.body &&
+        'lectures' in req.body &&
+        'students' in req.body &&
+        'subscriptions' in req.body &&
+        'teachers' in req.body
+    ) pulsebsDAO.loadCsvData( req.body )
               .then( result => res.status( 200 ).end() )
               .catch( err => res.status( 400 ).json( databaseErrorObj ) )
+    else res.status( 400 ).json( dataErrorObj )
+
 } )
 
 
