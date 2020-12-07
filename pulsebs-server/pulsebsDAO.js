@@ -56,7 +56,7 @@ exports.getUserByEmail = function ( email ) {
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    const user = new User( row.id, row.email, row.password, i, row.name, row.surname );
+                    const user = new User( row.id, row.email, row.password, row.type, row.name, row.surname );
                     resolve( user );
                 }
             } );
@@ -692,5 +692,37 @@ exports.setPresenceLecture = ( lectureId, className ) => {
             }
         } )
     } ) );
+}
 
+exports.loadCsvData = (data) => {
+    return new Promise( ( resolve, reject ) => {
+        let query = '';
+        //Classes inserting
+        data.classes.forEach( ( class_ ) => {
+            query += `INSERT INTO class (id,desc,seats) values  (${ class_.id },'${ class_.desc }',${ class_.seats }); `
+        } );
+        //Teachers inserting
+        data.teachers.forEach( ( teacher ) => {
+            query += `insert into teacher (id, email, password, name, surname) VALUES (${ teacher.id },'${ teacher.email }','${ teacher.password }','${ teacher.name }','${ teacher.surname }'); `
+        } );
+        //Students inserting
+        data.students.forEach( ( student ) => {
+            query += `insert into student (id, email, password, name, surname) VALUES (${ student.id },'${ student.email }','${ student.password }','${ student.name }','${ student.surname }'); `
+        } );
+        //Courses inserting
+        data.courses.forEach( ( course ) => {
+            query += `insert into course (id, desc, ref_teacher) VALUES (${ course.id },'${ course.desc }',${ course.ref_teacher }); `
+        } );
+        //Subscriptions inserting
+        data.subscriptions.forEach( ( subscription ) => {
+            query += `insert into subscription (ref_student, ref_course) VALUES (${subscription.ref_student},${subscription.ref_course}); `
+        } );
+        //Students inserting
+        data.lectures.forEach( ( lecture ) => {
+            query += `insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (${ lecture.ref_course },${ lecture.ref_class },${ lecture.date },${ lecture.endTime },${ lecture.presence },${ lecture.bookable },${ lecture.active }); `
+        } );
+        db.exec( "BEGIN TRANSACTION; " + query + " COMMIT;", ( err ) => {
+            err ? reject( 0 ) : resolve( 0 );
+        } );
+    });
 }
