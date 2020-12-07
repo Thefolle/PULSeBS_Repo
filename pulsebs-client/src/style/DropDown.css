@@ -1,0 +1,30 @@
+.DropDown {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    height: fit-content;
+}
+
+.DropDown .dropdown-item {
+    padding-left: 0.5ch;
+    padding-right: 0px;
+}
+
+.DropDown .dropdown-menu {
+    min-width: 0px;
+}
+
+.DropDown .dropdown-toggle {
+    text-align: left;
+    padding: 0 0 0 0.5ch;
+}
+
+.dropdown-toggle::after {
+    border-right: .6em solid transparent;
+    border-left: .6em solid transparent;
+    border-top: .6em solid;
+    margin-left: unset;
+    margin-right: .4em;
+    margin-top: .5em;
+    float: right;
+}
+

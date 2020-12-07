@@ -10,7 +10,7 @@ import { AuthContext } from '../auth/AuthContext';
 import TeacherStatistics from './TeacherStatistics';
 
 
-import { Button, Row, Col, Container, ListGroup } from "react-bootstrap";
+import { Button, Row, Col, Container, ListGroup, Jumbotron } from "react-bootstrap";
 
 import '../App.css';
 import '../customStyle.css';
@@ -153,9 +153,14 @@ class TeacherPage extends React.Component {
                                             <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                                                 <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
                                             )} />
-                                            <Route path={"/teacher/:teacherId/statistics"} render={({ match }) => (
-                                                <TeacherStatistics courses={this.state.courses}/>
-                                            )} />
+                                            <Route path={"/teacher/:teacherId/statistics"} render={({ match }) => {
+                                                if (!this.state.courses || this.state.courses.length === 0) {
+                                                    return <Jumbotron className='error'><p>It seems that you don't have taught at any course.</p><p>Please, refresh the page or contact the segretary for information.</p></Jumbotron>;
+                                                } else {
+                                                    return <TeacherStatistics courses={this.state.courses} userId={context.authUser.id} />
+                                                }
+                                            }
+                                            } />
                                         </Switch>
                                     </Col>
                                 </Row>
