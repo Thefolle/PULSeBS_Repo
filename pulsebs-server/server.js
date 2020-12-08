@@ -296,7 +296,7 @@ app.get( '/api/student/lectures', ( req, res ) => {
 } );
 
 
-//POST /student/booking
+//  POST /student/booking
 // FIXME: refactor
 app.post('/api/students/:studentId/booking', (req, res) => {
     const lectureId = req.body.lectureId;
@@ -370,8 +370,8 @@ app.get( '/api/student/bookings', ( req, res ) => {
 } )
 
 // DELETE /student/bookings
-//FIXME: refactor
-app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+//  FIXME: refactor
+app.post('/api/students/:studentId/bookings/:bookingId', (req, res) => {
     const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
     if (!bookingId) {

@@ -308,9 +308,10 @@ exports.cancelBookings = ( bookingId ) => {
 * Delete a booking  -v2
 * */
 
+// TODO: to fix get bookings method 
 exports.cancelBooking = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
-        let query = `DELETE FROM booking WHERE id = ${ bookingId };`
+        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
         db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
@@ -348,7 +349,8 @@ exports.getStudentBookings = ( studentId ) => {
                                 L.ref_class = CL.id AND
                                 L.ref_course = C.id AND
                                 C.ref_teacher = T.id AND
-                                B.ref_student = ${ studentId };`
+                                B.ref_student = ${ studentId } AND
+                                B.active = 1;`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );

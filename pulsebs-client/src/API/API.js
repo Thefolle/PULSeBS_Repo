@@ -102,7 +102,7 @@ async function getStudentBookings() {
 async function cancelBooking(studentId, bookingId) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + '/students/' + studentId + '/bookings/' + bookingId, {
-            method: 'DELETE'
+            method: 'POST'
         }).then((response) => {
             if (response.ok) {
                 resolve(null);
