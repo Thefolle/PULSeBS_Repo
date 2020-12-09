@@ -1,5 +1,10 @@
 import Lecture from './Lecture.js'
 import Booking from './Booking.js'
+import Student from './Student'
+import Teacher from './Teacher'
+import Course from './Course'
+import Enrollment from './Enrollment'
+import Schedule from './Schedule'
 import LectureTeacher from './LectureTeacher.js'
 import { Ellipsis } from 'react-bootstrap/esm/PageItem';
 const baseURL = "/api";
@@ -190,14 +195,19 @@ async function cancelLecture(teacherId, lectureId) {
 
 /**** SUPPORT OFFICE ****/
 
-/*async function importCSV(students) {
+/*async function importCSV(students, teachers, courses, enrollments, schedule) {
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/sofficer/", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn)) }),
+        body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn)),
+                               teachers: teachers.map((t) => new Teacher(t.id, t.name, t.surname, t.email, t.ssn)),
+                               courses: courses.map((c) => new Course(c.id, c.year, c.semester, c.course)), 
+                               enrollments: enrollments.map((e) => new Enrollment(e.cid, e.sid)),
+                               schedule: schedules.map((s) => new Schedule(s.id, s.room, s.date, s.seats, s.time))
+        }),
     }).then((response) => {
         if(response.ok) {
             resolve(response);
@@ -229,5 +239,5 @@ async function isAuthenticated(){
 
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture /*,importCSV*/ };
 export default API;
