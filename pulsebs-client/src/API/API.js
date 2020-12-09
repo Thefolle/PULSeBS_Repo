@@ -188,6 +188,32 @@ async function cancelLecture(teacherId, lectureId) {
 }
 
 
+/**** SUPPORT OFFICE ****/
+
+async function importStudents(students) {
+    return new Promise((resolve, reject) => {
+    fetch(baseURL + "/sofficer/", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn)) }),
+    }).then((response) => {
+        if(response.ok) {
+            resolve(response);
+        } else {
+            // analyze the cause of error
+            console.log("errore msg");
+            response.json()
+            .then( (obj) => {reject(obj);} ) // error msg in the response body
+            .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+        }
+    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+ });
+}
+
+
+
 async function isAuthenticated(){
     let url = "/user";
     const response = await fetch(baseURL + url);
