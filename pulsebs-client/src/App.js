@@ -12,6 +12,7 @@ import Header from './Components/Header';
 
 import './App.css';
 import API from './API/API.js';
+import BookingManager from './Components/BookingManager';
 
 function App() {
     return (
@@ -78,6 +79,9 @@ class PULSeBSApp extends React.Component {
                         </Route>
                         <Route path='/teacher'>
                             <TeacherPage />
+                        </Route>
+                        <Route path='/manager'>
+                            <BookingManager />
                         </Route>
                         <Route exact path='/'>
                             <Redirect to='Login'/>

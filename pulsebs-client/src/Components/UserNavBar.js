@@ -44,6 +44,16 @@ class UserNavBar extends React.Component {
                     </Nav>
                   </Navbar.Collapse>
                 </Route>
+                <Route path='/manager'>
+                  <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                      <Nav.Link href="/manager/allStats">All <FaBookOpen className={"ml-0.5"} /></Nav.Link>
+                      <Nav.Link href="/manager/bookings">Bookings <FaBookOpen className={"ml-0.5"} /></Nav.Link>
+                      <Nav.Link href="/manager/cancellations">Cancellations <FaBookOpen className={"ml-0.5"} /></Nav.Link>
+                      <Nav.Link href="/manager/attendances">Attendances <FaBookOpen className={"ml-0.5"} /></Nav.Link>
+                    </Nav>
+                  </Navbar.Collapse>
+                </Route>
               </Switch>
               <Navbar.Brand> <FaUserCircle className={"ml-1"} /> {this.props.userId} </Navbar.Brand>
               <div>

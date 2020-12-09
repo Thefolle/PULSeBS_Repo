@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const moment = require('moment');
+const { resolve } = require('path');
 moment.locale('it');
 
 const User = require('./User');
@@ -27,7 +28,7 @@ if (!db) {
             if (err) throw err;
         });
         db = openDB(dbName);
-    } else db = openDB('mypulsebs.db');
+    } else db = openDB('pulsebs.db');
 }
 
 /*
@@ -57,7 +58,14 @@ exports.getUserByEmail = function (email) {
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    const user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    let user=null;
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    if(i===2){
+                        user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
+                    }else{
+                        user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    }
+                    
                     resolve(user);
                 }
             });
@@ -685,6 +693,43 @@ exports.getManagerStats = () => {
         });
     }));
 }
+
+/*
+GET total info about bookings
+*/
+
+exports.getAllBookings=()=>{
+    return new Promise((resolve,reject)=>{
+        let query=`SELECT B.ref_student as studentId, S.name as studentName, S.surname as studentSurname, C.desc as course,L.date as dataStart, L.endTime as dataFinish, CL.desc as classC,B.absentClass as absent
+                    FROM booking B, lecture L, course C, class CL,student S
+                    WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND L.active=1;`; //remember if delete last condition in WHERE statement
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+        
+    });
+}
+
+
+/**
+ * Get info about all cancel lectures
+ */
+
+ exports.getAllCancellations=()=>{
+     return new Promise((resolve,reject)=>{
+        let query=`SELECT C.desc as course,CL.desc as classC,L.date as dataStart,L.endTime as dataFinish
+                    FROM lecture L, course C, class CL
+                    WHERE L.ref_course=C.id AND L.ref_class=CL.id AND L.active=0;`;
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+
+     });
+ }
 
 /*
 * Get all attendance of a positive student and the relative people involved in

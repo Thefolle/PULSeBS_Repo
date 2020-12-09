@@ -1,6 +1,7 @@
 import Lecture from './Lecture.js'
 import Booking from './Booking.js'
 import LectureTeacher from './LectureTeacher.js'
+import BookingsStat from './BookingsStat.js';
 const baseURL = "/api";
 
 
@@ -238,7 +239,31 @@ async function getTeacherStatistics(teacherId, courseId, groupBy) {
     }
 }
 
+async function getAllBookings() {
+    let url = "/manager/getAllBookings";
+    const response = await fetch(baseURL + url);
+    const bookingsJson = await response.json();
+    if (response.ok) {
+        return bookingsJson.map((b) => new BookingsStat(b.studentId, b.studentName, b.studentSurname,b.course, b.dataStart, b.dataFinish, b.classC,b.absent));
+    } else {
+        let err = { status: response.status, errObj: bookingsJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function getAllCancellations() {
+    let url = "/manager/getAllCancellations";
+    const response = await fetch(baseURL + url);
+    const cancellationsJson = await response.json();
+    if (response.ok) {
+        return cancellationsJson;
+    } else {
+        let err = { status: response.status, errObj: cancellationsJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellations };
 export default API;

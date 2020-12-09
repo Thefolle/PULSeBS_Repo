@@ -454,6 +454,32 @@ app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
     }
 } );
 
+//BOOKING MANAGER
+
+app.get('/api/manager/getAllBookings',(req,res)=>{
+ pulsebsDAO.getAllBookings()
+              .then( ( bookings ) => {
+                  res.json( bookings );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllCancellations',(req,res)=>{
+ pulsebsDAO.getAllBookings()
+              .then( ( cancellations ) => {
+                  res.json( cancellations );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
 
 // Exported for E2E testing
 exports.server = app;

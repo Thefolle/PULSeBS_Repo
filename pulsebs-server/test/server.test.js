@@ -3,6 +3,7 @@ const { server, handleToCloseServer } = require("../server");
 
 let token;
 
+describe('API STUDENT', () => {
 beforeAll((done) => {
 
     request(server)
@@ -187,4 +188,72 @@ afterAll(async () => {
     handleToCloseServer.close();
 }, 10);
 
+});
 
+describe('API TEACHER', () => {
+    beforeAll((done) => {
+
+        request(server)
+            .post('/api/login')
+            .send({ email: 'hyeronimus.bosch@gmail.com', password: 'password' })
+            .end((error, response) => {
+                if (error) return done(error);
+                token = response.body.token;
+                done();
+            });
+    });
+
+    describe('get /api/user', () => {
+        it('should return a 200 if succeed', async () => {
+
+            const response = await request(server)
+                .get('/api/user')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+            expect(response.body.id).toBe(239901);
+        });
+    });
+
+    //GET STUDENT LECTURES
+
+    describe('get /api/teacher/lectures', () => {
+        it('should return a 200 if exists', async () => {
+
+            const response = await request(server)
+                .get('/api/teacher/lectures')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+            expect(response.body.length).toEqual(7);
+        });
+
+    });
+
+
+    //GET ALL STUDENT'S BOOKINGS
+    describe('/api/teacher/getStudentsForLecture', () => {
+        it('should return a 200 if succeed', async () => {
+
+            const response = await request(server)
+                .get('/api/teacher/getStudentsForLecture')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+            expect(response.body.length).toBe(1);
+        });
+    });
+
+    // logout and server shutdown
+    afterAll(async () => {
+        // Although logout works, being sure to close the server is needed to end the testing session gracefully;
+        // await request(server)
+        //     .post('api/logout')
+        //     .set('Cookie', `token=${token}`);
+        // expect(response.status).toBe(200);
+        handleToCloseServer.close();
+    }, 10);
+});
