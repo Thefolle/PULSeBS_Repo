@@ -1,13 +1,13 @@
 import React from 'react';
 import {Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import UserNavBar from './Components/UserNavBar';
+import { Papa } from 'papaparse/papaparse/';
+import UserNavBar from '../Components/UserNavBar';
 
-import './App.css';
-import API from './API/API';
+import '../App.css';
 
 import {Switch} from 'react-router-dom';
-import {AuthContext} from './auth/AuthContext';
+import {AuthContext} from '../auth/AuthContext';
 import { Row, Col, Container, ListGroup} from "react-bootstrap";
 
 class SupportOfficePage extends React.Component {
@@ -15,20 +15,24 @@ class SupportOfficePage extends React.Component {
     constructor() {
         super();
         this.state = {
-          csvfile: undefined
+          studentscsv: undefined, students: [], teacherscsv: undefined, teachers: [], coursescsv: undefined, courses: [], enrollmcsv: undefined, enrollements: []
         };
-        this.updateData = this.updateStudentsData.bind(this);
+        this.updateStudentsData = this.updateStudentsData.bind(this);
       }
     
       handleChange = event => {
+          console.log(event.target.files[0]);
         this.setState({
-          csvfile: event.target.files[0]
+          [event.target.name]: event.target.files[0] //_csv: file
         });
       };
     
-      importStudentsCSV = () => {
-        const { csvfile } = this.state;
-        Papa.parse(csvfile, {
+      importCSV = () => {
+        const { studentscsv } = this.state;
+
+        var Papa = require("papaparse/papaparse.min.js");
+
+        Papa.parse(studentscsv, {
           complete: this.updateStudentsData,
           header: true
         });
@@ -37,8 +41,11 @@ class SupportOfficePage extends React.Component {
       updateStudentsData(result) {
         var data = result.data.map(e => ({id: e.Id, name: e.Name, city: e.City, email: e.OfficialEmail, bday: e.Birthday, ssn: e.SSN}));
         console.log(data);
-        API.importStudents(data)
-
+        this.setState({students: data});
+        //API.importStudents(data);
+        //or set param in the state .setState({students: students})
+        //in the 2case add a button to send all the data to the proper API which will process them
+        //!!!!!sistema parametri studente con quelli di fra
       }
 
 
@@ -85,13 +92,12 @@ class SupportOfficePage extends React.Component {
                                         ref={input => {
                                                    this.filesInput = input;
                                                 }}
-                                        name="file"
+                                        name="studentscsv"
                                         placeholder={null}
                                         onChange={this.handleChange}
                                     />
                                 <p />
                                 <button onClick={this.importCSV}> Upload now!</button>
-                                {//add check to select kind of data}
                            </div>
 
                         </Col>

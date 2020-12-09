@@ -190,7 +190,7 @@ async function cancelLecture(teacherId, lectureId) {
 
 /**** SUPPORT OFFICE ****/
 
-async function importStudents(students) {
+/*async function importCSV(students) {
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/sofficer/", {
         method: 'POST',
@@ -210,7 +210,7 @@ async function importStudents(students) {
         }
     }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
  });
-}
+}*/
 
 
 
