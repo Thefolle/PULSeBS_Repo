@@ -64,43 +64,43 @@ test('Try to get students booked for lectures of 1 professor', () => {
 });
 
 // GET STUDENTS BOOKED FOR 1 LECTURE
-test('Try to get students booked for lecture 1', () => {
-    return DAO.getStudentsForLecture('1').then(result => {
-        expect(result.length).toBe(1);
-    })
+test( 'Try to get students booked for lecture 1', () => {
+    return DAO.getStudentsForLecture( '1' ).then( result => {
+        expect( result.length ).toBe( 1 );
+    } )
 
-});
+} );
 
-test('Try to get students booked for lecture 2', () => {
-    return DAO.getStudentsForLecture('1').then(result => {
-        expect(result[0].id).toBe(269901);
-    })
+test( 'Try to get students booked for lecture 2', () => {
+    return DAO.getStudentsForLecture( '1' ).then( result => {
+        expect( result[0].id ).toBe( 269901 );
+    } )
 
-});
+} );
 
-test('Try to get students booked for lecture 3', () => {
-    return expect(DAO.getUserById('0')).rejects.toBeUndefined();
+test( 'Try to get students booked for lecture 3', () => {
+    return expect( DAO.getUserById( '0' ) ).rejects.toBeUndefined();
 
-});
+} );
 
-test('Try to get students booked for lecture 4', () => {
-    return expect(DAO.getUserById()).rejects.toBeUndefined();
+test( 'Try to get students booked for lecture 4', () => {
+    return expect( DAO.getUserById() ).rejects.toBeUndefined();
 
-});
+} );
 
 //GET ALL STUDENT'S BOOKINGS
-test('Try to get all student\'s bookings', () => {
-    return DAO.getStudentBookings('269901').then(result => {
-        expect(result.length).toEqual(3);
-    })
-});
+test( 'Try to get all student\'s bookings', () => {
+    return DAO.getStudentBookings( '269901' ).then( result => {
+        expect( result.length ).toEqual( 3 );
+    } )
+} );
 
 //GET TOMORROW LESSONS STATS
-test('Try to get all students booked for tomorrow lectures', () => {
-    return DAO.getTomorrowLessonsStats(true).then(result => {
-        expect(result.length).toEqual(1);
-    });
-});
+test( 'Try to get all students booked for tomorrow lectures', () => {
+    return DAO.getTomorrowLessonsStats( true ).then( result => {
+        expect( result.length ).toEqual( 1 );
+    } );
+} );
 
 describe('Turn a lecture to be online instead of in presence', () => {
     describe('Unit testing', () => {
@@ -156,8 +156,8 @@ describe('Turn a lecture to be online instead of in presence', () => {
         // } );
     });
     // Cannot test exitCode === -4
-});
-describe('Cancel/edit operations', () => {
+} );
+describe( 'Cancel/edit operations', () => {
     //EDIT PRESENCE LECTURE
     test('Try to put a lecture in remote', () => {
         return DAO.setPresenceLecture(2, '12').then(result => {
@@ -178,7 +178,7 @@ describe('Cancel/edit operations', () => {
             expect(result).toEqual(1);
         })
     });
-})
+} )
 
 // GET INFO BY STUDENT ID
 test('Try to see if student infos are correct', () => {
@@ -256,3 +256,116 @@ describe('[PUL 10] Get teacher statistics', () => {
         });
     });
 });
+describe( 'CSV loading tests', () => {
+    let data = {
+        "classes": [
+            {
+                "id": "15",
+                "desc": "12A",
+                "seats": "72"
+            }
+        ],
+        "teachers": [
+            {
+                "id": "239910",
+                "email": "abc@gmail.com",
+                "password": "hash123",
+                "name": "nome",
+                "surname": "cognome"
+            }
+        ],
+        "students": [
+            {
+                "id": "269910",
+                "email": "abc@gmail.com",
+                "password": "hash123",
+                "name": "nome",
+                "surname": "cognome"
+            }
+        ],
+        "courses": [
+            {
+                "id": "90",
+                "desc": "ABC course",
+                "ref_teacher": "239910"
+            }
+        ],
+        "subscriptions": [
+            {
+                "ref_student": "269910",
+                "ref_course": "90"
+            }
+        ],
+        "lectures": [
+            {
+                "ref_course": "90",
+                "ref_class": "15",
+                "date": "123456789",
+                "endTime": "123456789",
+                "presence": "0",
+                "bookable": "0 ",
+                "active": "0"
+            }
+        ]
+    };
+
+    test( "Try to load a correct CSV file content", () => {
+        return DAO.loadCsvData( data )
+                  .then( result => expect( result ).toBe( 0 ) )
+    } );
+    test( "Try to load a wrong CSV file content", () => {
+        data = {
+            "classes": [
+                {
+                    "id": "15",
+                    "desc": "12A",
+                    "seats": "72"
+                }
+            ],
+            "teachers": [
+                {
+                    "id": "239901",
+                    "email": "abc@gmail.com",
+                    "password": "hash123",
+                    "name": "nome",
+                    "surname": "cognome"
+                }
+            ],
+            "students": [
+                {
+                    "id": "269901",
+                    "email": "abc@gmail.com",
+                    "password": "hash123",
+                    "name": "nome",
+                    "surname": "cognome"
+                }
+            ],
+            "courses": [
+                {
+                    "id": "90",
+                    "desc": "ABC course",
+                    "ref_teacher": "239910"
+                }
+            ],
+            "subscriptions": [
+                {
+                    "ref_student": "269910",
+                    "ref_course": "90"
+                }
+            ],
+            "lectures": [
+                {
+                    "ref_course": "90",
+                    "ref_class": "15",
+                    "date": "123456789",
+                    "endTime": "123456789",
+                    "presence": "0",
+                    "bookable": "0 ",
+                    "active": "0"
+                }
+            ]
+        };
+        return DAO.loadCsvData( data )
+                  .catch( err => expect( err ).toBe( 0 ) );
+    } );
+} );
