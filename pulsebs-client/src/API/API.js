@@ -1,7 +1,6 @@
 import Lecture from './Lecture.js'
 import Booking from './Booking.js'
 import LectureTeacher from './LectureTeacher.js'
-import { Ellipsis } from 'react-bootstrap/esm/PageItem';
 const baseURL = "/api";
 
 
@@ -201,7 +200,45 @@ async function isAuthenticated(){
 }
 
 
+async function getTeacherStatistics(teacherId, courseId, groupBy) {
+    let url = `/teachers/${teacherId}/statistics/courses/${courseId}?groupBy=${groupBy.toLowerCase()}`;
+    const response = await fetch(baseURL + url);
+    if (response.status === 500) {
+        console.error('The server received a malformed request (in method ' + getTeacherStatistics.name + ')');
+        return {
+            x: [],
+            y: []
+        }
+    }
+    else if (response.status === 200) {
+        const responseJson = await response.json();
+        if (groupBy === 'Lecture') {
+            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingsNumber);
+            let y = responseJson.map(lectureStatistics => lectureStatistics.lectureDate);
+            let average;
+            if (y.length === 0) average = 0;
+            else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
+            return {x, y, average};
+        } else if (groupBy === 'Week') {
+            console.log(responseJson);
+            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
+            let y = responseJson.map(lectureStatistics => lectureStatistics.week);
+            let average;
+            if (y.length === 0) average = 0;
+            else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
+            return {x, y, average};
+        } else if (groupBy === 'Month') {
+            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
+            let y = responseJson.map(lectureStatistics => lectureStatistics.month);
+            let average;
+            if (y.length === 0) average = 0;
+            else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
+            return {x, y, average};
+        }
+    }
+}
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics };
 export default API;

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
-    "@fullcalendar/react": "^5.4.0",
     "@fullcalendar/daygrid": "^5.4.0",
+    "@fullcalendar/react": "^5.4.0",
     "@fullcalendar/timegrid": "^5.4.0",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/user-event": "^12.2.0",
@@ -12,6 +12,7 @@
     "formik": "^2.1.4",
     "install": "^0.13.0",
     "moment": "^2.29.1",
+    "plotly.js": "^1.58.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-bootstrap": "^1.0.1",

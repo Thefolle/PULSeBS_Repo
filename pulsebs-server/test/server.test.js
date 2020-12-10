@@ -69,19 +69,19 @@ describe('get /api/student/bookings', () => {
 
 //  DELETE cancle the lecture that already booked
 // FIXME:
-describe( '/api/students/:studentId/bookings/:bookingId', () => {
-    it( 'should return a 200 if exists', async () => {
+describe('/api/students/:studentId/bookings/:bookingId', () => {
+    it('should return a 200 if exists', async () => {
 
-          await request( server )
-            .delete( '/api/students/269901/bookings/1' )
-            .set( 'Cookie', `token=${ token }` )
-            .set( 'Content-Type', 'application/json' )
-            .then( ( res ) => {
-                expect( res.status ).toBe( 201 );
-                expect( res.body.response ).toBe( 1 );
-            } );
-    } );
-} );
+        await request(server)
+            .delete('/api/students/269901/bookings/1')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .then((res) => {
+                expect(res.status).toBe(201);
+                expect(res.body.response).toBe(1);
+            });
+    });
+});
 
 
 //DELETE TEACHER'S LECTURE
@@ -158,6 +158,23 @@ describe('E2E testing/Integration testing', () => {
     //             done();
     //         });
     // });
+});
+
+describe('[PUL 10] Get teacher statistics', () => {
+    test('Check returned status', function (done) {
+        let teacherId = 239903;
+        let courseId = 5;
+        request(server)
+            .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId)
+            .query({ groupBy: 'lecture' })
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .end(function (error, response) {
+                if (error) return done(error);
+                expect(response.status).toBe(200);
+                done();
+            });
+    });
 });
 
 describe( 'CSV loading tests', () => {
