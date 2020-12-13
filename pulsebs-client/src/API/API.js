@@ -8,7 +8,6 @@ import Schedule from './Schedule'
 import Class from './Class'
 import scheduledLecture from './scheduledLecture'
 import LectureTeacher from './LectureTeacher.js'
-import { Ellipsis } from 'react-bootstrap/esm/PageItem';
 const baseURL = "/api";
 
 
@@ -197,7 +196,7 @@ async function cancelLecture(teacherId, lectureId) {
 
 /**** SUPPORT OFFICE ****/
 
-/*async function importCSV(students, teachers, courses, enrollments, classes) {
+async function importCSV(students, teachers, courses, enrollments, classes) {
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/sofficer/", {
         method: 'POST',
@@ -207,7 +206,7 @@ async function cancelLecture(teacherId, lectureId) {
         body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn, s.password)),
                                teachers: teachers.map((t) => new Teacher(t.id, t.name, t.surname, t.email, t.password)),
                                courses: courses.map((c) => new Course(c.id, c.year, c.semester, c.course, c.teacher)), 
-                               enrollments: enrollments.map((e) => new Enrollment(e.cid, e.sid)),
+                               subscriptions: enrollments.map((e) => new Enrollment(e.cid, e.sid)),
                                classes: classes.map((c) => new Class(c.id, c.desc, c.seats)),
                                lectures: lectures.map((l) => new scheduledLecture(l.course, l.ref_class, l.start_date, l.end_date, l.presence, l.bookable, l.active))
                               // schedule: schedules.map((s) => new Schedule(s.id, s.room, s.date, s.seats, s.time))
@@ -224,7 +223,7 @@ async function cancelLecture(teacherId, lectureId) {
         }
     }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
  });
-}*/
+}
 
 
 
@@ -241,7 +240,45 @@ async function isAuthenticated(){
 }
 
 
+async function getTeacherStatistics(teacherId, courseId, groupBy) {
+    let url = `/teachers/${teacherId}/statistics/courses/${courseId}?groupBy=${groupBy.toLowerCase()}`;
+    const response = await fetch(baseURL + url);
+    if (response.status === 500) {
+        console.error('The server received a malformed request (in method ' + getTeacherStatistics.name + ')');
+        return {
+            x: [],
+            y: []
+        }
+    }
+    else if (response.status === 200) {
+        const responseJson = await response.json();
+        if (groupBy === 'Lecture') {
+            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingsNumber);
+            let y = responseJson.map(lectureStatistics => lectureStatistics.lectureDate);
+            let average;
+            if (y.length === 0) average = 0;
+            else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
+            return {x, y, average};
+        } else if (groupBy === 'Week') {
+            console.log(responseJson);
+            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
+            let y = responseJson.map(lectureStatistics => lectureStatistics.week);
+            let average;
+            if (y.length === 0) average = 0;
+            else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
+            return {x, y, average};
+        } else if (groupBy === 'Month') {
+            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
+            let y = responseJson.map(lectureStatistics => lectureStatistics.month);
+            let average;
+            if (y.length === 0) average = 0;
+            else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
+            return {x, y, average};
+        }
+    }
+}
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture /*,importCSV*/ };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents, isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics, importCSV };
 export default API;

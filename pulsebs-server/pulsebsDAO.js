@@ -1,32 +1,33 @@
-const sqlite3 = require( 'sqlite3' ).verbose();
-const fs = require( 'fs' );
-const moment = require( 'moment' );
+const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
+const moment = require('moment');
+moment.locale('it');
 
-const User = require( './User' );
+const User = require('./User');
 
 let db;
 
-function openDB (dbName) {
-    return new sqlite3.Database( dbName, ( err ) => {
-        if ( err ) return console.error( err.message );
-    } );
+function openDB(dbName) {
+    return new sqlite3.Database(dbName, (err) => {
+        if (err) return console.error(err.message);
+    });
 }
 
 /*
 * Database Connection
 */
-if ( !db ) {
-    if ( process.env.TEST && process.env.TEST === '1' ) {
+if (!db) {
+    if (process.env.TEST && process.env.TEST === '1') {
         //TEST DB
         const dbName = 'pulsebs-test.db'
         //Check for file existance
-        if ( fs.existsSync( dbName ) ) fs.unlinkSync( dbName ); //If true, delete file
+        if (fs.existsSync(dbName)) fs.unlinkSync(dbName); //If true, delete file
         //Create new db
         fs.copyFile('pulsebs-backup.db', 'pulsebs-test.db', (err) => {
             if (err) throw err;
         });
         db = openDB(dbName);
-    } else db = openDB('pulsebs.db');
+    } else db = openDB('mypulsebs.db');
 }
 
 /*
@@ -37,32 +38,39 @@ if ( !db ) {
 * Checking user password
 * */
 
-exports.getUserByEmail = function ( email ) {
-    return new Promise( ( resolve, reject ) => {
+exports.getUserByEmail = function (email) {
+    return new Promise((resolve, reject) => {
         let nTimesUserNotFound = 0;
 
-        let sqls = [ `SELECT * FROM student WHERE email = ?`,
-                `SELECT * FROM teacher WHERE email = ?`,
-                `SELECT * FROM staff WHERE email = ?` ];
+        let sqls = [`SELECT * FROM student WHERE email = ?`,
+            `SELECT * FROM teacher WHERE email = ?`,
+            `SELECT * FROM staff WHERE email = ?`];
 
-        for ( let i = 0; i < sqls.length; i++ ) {
-            db.all( sqls[i], [ email ], ( err, rows ) => {
-                if ( err ) {
-                    reject( err );
-                } else if ( rows.length === 0 ) {
+        for (let i = 0; i < sqls.length; i++) {
+            db.all(sqls[i], [email], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else if (rows.length === 0) {
                     // if none query succeeds, the email doesn't exist anywhere in the DB
                     nTimesUserNotFound++;
-                    if ( nTimesUserNotFound === 3 ) reject( undefined );
+                    if (nTimesUserNotFound === 3) reject(undefined);
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    const user = new User( row.id, row.email, row.password, i, row.name, row.surname );
-                    resolve( user );
+                    let user=null;
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    if(i===2){
+                        user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
+                    }else{
+                        user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    }
+                    
+                    resolve(user);
                 }
-            } );
+            });
         }
 
-    } );
+    });
 };
 
 
@@ -76,104 +84,111 @@ exports.getUserByEmail = function ( email ) {
 *   The current implementation extracts all ids and emails from the table and performs the selection in JS.
 */
 
-exports.getLectureInformation = function ( lectureId ) {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getLectureInformation = function (lectureId) {
+    return new Promise(((resolve, reject) => {
         let query = 'SELECT id, ref_course AS courseId, ref_class AS classId FROM student;'
-        db.all( query, [ lectureId ], ( error, rows ) => {
-            if ( error ) reject( error );
-            else if ( !rows ) resolve( [] );
-            else resolve( rows.filter( row => studentIds.includes( row.id ) ).map( row => row.email ) );
-        } );
-    } ) );
+        db.all(query, [lectureId], (error, rows) => {
+            if (error) reject(error);
+            else if (!rows) resolve([]);
+            else resolve(rows.filter(row => studentIds.includes(row.id)).map(row => row.email));
+        });
+    }));
 }
 
 /*
 * Get email by userId
 * */
 
-exports.getInfoByStudentId = ( studentId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getInfoByStudentId = (studentId) => {
+    return new Promise(((resolve, reject) => {
         let query = `SELECT email,
                             name,
                             surname
                     FROM student
-                    WHERE id=${ studentId };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows[0] );
-            else resolve( 0 );
-        } );
-    } ) );
+                    WHERE id=${studentId};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows[0]);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Retrieve info about id
 * */
 
-exports.getUserById = function ( id ) {
-    return new Promise( ( resolve, reject ) => {
+exports.getUserById = function (id) {
+    return new Promise((resolve, reject) => {
         let nTimesUserNotFound = 0;
 
-        let sqls = [ `SELECT * FROM student WHERE id = ?`,
-                `SELECT * FROM teacher WHERE id = ?`,
-                `SELECT * FROM staff WHERE id = ?` ];
+        let sqls = [`SELECT * FROM student WHERE id = ?`,
+            `SELECT * FROM teacher WHERE id = ?`,
+            `SELECT * FROM staff WHERE id = ?`];
 
-        for ( let i = 0; i < sqls.length; i++ ) {
-            db.all( sqls[i], [ id ], ( err, rows ) => {
-                if ( err ) {
-                    reject( err );
-                } else if ( rows.length === 0 ) {
+        for (let i = 0; i < sqls.length; i++) {
+            db.all(sqls[i], [id], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else if (rows.length === 0) {
                     // if none query succeeds, the email doesn't exist anywhere in the DB
                     nTimesUserNotFound++;
-                    if ( nTimesUserNotFound === 3 ) reject( undefined );
+                    if (nTimesUserNotFound === 3) reject(undefined);
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    const user = new User( row.id, row.email, row.password, i, row.name, row.surname );
-                    resolve( user );
+                    let user=null;
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    if(i===2){
+                        user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
+                    }else{
+                        user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    }
+                    
+                    resolve(user);
                 }
-            } );
+            });
         }
 
-    } );
+    });
 };
 
 /*
 * Book a seat for a lecture
 * */
 
-exports.bookSeat = ( lectureId, studentId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.bookSeat = (lectureId, studentId) => {
+    return new Promise(((resolve, reject) => {
         //1 - Check if student is undersigned to that course
         let checkQuery = `SELECT bookable
                           FROM subscription S,course C,lecture L
                           WHERE S.ref_course = C.id AND
                                 C.id = L.ref_course AND
-                                L.id = ${ lectureId } AND
-                                S.ref_student = ${ studentId };`
+                                L.id = ${lectureId} AND
+                                S.ref_student = ${studentId};`
         //2 - Insert a new booking record
-        let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ studentId },${ lectureId },${ moment().valueOf() });`
+        let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${studentId},${lectureId},${moment().valueOf()});`
 
-        db.get( checkQuery, [], ( err, row ) => {
-            if ( err ) reject( err );
-            if ( row && row.bookable === 1 ) {
+        db.get(checkQuery, [], (err, row) => {
+            if (err) reject(err);
+            if (row && row.bookable === 1) {
                 //Student subscription exists
 
-                db.run( bookQuery, [], ( err ) => {
+                db.run(bookQuery, [], (err) => {
 
-                    err ? reject( err ) : resolve( 1 );
-                } );
-            } else resolve( 0 );
-        } );
-    } ) );
+                    err ? reject(err) : resolve(1);
+                });
+            } else resolve(0);
+        });
+    }));
 }
 
 /*
 * Get lecture statistics
 * */
 
-exports.getLectureStats = ( lectureId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getLectureStats = (lectureId) => {
+    return new Promise(((resolve, reject) => {
         let query = `SELECT date,
                             CO.desc AS course,
                             CL.desc AS classroom
@@ -182,13 +197,13 @@ exports.getLectureStats = ( lectureId ) => {
                             course CO
                        WHERE L.ref_class = CL.id AND
                              L.ref_course = CO.id AND
-                             L.id = ${ lectureId };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows[0] );
-            else resolve( 0 );
-        } );
-    } ) );
+                             L.id = ${lectureId};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows[0]);
+            else resolve(0);
+        });
+    }));
 }
 
 
@@ -196,8 +211,8 @@ exports.getLectureStats = ( lectureId ) => {
 * Get list of student's lectures
 * */
 
-exports.getStudentLectures = ( studentId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getStudentLectures = (studentId) => {
+    return new Promise(((resolve, reject) => {
         let query = `SELECT L.id,
                             date,
                             presence,
@@ -217,22 +232,22 @@ exports.getStudentLectures = ( studentId ) => {
                             C.id IN (   SELECT  C2.id
                                         FROM    subscription S, student ST, course C2
                                         WHERE   S.ref_course = C2.id AND
-                                                S.ref_student = ${ studentId }
+                                                S.ref_student = ${studentId}
                             );`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Get list of teacher's lectures
 * */
 
-exports.getTeacherLectures = ( teacherId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getTeacherLectures = (teacherId) => {
+    return new Promise(((resolve, reject) => {
         let query = `SELECT C.desc as course,
                                 CL.desc as class,
                                 C.id as id,
@@ -247,13 +262,13 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 class CL
                         WHERE   L.ref_course = C.id AND
                                 L.ref_class = CL.id AND
-                                C.ref_teacher = ${ teacherId };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                                C.ref_teacher = ${teacherId};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
@@ -275,17 +290,17 @@ exports.getStudentsForLecture = (lectureId) => {
 * Get a list of students who will attend a lecture - Vincenzo's implementation
 * */
 
-exports.getStudentsForLecturev2 = ( teacherId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getStudentsForLecturev2 = (teacherId) => {
+    return new Promise(((resolve, reject) => {
         let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId
                      FROM booking B,course CO, lecture L
-                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${ teacherId };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${teacherId};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 
@@ -293,30 +308,30 @@ exports.getStudentsForLecturev2 = ( teacherId ) => {
 * Delete a booking
 * */
 
-exports.cancelBookings = ( bookingId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
+exports.cancelBookings = (bookingId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `UPDATE booking SET active = 0 WHERE id = ${bookingId};`
+        db.run(query, [], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Delete a booking  -v2
 * */
 
-exports.cancelBooking = ( bookingId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `DELETE FROM booking WHERE id = ${ bookingId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
+exports.cancelBooking = (bookingId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `DELETE FROM booking WHERE id = ${bookingId};`
+        db.run(query, [], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+            else resolve(0);
+        });
+    }));
 }
 
 
@@ -324,8 +339,8 @@ exports.cancelBooking = ( bookingId ) => {
 * Get a list of student's booking
 * */
 
-exports.getStudentBookings = ( studentId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getStudentBookings = (studentId) => {
+    return new Promise(((resolve, reject) => {
         let query = `   SELECT  B.id,
                                 B.date,
                                 B.active,
@@ -348,36 +363,36 @@ exports.getStudentBookings = ( studentId ) => {
                                 L.ref_class = CL.id AND
                                 L.ref_course = C.id AND
                                 C.ref_teacher = T.id AND
-                                B.ref_student = ${ studentId };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                                B.ref_student = ${studentId};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Delete a lecture
 * */
 
-exports.cancelLecture = ( lectureId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE lecture SET active = 0, bookable = 0 WHERE id = ${ lectureId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
+exports.cancelLecture = (lectureId) => {
+    return new Promise(((resolve, reject) => {
+        let query = `UPDATE lecture SET active = 0, bookable = 0 WHERE id = ${lectureId};`
+        db.run(query, [], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Get tomorrow's lessons stats
 * */
 
-exports.getTomorrowLessonsStats = ( test = false ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getTomorrowLessonsStats = (test = false) => {
+    return new Promise(((resolve, reject) => {
         let query = `    SELECT T.id,
                                 T.email,
                                 T.name,
@@ -395,26 +410,26 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
                                 B.ref_lecture = L.id AND
                                 B.active = 1 AND
                                 L.active = 1 AND
-                                L.date > ${ test ? 1605398400000 : moment().milliseconds( 0 )
-                                                                           .seconds( 0 )
-                                                                           .minute( 0 )
-                                                                           .hour( 0 )
-                                                                           .add( 1, "day" )
-                                                                           .valueOf() } AND
-                                L.date < ${ test ? 1605571199000 : moment().milliseconds( 0 )
-                                                                           .seconds( 0 )
-                                                                           .minute( 0 )
-                                                                           .hour( 0 )
-                                                                           .add( 2, "days" )
-                                                                           .valueOf() } AND
+                                L.date > ${test ? 1605398400000 : moment().milliseconds(0)
+                .seconds(0)
+                .minute(0)
+                .hour(0)
+                .add(1, "day")
+                .valueOf()} AND
+                                L.date < ${test ? 1605571199000 : moment().milliseconds(0)
+                .seconds(0)
+                .minute(0)
+                .hour(0)
+                .add(2, "days")
+                .valueOf()} AND
                                 CL.id = L.ref_class
                         GROUP BY B.ref_lecture;`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            else if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            else if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 
@@ -439,30 +454,30 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
 *   is not active or if the lecture's start time is planned within the next
 *   30 minutes starting from the current time
 * */
-exports.turnLectureIntoOnline = ( teacherId = 0, lectureId ) => {
-    return new Promise( ( resolve, reject ) => {
+exports.turnLectureIntoOnline = (teacherId = 0, lectureId) => {
+    return new Promise((resolve, reject) => {
         let query1 = `  SELECT  L.active as active, L.date as date
                         FROM lecture L, course C
                         WHERE L.ref_course = C.id AND L.id = ${lectureId} AND C.ref_teacher = ${teacherId}`;
         let query2 = `UPDATE lecture SET presence = 0, ref_class = 0 WHERE id = ${lectureId} AND active = 1;`
         let now = moment().valueOf(); // in milliseconds
 
-        db.get( query1, [], function ( error, couple ) {
-            if ( couple === undefined ) {
-                reject( -1 );
-            } else if ( couple.active === 0 ) {
-                reject( -2 );
-            } else if ( now > couple.date - 1800000 && now < couple.date ) {
-                reject( -3 );
-            } else if ( error ) {
-                reject( -4 );
+        db.get(query1, [], function (error, couple) {
+            if (couple === undefined) {
+                reject(-1);
+            } else if (couple.active === 0) {
+                reject(-2);
+            } else if (now > couple.date - 1800000 && now < couple.date) {
+                reject(-3);
+            } else if (error) {
+                reject(-4);
             } else {
-                db.run( query2, [], function ( error ) {
-                    if ( error ) {
-                        reject( -4 );
+                db.run(query2, [], function (error) {
+                    if (error) {
+                        reject(-4);
                     } else {
                         let getInformationToSendEmailsQuery =
-                                `SELECT DISTINCT L.date AS lectureDate,
+                            `SELECT DISTINCT L.date AS lectureDate,
                                     Co.desc AS courseDescription,
                                     Cl.desc AS lectureClass,
                                     S.name AS studentName,
@@ -479,47 +494,167 @@ exports.turnLectureIntoOnline = ( teacherId = 0, lectureId ) => {
                                     B.ref_lecture = L.id AND
                                     L.ref_course = Co.id AND
                                     L.ref_class = Cl.id`;
-                        db.all( getInformationToSendEmailsQuery, [], function ( error, rows ) {
-                            if ( error ) reject( -4 );
-                            else resolve( rows );
-                        } );
+                        db.all(getInformationToSendEmailsQuery, [], function (error, rows) {
+                            if (error) reject(-4);
+                            else resolve(rows);
+                        });
                     }
-                } );
+                });
             }
-        } );
+        });
 
-    } );
+    });
 }
 
 
 /*
-* Get all bookings to be grouped by week,month or single lecture
-* Time handling should be done on frontend due to a too simple handling of date format in sqlite
+* Get all bookings to be grouped by week, month or single lecture
 * */
 
-exports.getTeacherBookingStats = ( teacherId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `SELECT B.id,
-                            B.date as bDate,
-                            B.active,
-                            B.presence,
-                            L.date as Ldate,
-                            L.presence as lPresence,
-                            L.active as lActive,
-                            C.desc
-                     FROM   booking B,
+exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
+    return new Promise(((resolve, reject) => {
+        let now = moment();
+        if (groupBy === 'lecture') {
+            // the row C.ref_teacher = ${teacherId} is useful if one course can be held by more than one teacher
+            // no rows are returned if a the course is not assigned to the teacher
+            // L.id is needed for sqlite (group by requires it in the select), but it is useless for showing statistics
+            // the course description is not needed, it is already present in the front end
+            let perLectureQuery = `SELECT COUNT(*) as bookingsNumber,
+                            L.id as lectureId,
+                            L.date as lectureDate
+                    FROM    booking B,
                             lecture L,
                             course C
-                     WHERE  B.ref_lecture = L.id AND
+                    WHERE   B.ref_lecture = L.id AND
                             L.ref_course = C.id AND
-                            C.ref_teacher = ${ teacherId } AND
-                            active = 1;`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                            C.ref_teacher = ? AND
+                            C.id = ? AND
+                            L.presence = 1
+                    GROUP BY lectureId
+                    ORDER BY lectureDate
+                    ;`
+            db.all(perLectureQuery, [teacherId, courseId], (error, rows) => {
+                if (error) reject(error);
+                else resolve(rows);
+            });
+        } else if (groupBy === 'week') {
+            let earliestDateQuery = `
+                SELECT  MIN(L.date) as earliestDate
+                FROM lecture L
+            ;`
+            db.get(earliestDateQuery, [], function (error, row) {
+                if (error) reject(error);
+                else {
+                    // set the locale so as to start the week from Monday
+                    let earliestWeek = moment(row.earliestDate)
+                        .startOf('week')
+                    let successiveWeek = earliestWeek.clone().add(1, 'week');
+                    // the sampleDate field is not meaningful because there may be bookings in
+                    // different lectures but in the same week; it is just an expedient to keep
+                    // trace of which week the bookingNumber belongs to
+                    let getStatisticsInWeekQuery = `
+                        SELECT  COUNT(*) as bookingNumber, MAX(L.date) as sampleDate
+                        FROM    lecture L,
+                                booking B,
+                                course C
+                        WHERE   B.ref_lecture = L.id AND
+                                L.ref_course = C.id AND
+                                C.ref_teacher = ? AND
+                                C.id = ? AND
+                                L.date >= ? AND
+                                L.date < ? AND
+                                L.presence = 1
+                        ORDER BY sampleDate
+                    ;`
+                    let statistics = [];
+                    // the number of callbacks equals the number of loops in the while cycle; this property
+                    // enables to infer which query (and therefore callback) is executed last
+                    // notice that first the whole cycle is processed, and then the callbacks are called in
+                    // order, starting from the oldest one
+                    let numberOfLoops = 0, numberOfCallbacks = 0;
+                    while (now.isAfter(earliestWeek)) {
+                        db.get(getStatisticsInWeekQuery, [teacherId, courseId, earliestWeek.valueOf(), successiveWeek.valueOf()], function (error, row) {
+                            if (error) reject(error);
+                            else {
+                                // if in the considered week there was at least one lecture
+                                if (!(row.sampleDate == null && row.bookingNumber == 0)) {
+                                    statistics.push({ bookingNumber: row.bookingNumber, week: moment(row.sampleDate).startOf('week').valueOf() });
+                                }
+                                // infer if it this is the last executed query
+                                numberOfCallbacks++;
+                                if (numberOfCallbacks === numberOfLoops) {
+                                    resolve(statistics);
+                                }
+                            }
+                        });
+                        earliestWeek.add(1, 'week');
+                        successiveWeek.add(1, 'week');
+                        numberOfLoops++;
+                    }
+                }
+            });
+        } else {
+            let earliestDateQuery = `
+                SELECT  MIN(L.date) as earliestDate
+                FROM lecture L
+            ;`
+            db.get(earliestDateQuery, [], function (error, row) {
+                if (error) reject(error);
+                else {
+                    // set the locale so as to start the week from Monday
+                    moment.locale('it');
+                    let earliestMonth = moment(row.earliestDate)
+                        .startOf('month')
+                    let successiveMonth = earliestMonth.clone().add(1, 'month');
+                    // the sampleDate field is not meaningful because there may be bookings in
+                    // different lectures but in the same week; it is just an expedient to keep
+                    // trace of which week the bookingNumber belongs to; the other possibility
+                    // seems to directly use the earliestMonth variable, but the callback should
+                    // not rely upon changing variables
+                    let getStatisticsInMonthQuery = `
+                        SELECT  COUNT(*) as bookingNumber, MAX(L.date) as sampleDate
+                        FROM    lecture L,
+                                booking B,
+                                course C
+                        WHERE   B.ref_lecture = L.id AND
+                                L.ref_course = C.id AND
+                                C.ref_teacher = ? AND
+                                C.id = ? AND
+                                L.date >= ? AND
+                                L.date < ? AND
+                                L.presence = 1
+                        ORDER BY sampleDate
+                    ;`
+                    let statistics = [];
+                    // the number of callbacks equals the number of loops in the while cycle; this property
+                    // enables to infer which query (and therefore callback) is executed last
+                    // notice that first the whole cycle is processed, and then the callbacks are called in
+                    // order, starting from the oldest one
+                    let numberOfLoops = 0, numberOfCallbacks = 0;
+                    while (now.isAfter(earliestMonth)) {
+                        db.get(getStatisticsInMonthQuery, [teacherId, courseId, earliestMonth.valueOf(), successiveMonth.valueOf()], function (error, row) {
+                            if (error) reject(error);
+                            else {
+                                // if in the considered month there was at least one lecture
+                                if (!(row.sampleDate == null && row.bookingNumber == 0)) {
+                                    statistics.push({ bookingNumber: row.bookingNumber, month: moment(row.sampleDate).startOf('month').valueOf() });
+                                }
+                                // infer if it this is the last executed query
+                                numberOfCallbacks++;
+                                if (numberOfCallbacks === numberOfLoops) {
+                                    resolve(statistics);
+                                }
+                            }
+                        });
+                        earliestMonth.add(1, 'month');
+                        successiveMonth.add(1, 'month');
+                        numberOfLoops++;
+                    }
+                }
+            });
+        }
+
+    }));
 }
 
 /*
@@ -527,24 +662,24 @@ exports.getTeacherBookingStats = ( teacherId ) => {
 * Time handling should be done on frontend due to a too simple handling of date format in sqlite
 * */
 
-exports.getTeacherPresenceStats = ( teacherId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.getTeacherPresenceStats = (teacherId) => {
+    return new Promise(((resolve, reject) => {
         let query = `    SELECT *
                          FROM   booking B,
                                 lecture L,
                                 course C
                          WHERE  B.ref_lecture = L.id AND
                                 L.ref_course = C.id AND
-                                C.ref_teacher = ${ teacherId } AND
+                                C.ref_teacher = ${teacherId} AND
                                 active = 1 AND
                                 presence = 1 AND
-                                L.date < ${ moment().valueOf() };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                                L.date < ${moment().valueOf()};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
@@ -552,27 +687,27 @@ exports.getTeacherPresenceStats = ( teacherId ) => {
 * */
 
 exports.getManagerStats = () => {
-    return new Promise( ( ( resolve, reject ) => {
+    return new Promise(((resolve, reject) => {
         //Result => [ BOOKING COUNT, CANCELLATION COUNT, PRESENCE COUNT ]
         let query = `SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL
                      SELECT COUNT(*) FROM booking WHERE active = 0 UNION ALL
                      SELECT COUNT(*) FROM booking WHERE presence = 1;`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Get all attendance of a positive student and the relative people involved in
 * */
 
-exports.studentContactTracing = ( studentId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.studentContactTracing = (studentId) => {
+    return new Promise(((resolve, reject) => {
         let now = moment();
-        let twoWeeksAgo = now.subtract( 14, 'days' );
+        let twoWeeksAgo = now.subtract(14, 'days');
 
         let query = `SELECT S.name as sname,
                             S.surname as ssurname,
@@ -591,26 +726,26 @@ exports.studentContactTracing = ( studentId ) => {
                                         FROM    booking B,
                                                 lecture L
                                         WHERE   B.ref_lecture = L.lecture AND
-                                                B.ref_student = ${ studentId } AND
+                                                B.ref_student = ${studentId} AND
                                                 B.presence = 1 AND
-                                                L.date < ${ now.valueOf() } AND
-                                                L.date > ${ twoWeeksAgo.valueOf() } );`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                                                L.date < ${now.valueOf()} AND
+                                                L.date > ${twoWeeksAgo.valueOf()} );`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Get all lectures of a positive teacher and the relative people involved in
 * */
 
-exports.teacherContactTracing = ( teacherId ) => {
-    return new Promise( ( ( resolve, reject ) => {
+exports.teacherContactTracing = (teacherId) => {
+    return new Promise(((resolve, reject) => {
         let now = moment();
-        let twoWeeksAgo = now.subtract( 14, 'days' );
+        let twoWeeksAgo = now.subtract(14, 'days');
 
         let query = `SELECT S.name as sname,
                             S.surname as ssurname
@@ -621,31 +756,31 @@ exports.teacherContactTracing = ( teacherId ) => {
                      WHERE  B.ref_student = S.id AND
                             B.ref_lecture = L.id AND
                             L.ref_course = C.id AND
-                            C.ref_teacher = ${ teacherId } AND
+                            C.ref_teacher = ${teacherId} AND
                             B.presence = 1 AND
-                            L.date < ${ now.valueOf() } AND
-                            L.date > ${ twoWeeksAgo.valueOf() };`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+                            L.date < ${now.valueOf()} AND
+                            L.date > ${twoWeeksAgo.valueOf()};`
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Make bookable/no bookable a lecture
 * */
 
-exports.editBookableLecture = ( lectureId, bookable ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE lecture SET bookable = ${ bookable } WHERE id = ${ lectureId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
+exports.editBookableLecture = (lectureId, bookable) => {
+    return new Promise(((resolve, reject) => {
+        let query = `UPDATE lecture SET bookable = ${bookable} WHERE id = ${lectureId};`
+        db.run(query, [], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
@@ -653,44 +788,76 @@ exports.editBookableLecture = ( lectureId, bookable ) => {
 * */
 
 exports.getOfficerCoursesLectures = () => {
-    return new Promise( ( ( resolve, reject ) => {
+    return new Promise(((resolve, reject) => {
         let query = `SELECT * FROM lecture L, course C WHERE L.ref_course = C.id;`
-        db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
-        } );
-    } ) );
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+    }));
 }
 
 /*
 * Edit a lecture date
 * */
 
-exports.editLectureDate = ( lectureId, newDate ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE lecture SET date = ${ newDate } WHERE id = ${ lectureId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
+exports.editLectureDate = (lectureId, newDate) => {
+    return new Promise(((resolve, reject) => {
+        let query = `UPDATE lecture SET date = ${newDate} WHERE id = ${lectureId};`
+        db.run(query, [], function (err) {
+            if (err) reject(err);
+            if (this.changes) resolve(1);
+            else resolve(0);
+        });
+    }));
 }
 
-exports.setPresenceLecture = ( lectureId, className ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let queryClass = `SELECT id FROM class WHERE desc = ${ className }`;
-        let queryLecture = `UPDATE lecture SET presence = 1, ref_class = ? WHERE id = ${ lectureId }`;
-        db.get( queryClass, [], ( err, row ) => {
-            if ( err ) reject( err );
-            if ( row ) {
-                db.run( queryLecture, [ row.id ], ( err ) => {
-                    if ( err ) reject( err );
-                    else resolve( 1 );
-                } )
+exports.setPresenceLecture = (lectureId, className) => {
+    return new Promise(((resolve, reject) => {
+        let queryClass = `SELECT id FROM class WHERE desc = ${className}`;
+        let queryLecture = `UPDATE lecture SET presence = 1, ref_class = ? WHERE id = ${lectureId}`;
+        db.get(queryClass, [], (err, row) => {
+            if (err) reject(err);
+            if (row) {
+                db.run(queryLecture, [row.id], (err) => {
+                    if (err) reject(err);
+                    else resolve(1);
+                })
             }
-        } )
-    } ) );
+        })
+    }));
+}
 
+exports.loadCsvData = (data) => {
+    return new Promise( ( resolve, reject ) => {
+        let query = '';
+        //Classes inserting
+        data.classes.forEach( ( class_ ) => {
+            query += `INSERT INTO class (id,desc,seats) values  (${ class_.id },'${ class_.desc }',${ class_.seats }); `
+        } );
+        //Teachers inserting
+        data.teachers.forEach( ( teacher ) => {
+            query += `insert into teacher (id, email, password, name, surname) VALUES (${ teacher.id },'${ teacher.email }','${ teacher.password }','${ teacher.name }','${ teacher.surname }'); `
+        } );
+        //Students inserting
+        data.students.forEach( ( student ) => {
+            query += `insert into student (id, email, password, name, surname) VALUES (${ student.id },'${ student.email }','${ student.password }','${ student.name }','${ student.surname }'); `
+        } );
+        //Courses inserting
+        data.courses.forEach( ( course ) => {
+            query += `insert into course (id, desc, ref_teacher) VALUES (${ course.id },'${ course.desc }',${ course.ref_teacher }); `
+        } );
+        //Subscriptions inserting
+        data.subscriptions.forEach( ( subscription ) => {
+            query += `insert into subscription (ref_student, ref_course) VALUES (${subscription.ref_student},${subscription.ref_course}); `
+        } );
+        //Students inserting
+        data.lectures.forEach( ( lecture ) => {
+            query += `insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (${ lecture.ref_course },${ lecture.ref_class },${ lecture.date },${ lecture.endTime },${ lecture.presence },${ lecture.bookable },${ lecture.active }); `
+        } );
+        db.exec( "BEGIN TRANSACTION; " + query + " COMMIT;", ( err ) => {
+            err ? reject( 0 ) : resolve( 0 );
+        } );
+    });
 }

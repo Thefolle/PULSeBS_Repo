@@ -8,7 +8,7 @@ const cookieParser = require( 'cookie-parser' );
 const moment = require( 'moment' );
 
 const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
-const expireTime = 900; //seconds
+const expireTime = 900000; //seconds
 const bcrypt = require( 'bcrypt' );
 
 const schedule = require( 'node-schedule' );
@@ -17,6 +17,8 @@ const nodemailer = require( 'nodemailer' );
 
 // Authorization error
 const authErrorObj = {errors: [ {'param': 'Server', 'message': 'Authorization error'} ]};
+const databaseErrorObj = {errors: [ {'param': 'Server', 'message': 'Error during DB execution'} ]};
+const dataErrorObj = {errors: [ {'param': 'Server', 'message': 'Data sent is not correct'} ]};
 
 checkPassword = function ( user, password ) {
     /*
@@ -200,8 +202,6 @@ app.get( '/api/user', ( req, res ) => {
     );
 } );
 
-/*TEACHER */
-
 /*
 *   Update lecture
 *       request body:
@@ -278,6 +278,20 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
     }
 } );
 
+app.get('/api/teachers/:teacherId/statistics/courses/:courseId', (req, res) => {
+    const user = req.user && req.user.user;
+    const teacherId = req.params.teacherId;
+    const courseId = req.params.courseId;
+    const groupBy = req.query.groupBy;
+
+    pulsebsDAO.getTeacherBookingStatistics(teacherId, courseId, groupBy).then( statistics => {
+        res.status(200).json(statistics);
+    }).catch(error => {
+        console.log(error);
+        res.status(500).end();
+    });
+})
+
 /****** STUDENT ******/
 
 //GET /student/lectures
@@ -298,24 +312,24 @@ app.get( '/api/student/lectures', ( req, res ) => {
 
 //POST /student/booking
 // FIXME: refactor
-app.post('/api/students/:studentId/booking', (req, res) => {
+app.post( '/api/students/:studentId/booking', ( req, res ) => {
     const lectureId = req.body.lectureId;
     const studentId = req.params.studentId;
-    if (!lectureId) {
-        res.status(401).end();
+    if ( !lectureId ) {
+        res.status( 401 ).end();
     } else {
         const user = req.user && req.user.user;
         pulsebsDAO.bookSeat( lectureId, user )
                   .then( ( response ) => {
                       if ( process.env.TEST && process.env.TEST === '0' ) {
-                      pulsebsDAO.getLectureStats( lectureId )
-                                .then( ( lecture ) => {
+                          pulsebsDAO.getLectureStats( lectureId )
+                                    .then( ( lecture ) => {
 
-                                    pulsebsDAO.getInfoByStudentId( user )
-                                              .then( ( student ) => {
-                                                  var email = student.email;
-                                                  var name = student.name;
-                                                  var surname = student.surname;
+                                        pulsebsDAO.getInfoByStudentId( user )
+                                                  .then( ( student ) => {
+                                                      var email = student.email;
+                                                      var name = student.name;
+                                                      var surname = student.surname;
 
 
                                                       // Send booking email to student
@@ -337,12 +351,12 @@ app.post('/api/students/:studentId/booking', (req, res) => {
                                                           }
                                                       } );
 
-                                              } ).catch( ( err ) => {
-                                        console.log( err );
-                                    } );
-                                } ).catch( ( err ) => {
-                          console.log( err );
-                      } );
+                                                  } ).catch( ( err ) => {
+                                            console.log( err );
+                                        } );
+                                    } ).catch( ( err ) => {
+                              console.log( err );
+                          } );
                       }
                       res.status( 201 ).json( {response} )
                   } )
@@ -371,11 +385,11 @@ app.get( '/api/student/bookings', ( req, res ) => {
 
 // DELETE /student/bookings
 //FIXME: refactor
-app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
     const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
-    if (!bookingId) {
-        res.status(401).end();
+    if ( !bookingId ) {
+        res.status( 401 ).end();
     } else {
         // const user = req.user && req.user.user;
         pulsebsDAO.cancelBooking( bookingId )
@@ -386,61 +400,81 @@ app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
                                               } );
                   } );
     }
-});
+} );
 // FIXME:
-app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
+app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
     const lectureId = req.params.lectureId;
     const teacherId = req.params.teacherId;
-    if (!lectureId) {
-        res.status(401).end();
+    if ( !lectureId ) {
+        res.status( 401 ).end();
     } else {
         // const user = req.user && req.user.user;
-        pulsebsDAO.cancelLecture(lectureId)
-            .then((response) => {
-              if ( process.env.TEST && process.env.TEST === '0') {
-                  pulsebsDAO.getLectureStats( lectureId )
-                      .then( ( lecture ) => {
-                              pulsebsDAO.getStudentsForLecture(lectureId)
-                                  .then((students) => {
-                                      if (students.length !== 0) {
-                                          students.forEach(s => {
-                                              var email = s.email;
-                                              var name = s.name;
-                                              var surname = s.surname;
-                                              var user = s.id;
-                                              mailOptions = {
-                                                  from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                                                  //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS TO RANDOM PEOPLE IN THE WORLD.
-                                                  to: 'student.team9@yopmail.com',
-                                                  subject: 'Cancel Lecture (' + lecture.course + ')',
-                                                  text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + lecture.course + " in Classroom: " + lecture.classroom + " and Date: " + moment( lecture.date ).format( "YYYY-MM-DD HH:mm" ) +" is cancelled.\n\n"
-                                                      + "Have a good day.\n\n - PULSeBS Team9."
-                                              };
-                                              transporter.sendMail(mailOptions, function (error, info) {
-                                                  if (error) {
-                                                      console.log(error);
-                                                  } else {
-                                                      console.log('Email sent to: ' + user + ", info: " + info.response);
-                                                  }
-                                              });
-                                          });
-                                      }
-                                       }).catch((err) => {
-                                              console.log(err);
-                                          });
-                }).catch( ( err ) => {
-                        console.log( err );
-                    } );
-                 }
-              res.status(200).json({ response });
-            })
-            .catch((err) => {
-                res.status(500).json({
-                    errors: [{ 'param': 'Server', 'msg': err }],
-                });
-            });
+        pulsebsDAO.cancelLecture( lectureId )
+                  .then( ( response ) => {
+                      if ( process.env.TEST && process.env.TEST === '0' ) {
+                          pulsebsDAO.getLectureStats( lectureId )
+                                    .then( ( lecture ) => {
+                                        pulsebsDAO.getStudentsForLecture( lectureId )
+                                                  .then( ( students ) => {
+                                                      if ( students.length !== 0 ) {
+                                                          students.forEach( s => {
+                                                              var email = s.email;
+                                                              var name = s.name;
+                                                              var surname = s.surname;
+                                                              var user = s.id;
+                                                              mailOptions = {
+                                                                  from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                                                  //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS
+                                                                  // TO RANDOM PEOPLE IN THE WORLD.
+                                                                  to: 'student.team9@yopmail.com',
+                                                                  subject: 'Cancel Lecture (' + lecture.course + ')',
+                                                                  text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + lecture.course + " in Classroom: " + lecture.classroom + " and Date: " + moment( lecture.date ).format( "YYYY-MM-DD HH:mm" ) + " is cancelled.\n\n"
+                                                                      + "Have a good day.\n\n - PULSeBS Team9."
+                                                              };
+                                                              transporter.sendMail( mailOptions, function ( error, info ) {
+                                                                  if ( error ) {
+                                                                      console.log( error );
+                                                                  } else {
+                                                                      console.log( 'Email sent to: ' + user + ", info: " + info.response );
+                                                                  }
+                                                              } );
+                                                          } );
+                                                      }
+                                                  } ).catch( ( err ) => {
+                                            console.log( err );
+                                        } );
+                                    } ).catch( ( err ) => {
+                              console.log( err );
+                          } );
+                      }
+                      res.status( 200 ).json( {response} );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'param': 'Server', 'msg': err} ],
+                                              } );
+                  } );
     }
 } );
+/*
+* /api/sofficer - PUT
+* Called from client when a support officer wants to load data from .csv file.
+* Thi API parse a JSON object and execute statements on DB.
+* */
+app.put( '/api/sofficer/', ( req, res ) => {
+    //Ligh validation body
+    if('classes' in req.body &&
+        'courses' in req.body &&
+        'lectures' in req.body &&
+        'students' in req.body &&
+        'subscriptions' in req.body &&
+        'teachers' in req.body
+    ) pulsebsDAO.loadCsvData( req.body )
+              .then( result => res.status( 200 ).end() )
+              .catch( err => res.status( 400 ).json( databaseErrorObj ) )
+    else res.status( 400 ).json( dataErrorObj )
+
+} )
 
 
 // Exported for E2E testing

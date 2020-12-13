@@ -69,19 +69,19 @@ describe('get /api/student/bookings', () => {
 
 //  DELETE cancle the lecture that already booked
 // FIXME:
-describe( '/api/students/:studentId/bookings/:bookingId', () => {
-    it( 'should return a 200 if exists', async () => {
+describe('/api/students/:studentId/bookings/:bookingId', () => {
+    it('should return a 200 if exists', async () => {
 
-          await request( server )
-            .delete( '/api/students/269901/bookings/1' )
-            .set( 'Cookie', `token=${ token }` )
-            .set( 'Content-Type', 'application/json' )
-            .then( ( res ) => {
-                expect( res.status ).toBe( 201 );
-                expect( res.body.response ).toBe( 1 );
-            } );
-    } );
-} );
+        await request(server)
+            .delete('/api/students/269901/bookings/1')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .then((res) => {
+                expect(res.status).toBe(201);
+                expect(res.body.response).toBe(1);
+            });
+    });
+});
 
 
 //DELETE TEACHER'S LECTURE
@@ -159,6 +159,129 @@ describe('E2E testing/Integration testing', () => {
     //         });
     // });
 });
+
+describe('[PUL 10] Get teacher statistics', () => {
+    test('Check returned status', function (done) {
+        let teacherId = 239903;
+        let courseId = 5;
+        request(server)
+            .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId)
+            .query({ groupBy: 'lecture' })
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .end(function (error, response) {
+                if (error) return done(error);
+                expect(response.status).toBe(200);
+                done();
+            });
+    });
+});
+
+describe( 'CSV loading tests', () => {
+    let data = {
+        "classes": [
+            {
+                "id": "15",
+                "desc": "12A",
+                "seats": "72"
+            }
+        ],
+        "teachers": [
+            {
+                "id": "239910",
+                "email": "abc@gmail.com",
+                "password": "hash123",
+                "name": "nome",
+                "surname": "cognome"
+            }
+        ],
+        "students": [
+            {
+                "id": "269910",
+                "email": "abc@gmail.com",
+                "password": "hash123",
+                "name": "nome",
+                "surname": "cognome"
+            }
+        ],
+        "courses": [
+            {
+                "id": "90",
+                "desc": "ABC course",
+                "ref_teacher": "239910"
+            }
+        ],
+        "subscriptions": [
+            {
+                "ref_student": "269910",
+                "ref_course": "90"
+            }
+        ],
+        "lectures": [
+            {
+                "ref_course": "90",
+                "ref_class": "15",
+                "date": "123456789",
+                "endTime": "123456789",
+                "presence": "0",
+                "bookable": "0 ",
+                "active": "0"
+            }
+        ]
+    };
+
+    test( "Try to load a correct CSV file content", async function () {
+        let response = await request(server)
+            .put('/api/sofficer/')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send(data);
+        expect(response.status).toBe(200);
+    } );
+
+    test( "Try to load a wrong CSV file content", async function () {
+        data = {
+            "students": [
+                {
+                    "id": "269901",
+                    "email": "abc@gmail.com",
+                    "password": "hash123",
+                    "name": "nome",
+                    "surname": "cognome"
+                }
+            ],
+            "courses": [
+                {
+                    "id": "90",
+                    "desc": "ABC course",
+                    "ref_teacher": "239910"
+                }
+            ],
+            "subscriptions": [
+                {
+                    "ref_student": "269910",
+                    "ref_course": "90"
+                }
+            ],
+            "lectures": [
+                {
+                    "ref_course": "90",
+                    "date": "123456789",
+                    "endTime": "123456789",
+                    "presence": "0",
+                    "bookable": "0 ",
+                    "active": "0"
+                }
+            ]
+        };
+        let response = await request(server)
+            .put('/api/sofficer/')
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .send(data);
+        expect(response.status).toBe(400);
+    } );
+} );
 
 // logout and server shutdown
 afterAll(async () => {
