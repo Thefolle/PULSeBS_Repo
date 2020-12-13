@@ -13,16 +13,12 @@ import { Row, Col, Container, ListGroup, Button } from "react-bootstrap";
 
 let buttonsStyle = {
     background: "blue",
-    padding: "0.5rem",
-    margin: "0.5rem",
     height: "2rem", 
     width: "4rem"
   };
 
 let selectedButtonStyle = {
     background: "green",
-    padding: "0.5rem",
-    margin: "0.5rem",
     height: "2rem", 
     width: "4rem"
   };
@@ -46,41 +42,40 @@ class SupportOfficePage extends React.Component {
 
     handleChange = event => {
         let fileName = event.target.name + "csv";
-        console.log(fileName);
         this.setState({
-            [event.target.name]: [], fileName: event.target.files[0], failed: ''
+            [event.target.name]: [], [fileName]: event.target.files[0], failed: ''
         });
     };
 
     sendData = () => {
         const { students, teachers, courses, enrollments, classes, lectures } = this.state;
+        /*
         console.log(students);
         console.log(teachers);
         console.log(courses);
         console.log(enrollments);
         console.log(classes);
         console.log(lectures);
-        /*
+        */ 
         API.importCSV(students, teachers, courses, enrollments, classes, lectures).then((result) => {
             if (result.ok) {
                //get the updated list of tasks from the server
                console.log("ok");
                this.setState({ failed: 0 });
             } else {
+               console.log("ok");
                 this.setState({ failed: 1 });
             }
         }) //if SUCCEDED return 1
             .catch((errorObj) => {
                 this.handleErrors(errorObj);
-            });*/
+            });
     }
 
     importCSV = (type) => {
         const { studentscsv, teacherscsv, coursescsv, enrollmentscsv, lecturescsv, classescsv, schedulecsv } = this.state;
 
         var Papa = require("papaparse/papaparse.min.js");
-
-        console.log(type);
 
         switch (type) {
             case 'students':
@@ -149,12 +144,12 @@ class SupportOfficePage extends React.Component {
     };
 
     updateStudentsData(result) {
-        var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, city: e.City, email: e.OfficialEmail, bday: e.Birthday, ssn: e.SSN, password: e.Password }));
+        var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, city: e.City, email: e.Email, bday: e.Birthday, ssn: e.SSN, password: e.Password }));
         this.setState({ students: data });
     }
 
     updateTeachersData(result) {
-        var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, email: e.OfficialEmail, password: e.Password }));
+        var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, email: e.Email, password: e.Password }));
         this.setState({ teachers: data });
     }
 
@@ -170,7 +165,7 @@ class SupportOfficePage extends React.Component {
 
     updateLecturesData(result) {
         var data = result.data.map(e => ({ course: e.ref_course, ref_class: e.ref_class, start_date: e.start_date, end_date: e.end_date, presence: e.presence, bookable: e.bookable, active: e.active }));
-        this.setState({ schedule: data });
+        this.setState({ lectures: data });
     }
 
     updateClassesData(result) {
@@ -197,7 +192,7 @@ class SupportOfficePage extends React.Component {
                 this.setState({ authErr: err });
             }
         }
-        console.log("Error occured. Check the handleErrors method in studentPage.");
+        console.log("Error occured. Check the handleErrors method in supportOfficerPage.");
         console.log(err);
     }
 

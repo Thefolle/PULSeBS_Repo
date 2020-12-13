@@ -197,9 +197,10 @@ async function cancelLecture(teacherId, lectureId) {
 /**** SUPPORT OFFICE ****/
 
 async function importCSV(students, teachers, courses, enrollments, classes, lectures) {
+    console.log(students);
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/sofficer/", {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -213,6 +214,7 @@ async function importCSV(students, teachers, courses, enrollments, classes, lect
         }),
     }).then((response) => {
         if(response.ok) {
+            console.log("ok");
             resolve(response);
         } else {
             // analyze the cause of error
