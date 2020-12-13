@@ -1,6 +1,8 @@
 const sqlite3 = require( 'sqlite3' ).verbose();
+const { promises } = require('dns');
 const fs = require( 'fs' );
 const moment = require( 'moment' );
+const { resolve } = require('path');
 
 const User = require( './User' );
 
@@ -168,6 +170,112 @@ exports.bookSeat = ( lectureId, studentId ) => {
     } ) );
 }
 
+/**
+ * Add a student to waiting list
+ * @param {*} lectureId 
+ * --------- Feihong implement
+ */
+// TODO: 
+ exports.addStudentToWaitingList = (studentId, lectureId) => {
+     return new Promise( ( (resolve, reject) =>{
+        let addToWaiting = `INSERT INTO waiting(ref_student, ref_lecture, date) VALUES ( ${studentId}, ${lectureId}, ${ moment().valueOf()})`
+        db.run(addToWaiting, [], (err) => {
+            err ? reject("DB problem") : resolve("successful insert");
+        })
+     } ) )
+ }
+
+ /**
+  * 
+  * @param {*} lectureId 
+  * ----------- Feihong implement
+  */
+// TODO: To check if the student in the waiting list or not 
+
+exports.checkStudentInWaitingList = (studentId, lectureId) => {
+    return new Promises( ( (resolve, reject) => {
+        let checkWaiting = `SELECT ref_student FROM waiting WHERE ref_student = ${studentId} And ref_lecture = ${lectureId}`
+        db.get( checkWaiting, [], (err, row) => {
+            if (row){
+                reject("You already in the Waiting List")
+            } else {
+                resolve("You can add this lecture to Waiting List")
+            }
+        })
+    }))
+}
+
+
+/**
+ * @Feihong 
+ * @param {*} lectureId 
+ * Functions:
+ * 1. make sure there are free seats for student
+ * 2. if there are free seats, update the bookable attribute to 1
+ */
+// TODO: To check whether there are free seats of a lecture or not
+
+exports.checkSeatsOfLecture = (lectureId) => {
+    return new Promise (((resolve, reject) =>{
+        let upadteLecture = `UPDATE lecture SET bookable = 1 WHERE id = ${lectureId}`
+        let upadteLectureNo = `UPDATE lecture SET bookable = 0 WHERE id = ${lectureId}`
+        let numOfBookings = `SELECT    B.id,
+                                    L.id
+                          FROM      booking B,
+                                    lecture L
+                          WHERE     L.id = ${lectureId} AND
+                                    L.id = B.ref_lecture AND
+                                    B.active = 1`
+        let seats = `SELECT C.seats FROM class C, lecture L WHERE L.ref_class = C.id AND L.id = ${lectureId}`
+        db.all(numOfBookings, [], (err, rows) => {
+            if (err){
+                console.log('------------------' + err)
+                    reject(0) 
+            } else{
+                db.get(seats, [], (err, row) =>{
+                    if (row.seats > rows.length){
+                        console.log("You can book the lecture, already booked numbers:  " + rows.length + " Total numbers of seat are: " + row.seats + " lecture id is " + lectureId)
+                        db.run(upadteLecture,[], (err) =>{
+                            if(err) console.log("-------------------"+err)
+                        })
+                        resolve(1)
+                    }else {
+                        console.log("There is no free seats for student. err massage is:" + err)
+                        db.run(upadteLectureNo)
+                        resolve(0)
+                    }
+                })
+            }
+        })
+    }))
+}
+
+/**
+ * @Feihong
+ * Update bookable atribute
+ */
+// TODO: 
+
+/**
+ * @Feihong 
+ * @param {*} studentId 
+ * get the waiting list of a student 
+ */
+// TODO:
+
+exports.getWaitingList = ( studentId) => {
+    return new Promise ((resolve, reject) =>{
+        let query = `SELECT * FROM waiting WHERE ref_student = ${studentId}`
+        db.all(query, [], ( err, rows ) => {
+            if (err) reject('can not get waiting list')
+            if (rows) resolve(rows)
+            else reject(0)
+        })
+    })
+}
+
+
+
 /*
 * Get lecture statistics
 * */
@@ -220,9 +328,11 @@ exports.getStudentLectures = ( studentId ) => {
                                                 S.ref_student = ${ studentId }
                             );`
         db.all( query, [], ( err, rows ) => {
+            console.log('----------------' + rows.length)
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
             else resolve( 0 );
+
         } );
     } ) );
 }
@@ -288,27 +398,10 @@ exports.getStudentsForLecturev2 = ( teacherId ) => {
     } ) );
 }
 
-
-/*
-* Delete a booking
-* */
-
-exports.cancelBookings = ( bookingId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
-}
-
 /*
 * Delete a booking  -v2
 * */
-
-// TODO: to fix get bookings method 
+// FIXME: to fix get bookings method 
 exports.cancelBooking = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`

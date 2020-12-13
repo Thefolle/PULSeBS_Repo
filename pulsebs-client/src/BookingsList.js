@@ -19,6 +19,7 @@ const BookingsList = ( props ) => {
                         <th>Class</th>
                         <th>Presence</th>
                         <th>Actions</th>
+                        <th>WaitingList</th>
                     </tr>
                     </thead>
                     <tbody>

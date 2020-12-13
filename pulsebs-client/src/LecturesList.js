@@ -5,7 +5,7 @@ import {AuthContext}      from './auth/AuthContext';
 
 const LecturesList = ( props ) => {
 
-    let {lectures, bookings, bookSeat, alreadyBooked} = props;
+    let {waitings, lectures, bookings, bookSeat, addStudentToWaitingList, alreadyBooked } = props;
 
     return (
       <AuthContext.Consumer>
@@ -25,7 +25,8 @@ const LecturesList = ( props ) => {
                     </tr>
                     </thead>
                     <tbody>
-                    { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } bookings={bookings} bookSeat={ bookSeat } alreadyBooked={ alreadyBooked } /> ) }
+                      {/* TODO: map waitings */}
+                    { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } /> ) }
                     </tbody>
                 </Table>
                 }

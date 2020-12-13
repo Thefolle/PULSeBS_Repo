@@ -76,3 +76,13 @@ create table subscription
     ref_course  INTEGER references course,
     primary key (ref_student, ref_course)
 );
+
+create table waiting
+(
+    id          INTEGER primary key,
+    ref_student INTEGER not null references student,
+    ref_lecture INTEGER not null references lecture,
+    date        INTEGER not null,
+    active      INTEGER default 1 not null
+    
+);

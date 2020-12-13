@@ -6,7 +6,7 @@ import {AuthContext} from './auth/AuthContext';
 
 const LectureItem = ( props ) => {
 
-    let {lecture, bookings, bookSeat, alreadyBooked} = props;
+    let {lecture, waitings, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, alreadyWaited} = props;
 
     alreadyBooked = (lectureId) => {
             const ids = bookings.map((b) => b.ref_lecture );
@@ -16,6 +16,14 @@ const LectureItem = ( props ) => {
               return 0;
     }
 
+    alreadyWaited = (lectureId) => {
+        const ids = waitings.map( (w) => w.ref_lecture);
+        if( ids.includes(lectureId) === true)
+            return 1;
+        else 
+            return 0;
+    }
+    let a = 0
 
     return (
         <AuthContext.Consumer>
@@ -29,10 +37,25 @@ const LectureItem = ( props ) => {
                     <td>{ lecture.courseDesc }</td>
                     <td>{ lecture.classDesc }</td>
                     <td>{ lecture.teacherName + " " + lecture.teacherSurname }</td>
+
                     { lecture.bookable === 1 && alreadyBooked(lecture.id) === 0 && lecture.date > moment().valueOf() ?
-                    <td><Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt=""
-                            onClick={ () => bookSeat(context.authUser.id, lecture.id ) }/></td> : <td><BiCalendarX size={25}/></td>
+                    <td>
+                        <Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt="" onClick={ () => bookSeat(context.authUser.id, lecture.id ) }/>
+                    </td> : 
+                    // TODO: Merge Waiting column to actions 
+                    // TODO: check there is seats or not
+                   alreadyWaited(lecture.id) === 1|| (alreadyBooked(lecture.id) === 1 && lecture.date > moment().valueOf()) ?
+                    <td>
+                        <Image width="30" height="30" className="img-button" type="button" src="/svg/forbid.svg" onClick= {() =>{ alert("You can not book this lecture!") } }/>
+                    </td> :
                         /*do something if it fails*/
+                    <td>
+                        
+                        <Image width="30" height="30" className="img-button" type="button" src="/svg/add.svg" alt=""
+                            onClick={ () => addStudentToWaitingList(context.authUser.id, lecture.id ) }/>
+                        
+                    </td>
+                    
                     }
                 </tr>
             </>

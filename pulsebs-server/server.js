@@ -13,6 +13,7 @@ const bcrypt = require( 'bcrypt' );
 
 const schedule = require( 'node-schedule' );
 const nodemailer = require( 'nodemailer' );
+const { response } = require('express');
 
 
 // Authorization error
@@ -351,6 +352,68 @@ app.post('/api/students/:studentId/booking', (req, res) => {
                   } );
     }
 } );
+
+/**
+ * @Feihong 
+ * PUT 
+ */
+// TODO: Add a student to a waiting list 
+app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
+    const studentId = req.params.studentId;
+    const lectureId = req.params.lectureId;
+    if (!lectureId) {
+        res.status(401).end();
+    } else {
+        const user = req.user && req.user.user
+        pulsebsDAO.addStudentToWaitingList(user, lectureId)
+        .then( (response) => {
+            // TODO: add some operations 
+            res.status( 201 ).json( {response} )
+        })
+        .catch ( (err) => {
+            res.status( 500 ).json({errors: [ {'param': 'Server', 'msg': err} ]  })
+        })
+    }
+})
+
+/**
+ * @Feihong 
+ * GET /student/waitings
+ */
+// TODO: get waiting list of lecures of a student 
+
+app.get('/api/student/waitings', (req, res) => {
+    const studentId = req.user && req.user.user
+    pulsebsDAO.getWaitingList(studentId)
+                .then( (waitings) => {
+                    res.json( waitings )
+                })
+                .catch( (err) => {
+                    res.status(500).json({
+                        errors: [{'message': err}]
+                    })
+                } )
+})
+
+/**
+ * @Feihong 
+ * POST /students/studentId/lectures/lectureId
+ */
+// TODO: According the free seats of a lecture, to Update the bookable attribute of table lecture 
+app.post('/api/students/:studentId/lectures/checkSeats/:lectureId', (req, res) => {
+    const studentId = req.user && req.user.user
+    const lectureId = req.params.lectureId
+    if (!lectureId) {
+        res.status(400).end("Can not get lecture!");
+    }
+    else {
+        pulsebsDAO.checkSeatsOfLecture(lectureId)
+                    .then( (lectureId) => res.status(200).json({"lectureId": lectureId}))
+                    .catch( (err) =>{
+                        res.status(500).json({ errors: [{'param': 'Server-checkSeatsOfLecture', 'msg': err}], })
+                    })
+    }
+})
 
 
 //GET /student/bookings

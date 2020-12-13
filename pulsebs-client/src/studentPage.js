@@ -20,6 +20,7 @@ class StudentPage extends React.Component {
 
         this.state = {
             userType: 'student',
+            waitings: [],
             lectures: [],
             bookings: [],
             bookingFailed: ''
@@ -41,7 +42,14 @@ class StudentPage extends React.Component {
           .then((lectures) => {
               API.getStudentBookings()
                   .then((bookings) => {
-                      this.setState((state, props) => ({ lectures: lectures, bookings: bookings }));
+                    // Feihong 
+                    // add waiting status, below next 6 lines
+                    API.getWaitingList().then((waitings) =>{
+                        this.setState((state, props) => ({ waitings: waitings, lectures: lectures, bookings: bookings }));
+                    })
+                    .catch((err) => {
+                        this.handleErrors(err)
+                    })
                   })
                   .catch((err) => {
                       this.handleErrors(err);
@@ -66,10 +74,21 @@ class StudentPage extends React.Component {
         console.log(err);
     }
 
+    /**
+     * @Feihong
+     */
+    getWaitingList = () =>{
+        API.getWaitingList().then((waitings) => {
+            this.setState({waitings: waitings})
+        })
+        .catch((errorObj) => {
+            this.handleErrors(errorObj)
+        })
+    }
 
     getStudentLectures = () => {
-        console.log("Get lectures:");
-        API.getStudentLectures().then((lectures) => { console.log("Lectures found correctly:"); console.log(lectures); this.setState({ lectures: lectures }); })
+        API.getStudentLectures().then((lectures) => { 
+            this.setState({ lectures: lectures }); })
             .catch((errorObj) => {
                 this.handleErrors(errorObj);
             });
@@ -84,25 +103,33 @@ class StudentPage extends React.Component {
 
 
     bookSeat = (studentId, lectureId) => {
-        API.bookSeat(studentId, lectureId).then((result) => {
-            if (result.ok) {
-               //get the updated list of tasks from the server
-               API.getStudentBookings().then((bookings) => this.setState({ bookings: bookings }));
-               this.props.history.push("/student/bookings");
-            } else {
-                this.setState({ failed: 1 });
-                //error page
-            }
-        }) //if SUCCEDED return 1
-            .catch((errorObj) => {
-                this.handleErrors(errorObj);
-            });
+       
+                if(window.confirm("Do you want BOOK this lecture")){
+                    API.bookSeat(studentId, lectureId).then((result) => {
+                        if (result.ok) {
+                           //get the updated list of tasks from the server
+                           API.getStudentBookings().then((bookings) => this.setState({ bookings: bookings }));
+                           this.props.history.push("/student/bookings");
+                        } else {
+                            this.setState({ failed: 1 });
+                            //error page
+                        }
+                    }) //if SUCCEDED return 1
+                    .catch((errorObj) => {
+                        this.handleErrors(errorObj);
+                    });
+                }
+
     }
 
 
 
+    /**
+     * @Feihong
+     */
     //add Delete method in mybookings
     // FIXME:   already successfully refactor the URI 
+    // TODO: add a student to the booking table from waiting table
     cancelBooking = (studentId, bookingId) => {
         API.cancelBooking(studentId, bookingId)
             .then(() => {
@@ -114,7 +141,42 @@ class StudentPage extends React.Component {
             });
     }
 
+    /**
+     * @Feihong
+     * Add a student to waiting list of lecture
+     */
+    // TODO: 
+    addStudentToWaitingList = (studentId, lectureId) => {
+        if(window.confirm("Because there is no free seat anymore. Do you want add to the WATING LIST of this lecture")){
+            API.addStudentToWaitingList(studentId, lectureId)
+                .then((result) => {
+                    if (result.ok) {
+                    //get the updated list of tasks from the server
+                    API.getStudentLectures().then((lectures) => { 
+                        this.setState({ lectures: lectures })});
+                    this.props.history.push("/student/bookings");
+                    } else {
+                        this.setState({ failed: 1 });
+                        //error page
+                    }
+                }) //if SUCCEDED return 1
+                .catch((errorObj) => {
+                    this.handleErrors(errorObj);
+                });
+        }
+    }
+    
+    /**
+     * @Feihong
+     */
+    // TODO:
+    upDateBookable = (studentId, lectures) => {
 
+        for (var i=0; i<lectures.length; i++){
+            API.checkSeatsOfLecture(studentId, lectures[i].id).then( (result) => {    
+            })
+        }
+    }
 
     render() {
 
@@ -125,33 +187,33 @@ class StudentPage extends React.Component {
                   {context.authUser && <>
                     <UserNavBar userId={context.authUser.id}/>
                     <Container>
-                    <Row>
-                        <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
-                            <ListGroup className="sidebar" variant="flush">
-                            <h5>POLITECNICO DI TORINO</h5>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
-                            </ListGroup>
-                        </Col>
+                        <Row>
+                            <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                                <ListGroup className="sidebar" variant="flush">
+                                    <h5>POLITECNICO DI TORINO</h5>
+                                    <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
+                                    <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
+                                    <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                </ListGroup>
+                            </Col>
 
-                        <Col sm={8}>
-                    
-                    <Switch>
-                                <Route exact path={this.props.match.url + "/lectures"}>
-                                    <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
-                                </Route>
-                                <Route exact path={this.props.match.url + "/bookings"}>
-                                    <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
-                                </Route>
-                                <Route exact path={this.props.match.url + "/calendar"}>
-                                    <StudentCalendar bookings={this.state.bookings} />
-                                </Route>
-                            </Switch>
+                            <Col sm={8}>
+                        
+                                <Switch>
+                                    <Route exact path={this.props.match.url + "/lectures"}>
+                                        <LecturesList onload= { this.upDateBookable(context.authUser.id, this.state.lectures) } waitings = {this.state.waitings} lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat}  addStudentToWaitingList={this.addStudentToWaitingList}  alreadyBooked={this.alreadyBooked} />
+                                    </Route>
+                                    <Route exact path={this.props.match.url + "/bookings"}>
+                                        <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
+                                    </Route>
+                                    <Route exact path={this.props.match.url + "/calendar"}>
+                                        <StudentCalendar bookings={this.state.bookings} />
+                                    </Route>
+                                </Switch>
 
-                        </Col>
-                    </Row>
-                </Container>
+                            </Col>
+                        </Row>
+                    </Container>
                      </>
                      }
                 </>
