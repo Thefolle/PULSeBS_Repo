@@ -196,7 +196,7 @@ async function cancelLecture(teacherId, lectureId) {
 
 /**** SUPPORT OFFICE ****/
 
-async function importCSV(students, teachers, courses, enrollments, classes) {
+async function importCSV(students, teachers, courses, enrollments, classes, lectures) {
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/sofficer/", {
         method: 'POST',
