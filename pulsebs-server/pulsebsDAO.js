@@ -57,7 +57,14 @@ exports.getUserByEmail = function (email) {
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    const user = new User(row.id, row.email, row.password, row.type, row.name, row.surname);
+                    let user=null;
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    if(i===2){
+                        user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
+                    }else{
+                        user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    }
+                    
                     resolve(user);
                 }
             });
@@ -130,7 +137,14 @@ exports.getUserById = function (id) {
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    const user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    let user=null;
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    if(i===2){
+                        user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
+                    }else{
+                        user = new User(row.id, row.email, row.password, i, row.name, row.surname);
+                    }
+                    
                     resolve(user);
                 }
             });
