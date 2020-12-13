@@ -1,11 +1,11 @@
 class Teacher{
 
-    constructor(id, name, surname, email, ssn) {
+    constructor(id, name, surname, email, password) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.ssn = ssn;
+        this.password = password;
     }
 }
 

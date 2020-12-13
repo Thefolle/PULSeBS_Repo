@@ -5,6 +5,8 @@ import Teacher from './Teacher'
 import Course from './Course'
 import Enrollment from './Enrollment'
 import Schedule from './Schedule'
+import Class from './Class'
+import scheduledLecture from './scheduledLecture'
 import LectureTeacher from './LectureTeacher.js'
 import { Ellipsis } from 'react-bootstrap/esm/PageItem';
 const baseURL = "/api";
@@ -195,18 +197,20 @@ async function cancelLecture(teacherId, lectureId) {
 
 /**** SUPPORT OFFICE ****/
 
-/*async function importCSV(students, teachers, courses, enrollments, schedule) {
+/*async function importCSV(students, teachers, courses, enrollments, classes) {
     return new Promise((resolve, reject) => {
     fetch(baseURL + "/sofficer/", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn)),
-                               teachers: teachers.map((t) => new Teacher(t.id, t.name, t.surname, t.email, t.ssn)),
-                               courses: courses.map((c) => new Course(c.id, c.year, c.semester, c.course)), 
+        body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn, s.password)),
+                               teachers: teachers.map((t) => new Teacher(t.id, t.name, t.surname, t.email, t.password)),
+                               courses: courses.map((c) => new Course(c.id, c.year, c.semester, c.course, c.teacher)), 
                                enrollments: enrollments.map((e) => new Enrollment(e.cid, e.sid)),
-                               schedule: schedules.map((s) => new Schedule(s.id, s.room, s.date, s.seats, s.time))
+                               classes: classes.map((c) => new Class(c.id, c.desc, c.seats)),
+                               lectures: lectures.map((l) => new scheduledLecture(l.course, l.ref_class, l.start_date, l.end_date, l.presence, l.bookable, l.active))
+                              // schedule: schedules.map((s) => new Schedule(s.id, s.room, s.date, s.seats, s.time))
         }),
     }).then((response) => {
         if(response.ok) {

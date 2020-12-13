@@ -1,10 +1,11 @@
 class Course{
 
-    constructor(id, year, semester, course) {
+    constructor(id, year, semester, course, teacher) {
         this.id = id;
         this.year = year;
         this.semester = semester;
-        this.courseName = course;
+        this.desc = course;
+        this.ref_teacher = teacher;
     }
 }
 

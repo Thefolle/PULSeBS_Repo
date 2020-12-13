@@ -1,6 +1,6 @@
 class Student{
 
-    constructor(id, name, surname, email, city, bday, ssn) {
+    constructor(id, name, surname, email, city, bday, ssn, password) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -8,6 +8,7 @@ class Student{
         this.city = city;
         this.bday = bday;
         this.ssn = ssn;
+        this.password = password;
     }
 }
 

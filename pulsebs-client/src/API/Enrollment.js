@@ -1,8 +1,8 @@
 class Enrollment{
 
     constructor(cid, sid) {
-        this.cid = cid;
-        this.sid = sid;
+        this.ref_course = cid;
+        this.ref_student = sid;
     }
 }
 
