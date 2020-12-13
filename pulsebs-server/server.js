@@ -355,7 +355,7 @@ app.post('/api/students/:studentId/booking', (req, res) => {
 
 /**
  * @Feihong 
- * PUT 
+ * PUT /api/students/:studentId/lectures/:lectureId
  */
 // TODO: Add a student to a waiting list 
 app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
@@ -380,7 +380,7 @@ app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
  * @Feihong 
  * GET /student/waitings
  */
-// TODO: get waiting list of lecures of a student 
+//  get waiting list of lecures of a student 
 
 app.get('/api/student/waitings', (req, res) => {
     const studentId = req.user && req.user.user
@@ -399,7 +399,7 @@ app.get('/api/student/waitings', (req, res) => {
  * @Feihong 
  * POST /students/studentId/lectures/lectureId
  */
-// TODO: According the free seats of a lecture, to Update the bookable attribute of table lecture 
+//According the free seats of a lecture, to Update the bookable attribute of table lecture 
 app.post('/api/students/:studentId/lectures/checkSeats/:lectureId', (req, res) => {
     const studentId = req.user && req.user.user
     const lectureId = req.params.lectureId
@@ -432,7 +432,10 @@ app.get( '/api/student/bookings', ( req, res ) => {
               } );
 } )
 
-// DELETE /student/bookings
+/**
+ * @Feihong
+ * POST /student/bookings
+ */
 //  FIXME: refactor
 app.post('/api/students/:studentId/bookings/:bookingId', (req, res) => {
     const studentId = req.params.studentId;
@@ -450,6 +453,29 @@ app.post('/api/students/:studentId/bookings/:bookingId', (req, res) => {
                   } );
     }
 });
+
+/**
+ * @Feihong
+ * DELETE /students/:studentId/lectures/:lectureId/waiting
+ * TODO: delete a waiting item from waiting table
+ */
+app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) => {
+    const studentId = req.params.studentId;
+    const lectureId = req.params.lectureId;
+    if (!lectureId) {
+        res.status(401).end('can not find lecture');
+    } else {
+        pulsebsDAO.deleteWaitingAddBooking(lectureId)
+            .then( (response) => res.status(200).json( {response}))
+            .catch( ( err ) => {
+                res.status( 500 ).json( {
+                                            errors: [ {'param': 'Server', 'message': err} ],
+                                        } );
+            } );
+    }
+})
+
+
 // FIXME:
 app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
     const lectureId = req.params.lectureId;

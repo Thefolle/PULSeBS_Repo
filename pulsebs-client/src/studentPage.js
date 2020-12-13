@@ -1,17 +1,20 @@
 import React from 'react';
 import {Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import LecturesList from './LecturesList';
-import BookingsList from './BookingsList';
-import UserNavBar from './Components/UserNavBar';
-import StudentCalendar from "./Components/StudentCalendar";
-
-import './App.css';
-import API from './API/API';
-
 import {Switch} from 'react-router-dom';
 import {AuthContext} from './auth/AuthContext';
 import { Row, Col, Container, ListGroup} from "react-bootstrap";
+
+
+import LecturesList from './LecturesList';
+import BookingsList from './BookingsList';
+import WaitingList from './Components/waitings/WaitingList';
+import UserNavBar from './Components/UserNavBar';
+import StudentCalendar from "./Components/StudentCalendar";
+import './App.css';
+import API from './API/API';
+
+
 
 class StudentPage extends React.Component {
 
@@ -143,6 +146,26 @@ class StudentPage extends React.Component {
 
     /**
      * @Feihong
+     * @param {*} studentId 
+     * @param {*} lectureId 
+     */
+    // TODO: delete a waiting item and add a this student and lecture to book table
+    deleteWaitingAddBooking = (studentId, lectureId) => {
+       if(window.confirm("If you cancel this book, may be there is another student will book your seat")){
+           API.deleteWaitingAddBooking(studentId, lectureId)
+                .then(() => {
+                    alert('delete and add successful')
+                })
+                .catch((errorObj)=>{
+                    alert('delete and add failed')
+                    this.handleErrors(errorObj)
+                })
+       }
+    }
+
+
+    /**
+     * @Feihong
      * Add a student to waiting list of lecture
      */
     // TODO: 
@@ -153,7 +176,11 @@ class StudentPage extends React.Component {
                     if (result.ok) {
                     //get the updated list of tasks from the server
                     API.getStudentLectures().then((lectures) => { 
-                        this.setState({ lectures: lectures })});
+                        this.setState({ lectures: lectures })
+                    });
+                    API.getWaitingList().then((waitings) => {
+                        this.setState({waitings: waitings})
+                    });
                     this.props.history.push("/student/bookings");
                     } else {
                         this.setState({ failed: 1 });
@@ -204,7 +231,7 @@ class StudentPage extends React.Component {
                                         <LecturesList onload= { this.upDateBookable(context.authUser.id, this.state.lectures) } waitings = {this.state.waitings} lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat}  addStudentToWaitingList={this.addStudentToWaitingList}  alreadyBooked={this.alreadyBooked} />
                                     </Route>
                                     <Route exact path={this.props.match.url + "/bookings"}>
-                                        <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
+                                        <BookingsList deleteWaitingAddBooking={this.deleteWaitingAddBooking} bookings={this.state.bookings}  waitings = {this.state.waitings} cancelBooking={this.cancelBooking} />
                                     </Route>
                                     <Route exact path={this.props.match.url + "/calendar"}>
                                         <StudentCalendar bookings={this.state.bookings} />

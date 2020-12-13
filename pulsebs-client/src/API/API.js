@@ -109,7 +109,7 @@ async function getWaitingList(){
     const response = await fetch(baseURL + url);
     const waitingsJson = await response.json()
     if (response.ok){
-        return waitingsJson.map( (w) => new Waiting(w.id, w.ref_student, w.ref_lecture, w.date, w.active))
+        return waitingsJson.map( (w) => new Waiting(w.id, w.ref_student, w.ref_lecture, w.date, w.active, w.desc, w.cldesc, w.presence, w.lecdate))
     } else{
         let err  ={ status: response.status, errObj: waitingsJson};
         throw err;
@@ -141,6 +141,7 @@ async function cancelBooking(studentId, bookingId) {
 
 /**
  * @Feihong
+ * /api/students/:studentId/lectures/:lectureId
  */
 // TODO: Add a student to waiting list, when there is no set 
 async function addStudentToWaitingList(studentId, lectureId) {
@@ -167,9 +168,9 @@ async function addStudentToWaitingList(studentId, lectureId) {
 
 /**
  * @Feihong 
+ * api/students/:studentId/lectures/checkSeats/:lectureId
  */
 // TODO: According the free seats of a lecture, to Update the bookable attribute of table lecture 
-// api/students/:studentId/lectures/checkSeats/:lectureId
 async function checkSeatsOfLecture(studentId, lectureId){
     return new Promise((resolve, reject) =>{
         fetch(baseURL + '/students/' + studentId + '/lectures/checkSeats/' + lectureId, {
@@ -183,6 +184,31 @@ async function checkSeatsOfLecture(studentId, lectureId){
                 response.json()
                 resolve(1)
             } else{
+                response.json()
+                reject(0)
+            }
+        })
+    })
+}
+
+/**
+ * @Feihong
+ * /api/students/:studentId/lectures/:lectureId/waiting
+ */
+// TODO: delete a waiting item from waiting table
+async function deleteWaitingAddBooking(studentId, lectureId){
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + '/students/' + studentId + '/lectures/' + lectureId + '/waiting', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({studentId: studentId, lectureId: lectureId})
+        }).then( ( response ) => {
+            if (response.ok) {
+                response.json()
+                resolve(1)
+            } else {
                 response.json()
                 reject(0)
             }
@@ -276,5 +302,5 @@ async function isAuthenticated(){
 
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getWaitingList, getStudentBookings, cancelBooking, addStudentToWaitingList, checkSeatsOfLecture, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture };
+const API = { login, logout, getStudentLectures, bookSeat, getWaitingList, getStudentBookings, cancelBooking, addStudentToWaitingList, checkSeatsOfLecture, deleteWaitingAddBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture };
 export default API;

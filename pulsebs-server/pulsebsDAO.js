@@ -171,9 +171,29 @@ exports.bookSeat = ( lectureId, studentId ) => {
 }
 
 /**
+ * @Feihong
+ * @param {*} bookingId 
+ * Update a booking
+ */
+// FIXME: to fix get bookings method 
+exports.cancelBooking = ( bookingId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
+        db.run( query, [], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) {
+
+                resolve( 1 );
+            } 
+            else resolve( 0 );
+        } );
+    } ) );
+}
+
+/**
+ * @Feihong
  * Add a student to waiting list
  * @param {*} lectureId 
- * --------- Feihong implement
  */
 // TODO: 
  exports.addStudentToWaitingList = (studentId, lectureId) => {
@@ -186,9 +206,8 @@ exports.bookSeat = ( lectureId, studentId ) => {
  }
 
  /**
-  * 
+  * @Feihong
   * @param {*} lectureId 
-  * ----------- Feihong implement
   */
 // TODO: To check if the student in the waiting list or not 
 
@@ -234,13 +253,15 @@ exports.checkSeatsOfLecture = (lectureId) => {
             } else{
                 db.get(seats, [], (err, row) =>{
                     if (row.seats > rows.length){
-                        console.log("You can book the lecture, already booked numbers:  " + rows.length + " Total numbers of seat are: " + row.seats + " lecture id is " + lectureId)
+                        // console.log("You can book the lecture, already booked numbers:  " + rows.length + " Total numbers of seat are: " + row.seats + " lecture id is " + lectureId)
                         db.run(upadteLecture,[], (err) =>{
-                            if(err) console.log("-------------------"+err)
+                            if(err) {
+                                // console.log("-------------------"+err)
+                            }
                         })
                         resolve(1)
                     }else {
-                        console.log("There is no free seats for student. err massage is:" + err)
+                        // console.log("There is no free seats for student. err massage is:" + err)
                         db.run(upadteLectureNo)
                         resolve(0)
                     }
@@ -250,11 +271,7 @@ exports.checkSeatsOfLecture = (lectureId) => {
     }))
 }
 
-/**
- * @Feihong
- * Update bookable atribute
- */
-// TODO: 
+
 
 /**
  * @Feihong 
@@ -262,10 +279,25 @@ exports.checkSeatsOfLecture = (lectureId) => {
  * get the waiting list of a student 
  */
 // TODO:
-
 exports.getWaitingList = ( studentId) => {
     return new Promise ((resolve, reject) =>{
-        let query = `SELECT * FROM waiting WHERE ref_student = ${studentId}`
+        let query = `SELECT W.id, 
+                            W.ref_student, 
+                            W.ref_lecture, 
+                            W.date, 
+                            W.active, 
+                            CO.desc, 
+                            CL.desc AS cldesc,
+                            L.presence,
+                            L.date AS lecdate
+                        FROM waiting W, 
+                            lecture L, 
+                            course CO,
+                            class  CL 
+                        WHERE W.ref_student = ${studentId} AND
+                            W.ref_lecture = L.id AND
+                            L.ref_course = CO.id AND
+                            L.ref_class  = CL.id`
         db.all(query, [], ( err, rows ) => {
             if (err) reject('can not get waiting list')
             if (rows) resolve(rows)
@@ -274,7 +306,59 @@ exports.getWaitingList = ( studentId) => {
     })
 }
 
+/**
+ * @Feihong
+ * @param {*} lectureId 
+ * TODO: delete a waiting item
+ * 
+ */
+exports.deleteWaitingAddBooking = (lectureId) =>{
+    return new Promise ((resolve, reject) => {
+        let getQuery = `SELECT ref_student, ref_lecture FROM waiting WHERE ref_lecture = ${lectureId}`
+        let delQuery = `DELETE FROM waiting WHERE ref_student = ? AND ref_lecture = ?`
+        
+        db.get(getQuery, [], (err, row) => {
+            if(err){
+                console.log("----delete waiting err, no such a lecture in waiting list : "+ err)
+                reject (0)
+            } else {
+                if (row){
+                    var sId = row.ref_student
+                    console.log("++++sid: " + sId);
+                    db.run(delQuery, [sId, lectureId], (err) => {
+                        if (err) {
+                            console.log("----delete waiting err : "+ err)
+                            reject(0)
+                        } else {
+                            let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ sId },${ lectureId },${ moment().valueOf() })`
+                            db.run(bookQuery, [], (err) => {
+                                if (err){
+                                    console.log("----sid: " + sId + "  lectureid:  "+ lectureId);
+                                    console.log("----delete waiting err, can not add a new booking : "+ err)
+                                    reject(0)
+                                }else {
+                                    console.log("++++ delete waiting sucessful, add a new booking successfully. studentid: "+ sId + "  lectureid: " + lectureId);
+                                    resolve(1)
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    console.log("----delete waiting err, no such a lecture in waiting list : "+ err)
+                    reject(0)
+                }
+            }
+        })
+        
+    })
+}
 
+
+ /**
+  * @Feihong
+  * @param {*} lectureId 
+  * TODO: 
+  */
 
 /*
 * Get lecture statistics
@@ -398,20 +482,6 @@ exports.getStudentsForLecturev2 = ( teacherId ) => {
     } ) );
 }
 
-/*
-* Delete a booking  -v2
-* */
-// FIXME: to fix get bookings method 
-exports.cancelBooking = ( bookingId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
-        db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
-            if ( this.changes ) resolve( 1 );
-            else resolve( 0 );
-        } );
-    } ) );
-}
 
 
 /*

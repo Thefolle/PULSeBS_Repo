@@ -3,6 +3,7 @@ import moment      from 'moment';
 import Image       from 'react-bootstrap/Image';
 import { BiCalendarX } from "react-icons/bi";
 import {AuthContext} from './auth/AuthContext';
+import Lecture from './API/Lecture';
 
 const LectureItem = ( props ) => {
 
@@ -38,7 +39,7 @@ const LectureItem = ( props ) => {
                     <td>{ lecture.classDesc }</td>
                     <td>{ lecture.teacherName + " " + lecture.teacherSurname }</td>
 
-                    { lecture.bookable === 1 && alreadyBooked(lecture.id) === 0 && lecture.date > moment().valueOf() ?
+                    {alreadyWaited(lecture.id) === 0 && lecture.bookable === 1 && alreadyBooked(lecture.id) === 0 && lecture.date > moment().valueOf() ?
                     <td>
                         <Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt="" onClick={ () => bookSeat(context.authUser.id, lecture.id ) }/>
                     </td> : 
