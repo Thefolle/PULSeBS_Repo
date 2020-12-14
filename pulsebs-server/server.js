@@ -462,6 +462,7 @@ app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
 * Thi API parse a JSON object and execute statements on DB.
 * */
 app.put( '/api/sofficer/', ( req, res ) => {
+    console.log("qui");
     //Ligh validation body
     if('classes' in req.body &&
         'courses' in req.body &&
