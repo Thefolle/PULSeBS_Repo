@@ -554,11 +554,11 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                 SELECT  MIN(L.date) as earliestDate
                 FROM lecture L
             ;`
-            db.get(earliestDateQuery, [], function (error, row) {
-                if (error) reject(error);
+            db.get(earliestDateQuery, [], function (error1, row1) {
+                if (error1) reject(error1);
                 else {
                     // set the locale so as to start the week from Monday
-                    let earliestWeek = moment(row.earliestDate)
+                    let earliestWeek = moment(row1.earliestDate)
                         .startOf('week')
                     let successiveWeek = earliestWeek.clone().add(1, 'week');
                     // the sampleDate field is not meaningful because there may be bookings in
@@ -585,8 +585,8 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                     // order, starting from the oldest one
                     let numberOfLoops = 0, numberOfCallbacks = 0;
                     while (now.isAfter(earliestWeek)) {
-                        db.get(getStatisticsInWeekQuery, [teacherId, courseId, earliestWeek.valueOf(), successiveWeek.valueOf()], function (error1, row) {
-                            if (error1) reject(error1);
+                        db.get(getStatisticsInWeekQuery, [teacherId, courseId, earliestWeek.valueOf(), successiveWeek.valueOf()], function (error, row) {
+                            if (error) reject(error);
                             else {
                                 // if in the considered week there was at least one lecture
                                 if (!(row.sampleDate == null && row.bookingNumber === 0)) {
@@ -610,12 +610,12 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                 SELECT  MIN(L.date) as earliestDate
                 FROM lecture L
             ;`
-            db.get(earliestDateQuery, [], function (error, row) {
-                if (error) reject(error);
+            db.get(earliestDateQuery, [], function (error1, row1) {
+                if (error1) reject(error1);
                 else {
                     // set the locale so as to start the week from Monday
                     moment.locale('it');
-                    let earliestMonth = moment(row.earliestDate)
+                    let earliestMonth = moment(row1.earliestDate)
                         .startOf('month')
                     let successiveMonth = earliestMonth.clone().add(1, 'month');
                     // the sampleDate field is not meaningful because there may be bookings in
@@ -644,8 +644,8 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                     // order, starting from the oldest one
                     let numberOfLoops = 0, numberOfCallbacks = 0;
                     while (now.isAfter(earliestMonth)) {
-                        db.get(getStatisticsInMonthQuery, [teacherId, courseId, earliestMonth.valueOf(), successiveMonth.valueOf()], function (error1, row) {
-                            if (error1) reject(error1);
+                        db.get(getStatisticsInMonthQuery, [teacherId, courseId, earliestMonth.valueOf(), successiveMonth.valueOf()], function (error, row) {
+                            if (error) reject(error);
                             else {
                                 // if in the considered month there was at least one lecture
                                 if (!(row.sampleDate == null && row.bookingNumber === 0)) {
@@ -832,8 +832,8 @@ exports.setPresenceLecture = (lectureId, className) => {
         db.get(queryClass, [], (err, row) => {
             if (err) reject(err);
             if (row) {
-                db.run(queryLecture, [row.id], (err) => {
-                    if (err) reject(err);
+                db.run(queryLecture, [row.id], (err1) => {
+                    if (err1) reject(err1);
                     else resolve(1);
                 })
             }

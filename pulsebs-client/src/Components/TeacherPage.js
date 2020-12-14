@@ -82,8 +82,8 @@ class TeacherPage extends React.Component {
                 });
             }
         }
-        let newState = result.sort();
-        this.setState({ courses: newState });
+        result.sort();
+        this.setState({ courses: result });
     }
 
 
@@ -153,7 +153,7 @@ class TeacherPage extends React.Component {
                                             <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                                                 <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
                                             )} />
-                                            <Route path={"/teacher/:teacherId/statistics"} render={({}) => {
+                                            <Route path={"/teacher/:teacherId/statistics"} render={() => {
                                                 if (!this.state.courses || this.state.courses.length === 0) {
                                                     return <Jumbotron className='error'><p>It seems that you don't have taught at any course.</p><p>Please, refresh the page or contact the segretary for information.</p></Jumbotron>;
                                                 } else {
