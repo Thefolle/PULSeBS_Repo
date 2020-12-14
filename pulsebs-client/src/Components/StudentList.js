@@ -11,7 +11,7 @@ const StudentList = (props) => {
     //let student = students.filter( e => e.lId === parseInt( idl ) );
     return (
         <AuthContext.Consumer>
-            {(context) => (
+            {() => (
                 <>
                  <Link id="goback" to={`/teacher/${idc}/lectures`}> <FaBackward /> </Link>
                     { students.filter(e => e.lId === parseInt(idl)).length === 0 &&
