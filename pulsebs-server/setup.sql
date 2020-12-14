@@ -67,8 +67,7 @@ create table booking
     ref_lecture INTEGER not null references lecture,
     date        INTEGER not null,
     active      INTEGER default 1 not null,
-    presence    INTEGER default 0 not null,
-	absentClass INTEGER default 0 not null
+    presence    INTEGER default 0 not null
 );
 
 create table subscription

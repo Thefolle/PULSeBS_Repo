@@ -1,7 +1,6 @@
 import Lecture from './Lecture.js'
 import Booking from './Booking.js'
 import LectureTeacher from './LectureTeacher.js'
-import BookingsStat from './BookingsStat.js';
 const baseURL = "/api";
 
 
@@ -239,20 +238,56 @@ async function getTeacherStatistics(teacherId, courseId, groupBy) {
     }
 }
 
-async function getAllBookings() {
+async function getAllBookings(course,lecture) {
     let url = "/manager/getAllBookings";
+    if(course){
+        const query = "?course=" + course;
+        url+=query;
+    }
+    if(lecture){
+        const query = "&lecture=" + lecture;
+        url+=query;
+    }
     const response = await fetch(baseURL + url);
     const bookingsJson = await response.json();
     if (response.ok) {
-        return bookingsJson.map((b) => new BookingsStat(b.studentId, b.studentName, b.studentSurname,b.course, b.dataStart, b.dataFinish, b.classC,b.absent));
+        return bookingsJson;
     } else {
         let err = { status: response.status, errObj: bookingsJson };
         throw err;  // An object with the error coming from the server
     }
 }
 
-async function getAllCancellations() {
-    let url = "/manager/getAllCancellations";
+async function getAllAttendances(course,lecture) {
+    let url = "/manager/getAllAttendances";
+    if(course){
+        const query = "?course=" + course;
+        url+=query;
+    }
+    if(lecture){
+        const query = "&lecture=" + lecture;
+        url+=query;
+    }
+    const response = await fetch(baseURL + url);
+    const bookingsJson = await response.json();
+    if (response.ok) {
+        return bookingsJson;
+    } else {
+        let err = { status: response.status, errObj: bookingsJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function getAllCancellationsLectures(course,lecture) {
+    let url = "/manager/getAllCancellationsLectures";
+    if(course){
+        const query = "?course=" + course;
+        url+=query;
+    }
+    if(lecture){
+        const query = "&lecture=" + lecture;
+        url+=query;
+    }
     const response = await fetch(baseURL + url);
     const cancellationsJson = await response.json();
     if (response.ok) {
@@ -263,7 +298,51 @@ async function getAllCancellations() {
     }
 }
 
+async function getAllCancellationsBookings(course,lecture) {
+    let url = "/manager/getAllCancellationsBookings";
+    if(course){
+        const query = "?course=" + course;
+        url+=query;
+    }
+    if(lecture){
+        const query = "&lecture=" + lecture;
+        url+=query;
+    }
+    const response = await fetch(baseURL + url);
+    const cancellationsJson = await response.json();
+    if (response.ok) {
+        return cancellationsJson;
+    } else {
+        let err = { status: response.status, errObj: cancellationsJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function getAllCourses() {
+    let url = "/manager/getAllCourses";
+    const response = await fetch(baseURL + url);
+    const coursesJson = await response.json();
+    if (response.ok) {
+        return coursesJson;
+    } else {
+        let err = { status: response.status, errObj: coursesJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function getAllLectures() {
+    let url = "/manager/getAllLectures";
+    const response = await fetch(baseURL + url);
+    const lecturesJson = await response.json();
+    if (response.ok) {
+        return lecturesJson;
+    } else {
+        let err = { status: response.status, errObj: lecturesJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
 
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellations };
+
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures };
 export default API;

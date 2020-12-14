@@ -5,7 +5,6 @@ import { Table } from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
 import Image from 'react-bootstrap/Image';
 import { MdDeleteForever } from "react-icons/md"
-import API from '../API/API.js';
 
 import { FaBackward } from "react-icons/fa";
 

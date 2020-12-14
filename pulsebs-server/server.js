@@ -13,12 +13,13 @@ const bcrypt = require( 'bcrypt' );
 
 const schedule = require( 'node-schedule' );
 const nodemailer = require( 'nodemailer' );
+const { response } = require('express');
 
 
 // Authorization error
 const authErrorObj = {errors: [ {'param': 'Server', 'message': 'Authorization error'} ]};
 
-checkPassword = function ( user, password ) {
+let checkPassword = function ( user, password ) {
     /*
      The salt used to obfuscate passwords is 0
      console.log('hash:' + bcrypt.hashSync('password', 0));
@@ -390,8 +391,8 @@ app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
         res.status(401).end();
     } else {
         // const user = req.user && req.user.user;
-        pulsebsDAO.cancelBooking( bookingId )
-                  .then( ( response ) => res.status( 201 ).json( {response} ) )
+        pulsebsDAO.cancelBookings( bookingId )
+                  .then( ( response ) =>res.status( 201 ).json( {response} ))
                   .catch( ( err ) => {
                       res.status( 500 ).json( {
                                                   errors: [ {'param': 'Server', 'message': err} ],
@@ -457,7 +458,9 @@ app.delete('/api/teachers/:teacherId/lectures/:lectureId', (req, res) => {
 //BOOKING MANAGER
 
 app.get('/api/manager/getAllBookings',(req,res)=>{
- pulsebsDAO.getAllBookings()
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllBookings(course,lecture)
               .then( ( bookings ) => {
                   res.json( bookings );
               } )
@@ -468,10 +471,65 @@ app.get('/api/manager/getAllBookings',(req,res)=>{
               } );
 });
 
-app.get('/api/manager/getAllCancellations',(req,res)=>{
- pulsebsDAO.getAllBookings()
+app.get('/api/manager/getAllAttendances',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllAttendances(course,lecture)
+              .then( ( bookings ) => {
+                  res.json( bookings );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+
+app.get('/api/manager/getAllCancellationsLectures',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllCancellationsLectures(course,lecture)
               .then( ( cancellations ) => {
                   res.json( cancellations );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllCancellationsBookings',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllCancellationsBookings(course,lecture)
+              .then( ( cancellations ) => {
+                  res.json( cancellations );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllCourses',(req,res)=>{
+    pulsebsDAO.getAllCourses()
+              .then( ( courses ) => {
+                  res.json( courses );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllLectures',(req,res)=>{
+    pulsebsDAO.getAllLectures()
+              .then( ( lectures ) => {
+                  res.json( lectures );
               } )
               .catch( ( err ) => {
                   res.status( 500 ).json( {
