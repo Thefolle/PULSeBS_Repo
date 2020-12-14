@@ -393,7 +393,10 @@ app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
     } else {
         // const user = req.user && req.user.user;
         pulsebsDAO.cancelBookings( bookingId )
-                  .then( ( response ) => res.status( 201 ).json( {response} ) )
+                  .then( ( response ) => response === 1 ?
+                      res.status( 201 ).json( {response} ) :
+                      res.status( 401 ).json( {response} )
+                  )
                   .catch( ( err ) => {
                       res.status( 500 ).json( {
                                                   errors: [ {'param': 'Server', 'message': err} ],
