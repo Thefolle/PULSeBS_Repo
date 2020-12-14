@@ -27,7 +27,7 @@ if (!db) {
             if (err) throw err;
         });
         db = openDB(dbName);
-    } else db = openDB('mypulsebs.db');
+    } else db = openDB('pulsebs.db');
 }
 
 /*
@@ -58,13 +58,13 @@ exports.getUserByEmail = function (email) {
                 } else {
                     let row = rows[0];
                     let user=null;
-                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff
                     if(i===2){
                         user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
                     }else{
                         user = new User(row.id, row.email, row.password, i, row.name, row.surname);
                     }
-                    
+
                     resolve(user);
                 }
             });
@@ -138,13 +138,13 @@ exports.getUserById = function (id) {
                 } else {
                     let row = rows[0];
                     let user=null;
-                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff 
+                    //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff
                     if(i===2){
                         user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
                     }else{
                         user = new User(row.id, row.email, row.password, i, row.name, row.surname);
                     }
-                    
+
                     resolve(user);
                 }
             });
@@ -168,15 +168,26 @@ exports.bookSeat = (lectureId, studentId) => {
                                 S.ref_student = ${studentId};`
         //2 - Insert a new booking record
         let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${studentId},${lectureId},${moment().valueOf()});`
+        let existBookingQuery = `SELECT id FROM booking B WHERE B.ref_lecture = ${lectureId} AND ref_student = ${studentId}`;
 
         db.get(checkQuery, [], (err, row) => {
             if (err) reject(err);
             if (row && row.bookable === 1) {
                 //Student subscription exists
-
-                db.run(bookQuery, [], (err) => {
-
-                    err ? reject(err) : resolve(1);
+                db.get(existBookingQuery, [], (err,row) => {
+                    if (err) reject(err);
+                    if (row) {
+                        //Booking exist, and it should be updated
+                        let updateBookingQuery = `UPDATE booking SET active = 1 WHERE id = ${row.id}`;
+                        db.run(updateBookingQuery, [], (err) => {
+                            err ? reject(err) : resolve(1);
+                        })
+                    }else{
+                        //Booking doesn't exist, and it should be created as a new one
+                        db.run(bookQuery,[],(err) => {
+                            err ? reject(err) : resolve(1);
+                        })
+                    }
                 });
             } else resolve(0);
         });
@@ -321,7 +332,7 @@ exports.cancelBookings = (bookingId) => {
 
 /*
 * Delete a booking  -v2
-* */
+
 
 exports.cancelBooking = (bookingId) => {
     return new Promise(((resolve, reject) => {
@@ -333,7 +344,7 @@ exports.cancelBooking = (bookingId) => {
         });
     }));
 }
-
+* */
 
 /*
 * Get a list of student's booking
@@ -343,17 +354,18 @@ exports.getStudentBookings = (studentId) => {
     return new Promise(((resolve, reject) => {
         let query = `   SELECT  B.id,
                                 B.date,
-                                B.active,
+                                B.active as activeB,
                                 B.presence,
                                 B.ref_lecture,
                                 L.date,
                                 L.presence,
-                                L.active,
+                                L.active as activeL,
                                 C.desc as course,
                                 Cl.desc as class,
                                 seats,
                                 name,
-                                surname
+                                surname,
+                                B.ref_student
                         FROM    booking B,
                                 lecture L,
                                 course C,

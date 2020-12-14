@@ -68,18 +68,29 @@ describe('get /api/student/bookings', () => {
 });
 
 //  DELETE cancle the lecture that already booked
-// FIXME:
-describe('/api/students/:studentId/bookings/:bookingId', () => {
-    it('should return a 200 if exists', async () => {
-
-        await request(server)
-            .delete('/api/students/269901/bookings/1')
+describe('Try to cancel some bookings', () => {
+    test('Try to cancel a booking correctly', async function () {
+        let studentId = 269901;
+        let bookingId = 2;
+        let response = await request(server)
+            .delete('/api/students/' + studentId + '/bookings/' + bookingId)
             .set('Cookie', `token=${token}`)
-            .set('Content-Type', 'application/json')
-            .then((res) => {
-                expect(res.status).toBe(201);
-                expect(res.body.response).toBe(1);
-            });
+        expect(response.status).toBe(201);
+    });
+    test('Try to cancel a booking wrongly - Wrong url', async function () {
+        let studentId = 123456;
+        let response = await request(server)
+            .delete('/api/students/' + studentId + '/bookings/')
+            .set('Cookie', `token=${token}`)
+        expect(response.status).toBe(404);
+    });
+    test('Try to cancel a booking wrongly - Wrong params', async function () {
+        let studentId = 123456;
+        let bookingId = 20;
+        let response = await request(server)
+            .delete('/api/students/' + studentId + '/bookings/' + bookingId)
+            .set('Cookie', `token=${token}`)
+        expect(response.status).toBe(401);
     });
 });
 
