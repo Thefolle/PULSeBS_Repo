@@ -37,7 +37,7 @@ describe("Login test suite", () => {
 
 //BOOKING A SEAT
 test('Try to book a new seat', () => {
-    return DAO.bookSeat('2', '269901').then(result => {
+    return DAO.bookSeat('3', '269901').then(result => {
         expect(result).toBe(1);
     });
 });
@@ -59,7 +59,7 @@ test('Try to get a teacher\'s lectures', () => {
 //GET STUDENTS BOOKED FOR LECTURE ID
 test('Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2('239901').then(result => {
-        expect(result.length).toBe(2);
+        expect(result.length).toBe(3);
     });
 });
 
@@ -167,7 +167,7 @@ describe( 'Cancel/edit operations', () => {
 
     //CANCEL A BOOKING
     test('Try to cancel a booking', () => {
-        return DAO.cancelBooking(1).then(result => {
+        return DAO.cancelBookings(1).then(result => {
             expect(result).toEqual(1);
         })
     });
