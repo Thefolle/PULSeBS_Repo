@@ -1,13 +1,10 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { Papa } from 'papaparse/papaparse/';
 import UserNavBar from '../Components/UserNavBar';
 import Form from 'react-bootstrap/Form'
 
 import '../App.css';
 import API from '../API/API';
-import { Switch } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
 import { Row, Col, Container, ListGroup, Button } from "react-bootstrap";
 
@@ -60,15 +57,14 @@ class SupportOfficePage extends React.Component {
         API.importCSV(students, teachers, courses, enrollments, classes, lectures).then((result) => {
             if (result.ok) {
                //get the updated list of tasks from the server
-               console.log("ok");
-               this.setState({ failed: 0 });
+               this.setState({ failed: 0, studentscsv: undefined, students: [], teacherscsv: undefined, teachers: [], coursescsv: undefined, courses: [], enrollmentscsv: undefined, enrollments: [], lecturescsv: undefined, lectures: [], classescsv: undefined, classes: [], schedulecsv: undefined, schedule: []  });
             } else {
-               console.log("ok");
-                this.setState({ failed: 1 });
+                this.setState({ failed: 1, studentscsv: undefined, students: [], teacherscsv: undefined, teachers: [], coursescsv: undefined, courses: [], enrollmentscsv: undefined, enrollments: [], lecturescsv: undefined, lectures: [], classescsv: undefined, classes: [], schedulecsv: undefined, schedule: [] });
             }
         }) //if SUCCEDED return 1
             .catch((errorObj) => {
                 this.handleErrors(errorObj);
+                this.setState({ failed: 1, studentscsv: undefined, students: [], teacherscsv: undefined, teachers: [], coursescsv: undefined, courses: [], enrollmentscsv: undefined, enrollments: [], lecturescsv: undefined, lectures: [], classescsv: undefined, classes: [], schedulecsv: undefined, schedule: [] });
             });
     }
 
@@ -121,6 +117,7 @@ class SupportOfficePage extends React.Component {
                         header: true
                     });
                 }
+                break;
 
             case 'classes':
                 if( classescsv !== undefined ) {
@@ -129,6 +126,7 @@ class SupportOfficePage extends React.Component {
                         header: true
                     });
                 }
+                break;
 
             case 'schedule':
                 if (schedulecsv !== undefined) {
@@ -139,44 +137,54 @@ class SupportOfficePage extends React.Component {
                 }
                 break;
 
+            default:
+                break;
+
         }
 
     };
 
     updateStudentsData(result) {
         var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, city: e.City, email: e.Email, bday: e.Birthday, ssn: e.SSN, password: e.Password }));
-        this.setState({ students: data });
+        //this.setState({ students: data.slice(0, data.length-1) }); //USE THIS to upload all the rows -> requires too much time (expires)
+        this.setState({ students: data.slice(0, 10) });
     }
 
     updateTeachersData(result) {
         var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, email: e.Email, password: e.Password }));
-        this.setState({ teachers: data });
+        //this.setState({ teachers: data.slice(0, data.length-1) });
+        this.setState({ teachers: data.slice(0, 10) });
     }
 
     updateCoursesData(result) {
-        var data = result.data.map(e => ({ id: e.Code, year: e.Year, semester: e.Semester, course: e.Desc, teacher: e.Teacher }));
-        this.setState({ courses: data });
+        var data = result.data.map(e => ({ id: e.Id, year: e.Year, semester: e.Semester, course: e.Desc, teacher: e.Teacher }));
+       // this.setState({ courses: data.slice(0, data.length-1) });
+       this.setState({ courses: data.slice(0, 10) });
     }
 
     updateEnrollmData(result) {
         var data = result.data.map(e => ({ cid: e.Code, sid: e.Student }));
-        this.setState({ enrollments: data });
+        //this.setState({ enrollments: data.slice(0, data.length-1) });
+        this.setState({ enrollments: data.slice(6, 10) });
     }
 
     updateLecturesData(result) {
         var data = result.data.map(e => ({ course: e.ref_course, ref_class: e.ref_class, start_date: e.start_date, end_date: e.end_date, presence: e.presence, bookable: e.bookable, active: e.active }));
-        this.setState({ lectures: data });
+       // this.setState({ lectures: data.slice(0, data.length-1) });
+       this.setState({ lectures: data.slice(5, 10) });
     }
 
     updateClassesData(result) {
         var data = result.data.map(e => ({ id: e.Id, desc: e.Desc, seats: e.Seats }));
-        this.setState({ classes: data });
+        console.log(data);
+      //  this.setState({ classes: data.slice(0, data.length-1) });
+      this.setState({ classes: data.slice(6, 10) });
     }
 
     updateScheduleData(result) {
         var data = result.data.map(e => ({ id: e.Code, room: e.Room, date: e.Date, seats: e.Seats, time: e.Time }));
-        console.log(data);
-        this.setState({ schedule: data });
+        //this.setState({ schedule: data.slice(0, data.length-1) });
+        this.setState({ schedule: data.slice(0, 10) });
     }
 
 
@@ -190,10 +198,12 @@ class SupportOfficePage extends React.Component {
             } else {
                 //other errors that may happens and choose the page in which are displayed
                 this.setState({ authErr: err });
+                this.setState({ failed: 1, studentscsv: undefined, students: [], teacherscsv: undefined, teachers: [], coursescsv: undefined, courses: [], enrollmentscsv: undefined, enrollments: [], lecturescsv: undefined, lectures: [], classescsv: undefined, classes: [], schedulecsv: undefined, schedule: [] });
             }
         }
         console.log("Error occured. Check the handleErrors method in supportOfficerPage.");
         console.log(err);
+        this.setState({ failed: 1, studentscsv: undefined, students: [], teacherscsv: undefined, teachers: [], coursescsv: undefined, courses: [], enrollmentscsv: undefined, enrollments: [], lecturescsv: undefined, lectures: [], classescsv: undefined, classes: [], schedulecsv: undefined, schedule: [] });
     }
 
     
@@ -222,7 +232,7 @@ class SupportOfficePage extends React.Component {
                                         <h4>Import CSV files to set up the system:</h4>
                                         <br />
                                         {this.state.failed === 1 &&
-                                            <p>Something went wrong. Please, import again your files.</p>                                            
+                                            <p>Something went wrong. Please, select and import again your files.</p>                                            
                                         }
                                         {this.state.failed === 0 &&
                                             <p>Upload completed.</p>                                            
