@@ -89,11 +89,11 @@ test( 'Try to get students booked for lecture 4', () => {
 } );
 
 //GET ALL STUDENT'S BOOKINGS
-test( 'Try to get all student\'s bookings', () => {
-    return DAO.getStudentBookings( '269901' ).then( result => {
-        expect( result.length ).toEqual( 3 );
-    } )
-} );
+test('Try to get all student\'s bookings', () => {
+    return DAO.getStudentBookings('269901').then(result => {
+        expect(result.length).toEqual(2);
+    })
+});
 
 //GET TOMORROW LESSONS STATS
 test( 'Try to get all students booked for tomorrow lectures', () => {
@@ -256,6 +256,110 @@ describe('[PUL 10] Get teacher statistics', () => {
         });
     });
 });
+
+describe("[PUL-11] Get statistics for manager",()=>{
+    test('get All Bookings 1',()=>{
+        return DAO.getAllBookings().then(b=>{
+            expect(b.length).toBe(1);
+        })
+    });
+
+    test('get Bookings 2',()=>{
+        let course="Analisi 1";
+        let lecture=2;
+        return DAO.getAllBookings(course,lecture).then(b=>{
+            expect(b.length).toBe(1);
+        })
+    });
+
+    test('get Bookings 3',()=>{
+        let course="Fisica 2";
+        let lecture=1;
+        return DAO.getAllBookings(course,lecture).then(b=>{
+            expect(b.length).toBe(0);
+        })
+    });
+
+     test('get All Attendances 1',()=>{
+        return DAO.getAllAttendances().then(b=>{
+            expect(b.length).toBe(0);
+        })
+    });
+
+    test('get Attendances 2',()=>{
+        let course="Analisi 1";
+        let lecture=2;
+        return DAO.getAllAttendances(course,lecture).then(b=>{
+            expect(b.length).toBe(0);
+        })
+    });
+
+    test('get Attendances 3',()=>{
+        let course="Fisica 2";
+        let lecture=1;
+        return DAO.getAllAttendances(course,lecture).then(b=>{
+            expect(b.length).toBe(0);
+        })
+    });
+
+    test('get All cancelled Lectures 1',()=>{
+        return DAO.getAllCancellationsLectures().then(c=>{
+            expect(c.length).toBe(2);
+        });
+    });
+
+    test('get All cancelled Lectures 2',()=>{
+        let course = "Analisi 1";
+        let lecture = 5;
+        return DAO.getAllCancellationsLectures(course,lecture).then(c=>{
+            expect(c.length).toBe(1);
+        });
+    });
+
+    test('get All cancelled Lectures 3',()=>{
+        let course="Fisica 2";
+        let lecture=7;
+        return DAO.getAllCancellationsLectures(course,lecture).then(c=>{
+            expect(c.length).toBe(0);
+        });
+    });
+
+    test('get All cancelled Booking 1',()=>{
+        return DAO.getAllCancellationsBookings().then(c=>{
+            expect(c.length).toBe(1);
+        });
+    });
+
+    test('get All cancelled Bookings 2',()=>{
+        let course = "Analisi 1";
+        let lecture = 2;
+        return DAO.getAllCancellationsBookings(course,lecture).then(c=>{
+            expect(c.length).toBe(0);
+        });
+    });
+
+    test('get All cancelled Bookings 3',()=>{
+        let course="Fisica 2";
+        let lecture=7;
+        return DAO.getAllCancellationsBookings(course,lecture).then(c=>{
+            expect(c.length).toBe(0);
+        });
+    });
+
+    test('get All Courses',()=>{
+        return DAO.getAllCourses().then(c=>{
+            expect(c.length).toBe(5); //change value(depends of cardinality of courses)
+        });
+    });
+
+    test('get All Lectures',()=>{
+        return DAO.getAllLectures().then(c=>{
+            expect(c.length).toBe(7); //change value(depends of cardinality of lectures)
+        });
+    });
+
+});
+
 describe( 'CSV loading tests', () => {
     let data = {
         "classes": [

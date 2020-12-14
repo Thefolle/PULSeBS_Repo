@@ -137,20 +137,20 @@ class StudentPage extends React.Component {
 
                         <Col sm={8}>
 
-                    <Switch>
-                                <Route exact path={this.props.match.url + "/lectures"}>
-                                    <LecturesList lectures={this.state.lectures} bookings={this.state.bookings}
-                                                  bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked}
-                                                  cancelBooking={this.cancelBooking}
-                                    />
-                                </Route>
-                                <Route exact path={this.props.match.url + "/bookings"}>
-                                    <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
-                                </Route>
-                                <Route exact path={this.props.match.url + "/calendar"}>
-                                    <StudentCalendar bookings={this.state.bookings} />
-                                </Route>
-                            </Switch>
+                        <Switch>
+                            <Route exact path={this.props.match.url + "/lectures"}>
+                                <LecturesList lectures={this.state.lectures} bookings={this.state.bookings}
+                                    bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked}
+                                    cancelBooking={this.cancelBooking}
+                                />
+                            </Route>
+                            <Route exact path={this.props.match.url + "/bookings"}>
+                                <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
+                            </Route>
+                            <Route exact path={this.props.match.url + "/calendar"}>
+                                <StudentCalendar bookings={this.state.bookings} />
+                            </Route>
+                        </Switch>
 
                         </Col>
                     </Row>

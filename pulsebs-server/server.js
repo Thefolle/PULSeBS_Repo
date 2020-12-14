@@ -13,6 +13,7 @@ const bcrypt = require( 'bcrypt' );
 
 const schedule = require( 'node-schedule' );
 const nodemailer = require( 'nodemailer' );
+const { response } = require('express');
 
 
 // Authorization error
@@ -476,6 +477,89 @@ app.put( '/api/sofficer/', ( req, res ) => {
     else res.status( 400 ).json( dataErrorObj )
 
 } )
+
+//BOOKING MANAGER
+
+app.get('/api/manager/getAllBookings',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllBookings(course,lecture)
+              .then( ( bookings ) => {
+                  res.json( bookings );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllAttendances',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllAttendances(course,lecture)
+              .then( ( bookings ) => {
+                  res.json( bookings );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+
+app.get('/api/manager/getAllCancellationsLectures',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllCancellationsLectures(course,lecture)
+              .then( ( cancellations ) => {
+                  res.json( cancellations );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllCancellationsBookings',(req,res)=>{
+    const course=req.query.course;
+    const lecture=req.query.lecture;
+    pulsebsDAO.getAllCancellationsBookings(course,lecture)
+              .then( ( cancellations ) => {
+                  res.json( cancellations );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllCourses',(req,res)=>{
+    pulsebsDAO.getAllCourses()
+              .then( ( courses ) => {
+                  res.json( courses );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
+
+app.get('/api/manager/getAllLectures',(req,res)=>{
+    pulsebsDAO.getAllLectures()
+              .then( ( lectures ) => {
+                  res.json( lectures );
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ],
+                                          } );
+              } );
+});
 
 
 // Exported for E2E testing

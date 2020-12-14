@@ -1,0 +1,193 @@
+import React from 'react';
+import API from '../API/API';
+import { withRouter, Switch, Route } from 'react-router-dom';
+import { AuthContext } from '../auth/AuthContext';
+import UserNavBar from './UserNavBar';
+import '../App.css';
+import '../customStyle.css';
+import Container from 'react-bootstrap/Container';
+import BookingsStats from './BookingsStats';
+import ListGroup from 'react-bootstrap/ListGroup';
+import DropDownBookingManager from './DropDownBookingManager';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+
+class BookingManager extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            lecture:-1, //All lectures = -1
+            course:"All", // All courses=All
+            courses:[],
+            lectures:[],
+            bookings:[],
+            cancellations: [],
+            attendances: [],
+            cancellationsBookings:[]
+        };
+    }
+
+    componentDidMount() {
+        API.getAllCourses().then((courses)=>{
+            API.getAllLectures().then((lectures) => {
+                API.getAllBookings(this.state.course, this.state.lecture).then((bookings) => {
+                    API.getAllAttendances(this.state.course, this.state.lecture).then((attendances) => {
+                        API.getAllCancellationsLectures(this.state.course, this.state.lecture).then((cancellations)=>{
+                            API.getAllCancellationsBookings(this.state.course, this.state.lecture).then((cancellationsB)=>{
+                                this.setState({ courses: courses }); 
+                                this.setState({ lectures: lectures });
+                                this.setState({bookings:bookings});
+                                this.setState({attendances:attendances});
+                                this.setState({cancellations:cancellations});
+                                this.setState({cancellationsBookings:cancellationsB});
+                            }).catch((err)=>{
+                                this.handleErrors(err);
+                            });
+                        }).catch((err) => {
+                        this.handleErrors(err);
+                        });
+                    }).catch((err) => {
+                        this.handleErrors(err);
+                    });
+                }).catch((err) => {
+                    this.handleErrors(err);
+                });
+            }).catch((err) => {
+                this.handleErrors(err);
+            });
+        }).catch((err)=>{
+            this.handleErrors(err);
+        });
+    }
+
+    handleErrors = (err) => {
+        if (err) {
+            if (err.status && err.status === 401) {
+                this.setState({ authErr: err });
+                this.props.history.push("/");
+            } else {
+                //other errors that may happens and choose the page in which are displayed
+                this.setState({ authErr: err });
+            }
+        }
+        console.log("Error occured. Check the handleErrors method in BookingManager.");
+        console.log(err);
+    }
+
+    updateCourse=(course)=>{
+        API.getAllBookings(course,this.state.lecture).then((attendances) => {
+            API.getAllAttendances(course,this.state.lecture).then((bookings) => {
+                API.getAllCancellationsLectures(course,this.state.lecture).then((cancellations)=>{
+                    API.getAllCancellationsBookings(course,this.state.lecture).then((cancellationsB)=>{
+                        this.setState({course:course});
+                        this.setState({bookings:bookings});
+                        this.setState({attendances:attendances});
+                        this.setState({cancellations:cancellations});
+                        this.setState({cancellationsBookings:cancellationsB});
+                    }).catch((err)=>{
+                        this.handleErrors(err);
+                    });
+                }).catch((err)=>{
+                    this.handleErrors(err);
+                });
+            }).catch((err) => {
+                this.handleErrors(err);
+            });
+        }).catch((err) => {
+            this.handleErrors(err);
+        });
+    }
+
+    updateLecture=(lecture)=>{
+        API.getAllBookings(this.state.course,lecture).then((bookings) => {
+            API.getAllAttendances(this.state.course, lecture).then((attendances) => {
+                API.getAllCancellationsLectures(this.state.course,lecture).then((cancellations)=>{
+                    API.getAllCancellationsBookings(this.state.course,lecture).then((cancellationsB)=>{
+                        this.setState({lecture:parseInt(lecture)});
+                        this.setState({bookings:bookings});
+                        this.setState({attendances:attendances});
+                        this.setState({cancellations:cancellations});
+                        this.setState({cancellationsBookings:cancellationsB});
+                    }).catch((err)=>{
+                        this.handleErrors(err);
+                    });
+                }).catch((err)=>{
+                    this.handleErrors(err);
+                });
+            }).catch((err) => {
+                this.handleErrors(err);
+            });
+        }).catch((err) => {
+            this.handleErrors(err);
+        });
+        
+    }
+    
+
+    
+     render() {
+
+        return (
+            <AuthContext.Consumer>
+                {(context) => (
+                    <>
+                        {context.authUser && <>
+                            <UserNavBar userId={context.authUser.id} />
+                            <Container>
+                                <Row>
+                                    <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                                        <ListGroup className="sidebar" variant="flush" >
+                                            <h5>POLITECNICO DI TORINO</h5>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                        </ListGroup>
+                                    </Col>
+                                    <Col sm={8}>
+                                        <Row>
+                                            <Col>
+                                                <label>Course:</label>
+                                                <DropDownBookingManager options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
+                                            </Col>
+                                            <Col>
+                                                <label>Lecture:</label>
+                                                <DropDownBookingManager options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
+                                            </Col>
+                                        </Row>
+                                        <Switch>
+                                            <Route exact path={"/manager/allStats"}>
+                                                <br/>
+                                                <BookingsStats bookings={this.state.bookings} type={1}/>
+                                                <br/>
+                                                <BookingsStats bookings={this.state.cancellations} type={2}/>
+                                                <br/>
+                                                <BookingsStats bookings={this.state.cancellationsBookings} type={3} />
+                                                <br/>
+                                                <BookingsStats bookings={this.state.attendances} type={0}/>
+                                            </Route>
+                                            <Route exact path={"/manager/bookings"}>
+                                                <BookingsStats bookings={this.state.bookings} type={1}/>
+                                            </Route>
+                                            <Route exact path={"/manager/cancellationsLectures"}>
+                                                <BookingsStats bookings={this.state.cancellations} type={2}/>
+                                            </Route>
+                                            <Route exact path={"/manager/cancellationsBookings"}>
+                                                <BookingsStats bookings={this.state.cancellationsBookings} type={3} />
+                                            </Route>
+                                            <Route exact path={"/manager/attendances"}>
+                                                <BookingsStats bookings={this.state.attendances} type={0}/>
+                                            </Route>
+                                        </Switch>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </>
+                        }
+                    </>
+                )}
+            </AuthContext.Consumer>
+        );
+    }
+}
+
+export default withRouter(BookingManager);

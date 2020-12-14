@@ -1,25 +1,25 @@
-import React       from 'react';
-import moment      from 'moment';
-import Image       from 'react-bootstrap/Image';
+import React from 'react';
+import moment from 'moment';
+import Image from 'react-bootstrap/Image';
 import { BiCalendarX } from "react-icons/bi";
 import { ImCross } from "react-icons/im";
-import {AuthContext} from './auth/AuthContext';
+import { AuthContext } from './auth/AuthContext';
 
-const LectureItem = ( props ) => {
+const LectureItem = (props) => {
 
-    let {lecture, bookings, bookSeat, alreadyBooked,cancelBooking, getBookingFromLecture} = props;
+    let { lecture, bookings, bookSeat, alreadyBooked, cancelBooking, getBookingFromLecture } = props;
 
-    alreadyBooked = (lectureId,studentId) => {
+    alreadyBooked = (lectureId, studentId) => {
         const booking = getBookingFromLecture(lectureId, studentId);
-        if(booking === 0) return true;
+        if (booking === 0) return true;
         return booking.active !== 1;
     }
 
-    getBookingFromLecture = (lectureId,studentId) => {
-        let booking = bookings.find( (b) => {
+    getBookingFromLecture = (lectureId, studentId) => {
+        let booking = bookings.find((b) => {
             return b.ref_lecture === lectureId && b.ref_student === studentId
         })
-        if(!booking) return 0;
+        if (!booking) return 0;
         else return booking;
     }
 

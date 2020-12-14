@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const moment = require('moment');
+const { resolve } = require('path');
 moment.locale('it');
 
 const User = require('./User');
@@ -287,7 +288,7 @@ exports.getTeacherLectures = (teacherId) => {
 * */
 exports.getStudentsForLecture = (lectureId) => {
     return new Promise(((resolve, reject) => {
-        let query = `SELECT S.id,S.email,S.name,S.surname FROM booking B, student S WHERE B.ref_student=S.id AND B.ref_lecture = ${lectureId};`
+        let query = `SELECT S.id,S.email,S.name,S.surname FROM booking B, student S WHERE B.ref_student=S.id AND B.active=1 AND B.ref_lecture = ${lectureId};`
         db.all(query, [], (err, rows) => {
             if (err) reject(err);
             if (rows) resolve(rows);
@@ -305,7 +306,7 @@ exports.getStudentsForLecturev2 = (teacherId) => {
     return new Promise(((resolve, reject) => {
         let query = `SELECT DISTINCT B.ref_student as studentId,B.ref_lecture as lId
                      FROM booking B,course CO, lecture L
-                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND CO.ref_teacher=${teacherId};`
+                     WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND B.active=1 AND CO.ref_teacher=${teacherId};`
         db.all(query, [], (err, rows) => {
             if (err) reject(err);
             if (rows) resolve(rows);
@@ -334,7 +335,7 @@ exports.cancelBookings = (bookingId) => {
 * Delete a booking  -v2
 
 
-exports.cancelBooking = (bookingId) => {
+/*exports.cancelBooking = (bookingId) => {
     return new Promise(((resolve, reject) => {
         let query = `DELETE FROM booking WHERE id = ${bookingId};`
         db.run(query, [], function (err) {
@@ -375,6 +376,7 @@ exports.getStudentBookings = (studentId) => {
                                 L.ref_class = CL.id AND
                                 L.ref_course = C.id AND
                                 C.ref_teacher = T.id AND
+                                B.active=1 AND
                                 B.ref_student = ${studentId};`
         db.all(query, [], (err, rows) => {
             if (err) reject(err);
@@ -698,7 +700,7 @@ exports.getTeacherPresenceStats = (teacherId) => {
 * Get the total of bookings, cancellations and attendances of the system
 * */
 
-exports.getManagerStats = () => {
+/*exports.getManagerStats = () => {
     return new Promise(((resolve, reject) => {
         //Result => [ BOOKING COUNT, CANCELLATION COUNT, PRESENCE COUNT ]
         let query = `SELECT COUNT(*) FROM booking WHERE active = 1 UNION ALL
@@ -710,7 +712,127 @@ exports.getManagerStats = () => {
             else resolve(0);
         });
     }));
+}*/
+
+/*
+GET total info about bookings
+*/
+
+exports.getAllBookings=(course,lecture)=>{
+    return new Promise((resolve,reject)=>{
+        let query=`SELECT B.ref_student as userId, S.name as userName, S.surname as userSurname, C.desc as course,L.id as lecId,L.date as dataStart, L.endTime as dataFinish, CL.desc as classC,B.presence as presence
+                    FROM booking B, lecture L, course C, class CL,student S
+                    WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND B.active=1;`; //remember if delete last condition in WHERE statement
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows){
+                lecture=parseInt(lecture);
+                if(course && course!=="All")
+                    rows=rows.filter(c=>c.course===course);
+                if(lecture && lecture!==-1)
+                    rows=rows.filter(l=>l.lecId===lecture);
+
+                resolve(rows);
+            }
+            else resolve(0);
+        });
+
+    });
 }
+
+exports.getAllAttendances = (course, lecture) => {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT B.ref_student as userId, S.name as userName, S.surname as userSurname, C.desc as course,L.id as lecId,L.date as dataStart, L.endTime as dataFinish, CL.desc as classC,B.presence as presence
+                    FROM booking B, lecture L, course C, class CL,student S
+                    WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND B.active=1 AND B.presence=1;`; //remember if delete last condition in WHERE statement
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) {
+                lecture = parseInt(lecture);
+                if (course && course !== "All")
+                    rows = rows.filter(c => c.course === course);
+                if (lecture && lecture !== -1)
+                    rows = rows.filter(l => l.lecId === lecture);
+
+                resolve(rows);
+            }
+            else resolve(0);
+        });
+
+    });
+}
+
+/**
+ * Get info about all cancelled lectures
+ */
+
+ exports.getAllCancellationsLectures=(course,lecture)=>{
+     return new Promise((resolve,reject)=>{
+        let query=`SELECT T.id as userId,T.name as userName,T.surname as userSurname,C.desc as course,CL.desc as classC,L.id as lecId,L.date as dataStart,L.endTime as dataFinish
+                    FROM lecture L, course C, class CL,teacher T
+                    WHERE L.ref_course=C.id AND L.ref_class=CL.id AND C.ref_teacher=T.id AND L.active=0;`;
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows){
+                lecture=parseInt(lecture);
+                if(course && course!=="All")
+                    rows=rows.filter(c=>c.course===course);
+                if(lecture && lecture!==-1)
+                    rows=rows.filter(l=>l.lecId===lecture);
+                resolve(rows);
+            }
+            else resolve(0);
+        });;
+
+     });
+ }
+
+  exports.getAllCancellationsBookings=(course,lecture)=>{
+     return new Promise((resolve,reject)=>{
+        let query=`SELECT B.ref_student as userId, S.name as userName, S.surname as userSurname, C.desc as course,L.id as lecId,L.date as dataStart, L.endTime as dataFinish, CL.desc as classC,B.presence as presence
+                    FROM booking B, lecture L, course C, class CL,student S
+                    WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND B.active=0;`;
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows){
+                lecture=parseInt(lecture);
+                if(course && course!=="All")
+                    rows=rows.filter(c=>c.course===course);
+                if(lecture && lecture!==-1)
+                    rows=rows.filter(l=>l.lecId===lecture);
+                resolve(rows);
+            }
+            else resolve(0);
+        });;
+
+     });
+ }
+
+ exports.getAllCourses=()=>{
+     return new Promise((resolve,reject)=>{
+        let query=`SELECT C.desc as course,C.id as id
+                    FROM course C;`;
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+
+     });
+ }
+
+ exports.getAllLectures=()=>{
+     return new Promise((resolve,reject)=>{
+        let query=`SELECT L.id as lecId
+                    FROM lecture L;`;
+        db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) resolve(rows);
+            else resolve(0);
+        });
+
+     });
+ }
 
 /*
 * Get all attendance of a positive student and the relative people involved in
