@@ -480,4 +480,5 @@ app.put( '/api/sofficer/', ( req, res ) => {
 
 // Exported for E2E testing
 exports.server = app;
+app.disable("x-powered-by");
 exports.handleToCloseServer = app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) )
