@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import request from 'supertest';
 import '@babel/polyfill';
 import App from './App';
 

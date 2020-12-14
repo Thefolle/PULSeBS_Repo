@@ -36,6 +36,7 @@ class TeacherStatistics extends React.Component {
         if (document.getElementById('plotId')) {
             API.getTeacherStatistics(teacherId, courseId, groupBy).then(data => {
                 let trace1, trace2, layout;
+                console.log(data);
                 // data are sorted according to an increasing date in the back end
                 [trace1, trace2, layout] = this.generateChartFromData(data.x, data.y, groupBy);
                 Plotly.newPlot('plotId', [trace1, trace2], layout, { displayModeBar: false });
@@ -101,7 +102,7 @@ class TeacherStatistics extends React.Component {
             }
 
             layout = {
-                title: { 
+                title: {
                     text: `What's the bookings trend grouped by ${groupBy.toLowerCase()}?`,
                     font: {
                         size: 24
@@ -163,7 +164,7 @@ class TeacherStatistics extends React.Component {
             };
 
             layout = {
-                title: { 
+                title: {
                     text: `What's the bookings trend grouped by ${groupBy.toLowerCase()}?`,
                     font: {
                         size: 24
@@ -224,7 +225,7 @@ class TeacherStatistics extends React.Component {
             };
 
             layout = {
-                title: { 
+                title: {
                     text: `What's the bookings trend grouped by ${groupBy.toLowerCase()}?`,
                     font: {
                         size: 24

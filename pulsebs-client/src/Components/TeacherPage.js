@@ -4,13 +4,13 @@ import { withRouter, Switch, Route } from 'react-router-dom';
 import API from '../API/API';
 import CourseList from './CourseList';
 import LectureList from './LectureList';
-import StudentList from './StudentiList';
-import UserNavBar from './UserNavBar';
+import StudentList from './StudentList';
+import UserNavBar  from './UserNavBar';
 import { AuthContext } from '../auth/AuthContext';
 import TeacherStatistics from './TeacherStatistics';
 
 
-import { Button, Row, Col, Container, ListGroup, Jumbotron } from "react-bootstrap";
+import { Row, Col, Container, ListGroup, Jumbotron } from "react-bootstrap";
 
 import '../App.css';
 import '../customStyle.css';
@@ -33,7 +33,7 @@ class TeacherPage extends React.Component {
     // Update the front end instead of retreiving all lectures again, after
     // that a lecture has been turnt to be online (after the click)
     turnLectureIntoOnline = (lectureId, teacherId) => {
-        API.turnLectureIntoOnline(lectureId, teacherId).then(result => {
+        API.turnLectureIntoOnline(lectureId, teacherId).then( () => {
             API.getTeacherLectures().then((lectures) => {
                 this.setState({ lectures: lectures });
             });
@@ -82,8 +82,8 @@ class TeacherPage extends React.Component {
                 });
             }
         }
-
-        this.setState({ courses: result.sort() });
+        let newState = result.sort();
+        this.setState({ courses: newState });
     }
 
 
@@ -153,7 +153,7 @@ class TeacherPage extends React.Component {
                                             <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                                                 <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
                                             )} />
-                                            <Route path={"/teacher/:teacherId/statistics"} render={({ match }) => {
+                                            <Route path={"/teacher/:teacherId/statistics"} render={({}) => {
                                                 if (!this.state.courses || this.state.courses.length === 0) {
                                                     return <Jumbotron className='error'><p>It seems that you don't have taught at any course.</p><p>Please, refresh the page or contact the segretary for information.</p></Jumbotron>;
                                                 } else {

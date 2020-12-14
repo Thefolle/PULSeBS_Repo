@@ -126,7 +126,7 @@ describe('Turn a lecture to be online instead of in presence', () => {
         });
 
         test('Non-existing lecture', () => {
-            return DAO.turnLectureIntoOnline(239901, 300).then(exitCode => {
+            return DAO.turnLectureIntoOnline(300,239901).then(exitCode => {
                 console.log("Test failure message: ");
                 console.log(exitCode);
             }).catch(exitCode => {
@@ -136,7 +136,7 @@ describe('Turn a lecture to be online instead of in presence', () => {
         });
 
         test('Non-active lecture', () => {
-            return DAO.turnLectureIntoOnline(239901, 5).then(exitCode => {
+            return DAO.turnLectureIntoOnline(5, 239901).then(exitCode => {
                 console.log("Test failure message: ");
                 console.log(exitCode);
             }).catch(exitCode => {

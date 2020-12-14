@@ -3,9 +3,9 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
-import User from './User';
-import LoginPage                   from './login';
-import StudentPage                 from './studentPage';
+import User        from './User';
+import LoginPage   from './LoginPage';
+import StudentPage from './studentPage';
 import TeacherPage   from './Components/TeacherPage';
 import { AuthContext } from './auth/AuthContext';
 import Header from './Components/Header';
@@ -17,7 +17,7 @@ function App() {
     return (
         <div className="App">
             <Router>
-                <PULSeBSApp></PULSeBSApp>
+                <PULSeBSApp/>
             </Router>
         </div>
     )

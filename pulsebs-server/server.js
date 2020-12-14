@@ -20,7 +20,7 @@ const authErrorObj = {errors: [ {'param': 'Server', 'message': 'Authorization er
 const databaseErrorObj = {errors: [ {'param': 'Server', 'message': 'Error during DB execution'} ]};
 const dataErrorObj = {errors: [ {'param': 'Server', 'message': 'Data sent is not correct'} ]};
 
-checkPassword = function ( user, password ) {
+let checkPassword = function ( user, password ) {
     /*
      The salt used to obfuscate passwords is 0
      console.log('hash:' + bcrypt.hashSync('password', 0));
@@ -54,7 +54,7 @@ let transporter = nodemailer.createTransport( {
                                               } );
 
 // Email sender (each day at 11PM)
-const j = schedule.scheduleJob( {hour: 23, minute: 0, second: 0}, () => {
+schedule.scheduleJob( {hour: 23, minute: 0, second: 0}, () => {
     console.log( 'It is 11PM: sending emails to teachers for tomorrow\'s lessons' );
 
     // TESTED
@@ -145,7 +145,7 @@ app.use(
 );
 
 // To return a better object in case of errors
-app.use( function ( err, req, res, next ) {
+app.use( function ( err, req, res,  ) {
     if ( err.name === 'UnauthorizedError' ) {
         res.status( 401 ).json( authErrorObj );
     }
@@ -186,8 +186,8 @@ app.get( '/api/teacher/getStudentsForLecture', ( req, res ) => {
 
 //API for check authenticated User
 app.get( '/api/user', ( req, res ) => {
-    const user = req.user && req.user.user;
-    pulsebsDAO.getUserById( user )
+    const userRequest = req.user && req.user.user;
+    pulsebsDAO.getUserById( userRequest )
               .then( ( user ) => {
                   res.json( {
                                 id: user.id,
@@ -196,7 +196,7 @@ app.get( '/api/user', ( req, res ) => {
                                 type: user.type
                             } );
               } ).catch(
-        ( err ) => {
+        (  ) => {
             res.status( 404 ).json( authErrorObj );
         }
     );
@@ -210,7 +210,7 @@ app.get( '/api/user', ( req, res ) => {
 */
 
 app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
-    const user = req.user && req.user.user;
+    //const user = req.user && req.user.user;
     const teacherId = req.params.teacherId;
     const lectureId = req.params.lectureId;
     const presence = req.body.presence;
@@ -220,7 +220,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
         res.status( 422 ).json( {message: "The field presence has to be 0 and, moreover, it is compulsory."} );
     } else {
 
-        pulsebsDAO.turnLectureIntoOnline( teacherId, lectureId ).then( ( information ) => {
+        pulsebsDAO.turnLectureIntoOnline( lectureId, teacherId ).then( ( information ) => {
             // if success
             res.status( 200 ).json( {
                                         message: "The selected lecture with id " + lectureId + " has been correctly turnt into an online lecture." +
@@ -228,9 +228,9 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                                     } );
 
             if ( process.env.TEST && process.env.TEST === '0' ) {
-                let mailOptions;
+                let mailOpts;
                 information.map( studentAndLectureInfo => {
-                    mailOptions = {
+                    mailOpts = {
                         from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
                         to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
                         subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
@@ -242,7 +242,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                             " has been just turnt to be online by the teacher." + "\n\n" +
                             "Have a good virtual lesson.\n\n - PULSeBS Team9."
                     };
-                    transporter.sendMail( mailOptions, function ( error, info ) {
+                    transporter.sendMail( mailOpts, function ( error, info ) {
                         if ( error ) {
                             console.log( "Some error occured in sending the email to " + info.studentEmail + ": " + error );
                         } else {
@@ -279,7 +279,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
 } );
 
 app.get('/api/teachers/:teacherId/statistics/courses/:courseId', (req, res) => {
-    const user = req.user && req.user.user;
+    //const user = req.user && req.user.user;
     const teacherId = req.params.teacherId;
     const courseId = req.params.courseId;
     const groupBy = req.query.groupBy;
@@ -314,7 +314,6 @@ app.get( '/api/student/lectures', ( req, res ) => {
 // FIXME: refactor
 app.post( '/api/students/:studentId/booking', ( req, res ) => {
     const lectureId = req.body.lectureId;
-    const studentId = req.params.studentId;
     if ( !lectureId ) {
         res.status( 401 ).end();
     } else {
@@ -327,7 +326,7 @@ app.post( '/api/students/:studentId/booking', ( req, res ) => {
 
                                         pulsebsDAO.getInfoByStudentId( user )
                                                   .then( ( student ) => {
-                                                      var email = student.email;
+                                                      //var email = student.email;
                                                       var name = student.name;
                                                       var surname = student.surname;
 
@@ -386,7 +385,6 @@ app.get( '/api/student/bookings', ( req, res ) => {
 // DELETE /student/bookings
 //FIXME: refactor
 app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
-    const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
     if ( !bookingId ) {
         res.status( 401 ).end();
@@ -407,7 +405,7 @@ app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
 // FIXME:
 app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
     const lectureId = req.params.lectureId;
-    const teacherId = req.params.teacherId;
+    //const teacherId = req.params.teacherId;
     if ( !lectureId ) {
         res.status( 401 ).end();
     } else {
@@ -421,7 +419,7 @@ app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                                                   .then( ( students ) => {
                                                       if ( students.length !== 0 ) {
                                                           students.forEach( s => {
-                                                              var email = s.email;
+                                                              //var email = s.email;
                                                               var name = s.name;
                                                               var surname = s.surname;
                                                               var user = s.id;
@@ -473,8 +471,8 @@ app.put( '/api/sofficer/', ( req, res ) => {
         'subscriptions' in req.body &&
         'teachers' in req.body
     ) pulsebsDAO.loadCsvData( req.body )
-              .then( result => res.status( 200 ).end() )
-              .catch( err => res.status( 400 ).json( databaseErrorObj ) )
+              .then( () => res.status( 200 ).end() )
+              .catch( () => res.status( 400 ).json( databaseErrorObj ) )
     else res.status( 400 ).json( dataErrorObj )
 
 } )

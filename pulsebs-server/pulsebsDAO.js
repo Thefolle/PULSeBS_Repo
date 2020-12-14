@@ -57,7 +57,7 @@ exports.getUserByEmail = function (email) {
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    let user=null;
+                    let user;
                     //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff
                     if(i===2){
                         user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
@@ -137,7 +137,7 @@ exports.getUserById = function (id) {
                     // email doesn't belong to a type-i user
                 } else {
                     let row = rows[0];
-                    let user=null;
+                    let user;
                     //Booking Manager and Staff officer have data in same table but they have different types(0,1) so add this value at 2 that identifies staff
                     if(i===2){
                         user = new User(row.id, row.email, row.password, i+parseInt(row.type), row.name, row.surname);
@@ -170,22 +170,22 @@ exports.bookSeat = (lectureId, studentId) => {
         let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${studentId},${lectureId},${moment().valueOf()});`
         let existBookingQuery = `SELECT id FROM booking B WHERE B.ref_lecture = ${lectureId} AND ref_student = ${studentId}`;
 
-        db.get(checkQuery, [], (err, row) => {
-            if (err) reject(err);
-            if (row && row.bookable === 1) {
+        db.get(checkQuery, [], (err1, row1) => {
+            if (err1) reject(err1);
+            if (row1 && row1.bookable === 1) {
                 //Student subscription exists
-                db.get(existBookingQuery, [], (err,row) => {
-                    if (err) reject(err);
-                    if (row) {
+                db.get(existBookingQuery, [], (err2,row2) => {
+                    if (err2) reject(err2);
+                    if (row2) {
                         //Booking exist, and it should be updated
-                        let updateBookingQuery = `UPDATE booking SET active = 1 WHERE id = ${row.id}`;
-                        db.run(updateBookingQuery, [], (err) => {
-                            err ? reject(err) : resolve(1);
+                        let updateBookingQuery = `UPDATE booking SET active = 1 WHERE id = ${row2.id}`;
+                        db.run(updateBookingQuery, [], (err3) => {
+                            err3 ? reject(err3) : resolve(1);
                         })
                     }else{
                         //Booking doesn't exist, and it should be created as a new one
-                        db.run(bookQuery,[],(err) => {
-                            err ? reject(err) : resolve(1);
+                        db.run(bookQuery,[],(err3) => {
+                            err3 ? reject(err3) : resolve(1);
                         })
                     }
                 });
@@ -466,7 +466,7 @@ exports.getTomorrowLessonsStats = (test = false) => {
 *   is not active or if the lecture's start time is planned within the next
 *   30 minutes starting from the current time
 * */
-exports.turnLectureIntoOnline = (teacherId = 0, lectureId) => {
+exports.turnLectureIntoOnline = (lectureId,teacherId = 0) => {
     return new Promise((resolve, reject) => {
         let query1 = `  SELECT  L.active as active, L.date as date
                         FROM lecture L, course C
@@ -474,7 +474,7 @@ exports.turnLectureIntoOnline = (teacherId = 0, lectureId) => {
         let query2 = `UPDATE lecture SET presence = 0, ref_class = 0 WHERE id = ${lectureId} AND active = 1;`
         let now = moment().valueOf(); // in milliseconds
 
-        db.get(query1, [], function (error, couple) {
+        db.get(query1, [], function (error1, couple) {
             if (couple === undefined) {
                 reject(-1);
             } else if (couple.active === 0) {
@@ -484,8 +484,8 @@ exports.turnLectureIntoOnline = (teacherId = 0, lectureId) => {
             } else if (error) {
                 reject(-4);
             } else {
-                db.run(query2, [], function (error) {
-                    if (error) {
+                db.run(query2, [], function (error2) {
+                    if (error2) {
                         reject(-4);
                     } else {
                         let getInformationToSendEmailsQuery =
@@ -506,8 +506,8 @@ exports.turnLectureIntoOnline = (teacherId = 0, lectureId) => {
                                     B.ref_lecture = L.id AND
                                     L.ref_course = Co.id AND
                                     L.ref_class = Cl.id`;
-                        db.all(getInformationToSendEmailsQuery, [], function (error, rows) {
-                            if (error) reject(-4);
+                        db.all(getInformationToSendEmailsQuery, [], function (error3, rows) {
+                            if (error3) reject(-4);
                             else resolve(rows);
                         });
                     }
@@ -585,11 +585,11 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                     // order, starting from the oldest one
                     let numberOfLoops = 0, numberOfCallbacks = 0;
                     while (now.isAfter(earliestWeek)) {
-                        db.get(getStatisticsInWeekQuery, [teacherId, courseId, earliestWeek.valueOf(), successiveWeek.valueOf()], function (error, row) {
-                            if (error) reject(error);
+                        db.get(getStatisticsInWeekQuery, [teacherId, courseId, earliestWeek.valueOf(), successiveWeek.valueOf()], function (error1, row) {
+                            if (error1) reject(error1);
                             else {
                                 // if in the considered week there was at least one lecture
-                                if (!(row.sampleDate == null && row.bookingNumber == 0)) {
+                                if (!(row.sampleDate == null && row.bookingNumber === 0)) {
                                     statistics.push({ bookingNumber: row.bookingNumber, week: moment(row.sampleDate).startOf('week').valueOf() });
                                 }
                                 // infer if it this is the last executed query
@@ -644,11 +644,11 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                     // order, starting from the oldest one
                     let numberOfLoops = 0, numberOfCallbacks = 0;
                     while (now.isAfter(earliestMonth)) {
-                        db.get(getStatisticsInMonthQuery, [teacherId, courseId, earliestMonth.valueOf(), successiveMonth.valueOf()], function (error, row) {
-                            if (error) reject(error);
+                        db.get(getStatisticsInMonthQuery, [teacherId, courseId, earliestMonth.valueOf(), successiveMonth.valueOf()], function (error1, row) {
+                            if (error1) reject(error1);
                             else {
                                 // if in the considered month there was at least one lecture
-                                if (!(row.sampleDate == null && row.bookingNumber == 0)) {
+                                if (!(row.sampleDate == null && row.bookingNumber === 0)) {
                                     statistics.push({ bookingNumber: row.bookingNumber, month: moment(row.sampleDate).startOf('month').valueOf() });
                                 }
                                 // infer if it this is the last executed query

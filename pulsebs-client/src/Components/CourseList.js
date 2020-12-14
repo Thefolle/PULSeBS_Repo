@@ -1,5 +1,5 @@
 import React, { useState }     from 'react';
-import { Link, Redirect }  from 'react-router-dom';
+import { Redirect }  from 'react-router-dom';
 import { Table } from "react-bootstrap";
 import {AuthContext} from '../auth/AuthContext';
 
@@ -9,7 +9,7 @@ const CourseList = ( props ) => {
 
     return (
       <AuthContext.Consumer>
-            {(context)=>(
+            {()=>(
                 <>
                   <Table className="table" id="lectures-table">
                       <thead>

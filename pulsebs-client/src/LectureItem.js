@@ -12,17 +12,13 @@ const LectureItem = ( props ) => {
     alreadyBooked = (lectureId,studentId) => {
         const booking = getBookingFromLecture(lectureId, studentId);
         if(booking === 0) return true;
-        if(booking.active === 1) return false;
-        else return true;
+        return booking.active !== 1;
     }
 
     getBookingFromLecture = (lectureId,studentId) => {
-        console.log(bookings)
-        console.log(lectureId + " " + studentId);
-        let booking = bookings.find( (booking) => {
-            return booking.ref_lecture === lectureId && booking.ref_student === studentId
+        let booking = bookings.find( (b) => {
+            return b.ref_lecture === lectureId && b.ref_student === studentId
         })
-        console.log(booking)
         if(!booking) return 0;
         else return booking;
     }

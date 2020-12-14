@@ -5,8 +5,6 @@ import { Table } from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
 import Image from 'react-bootstrap/Image';
 import { MdDeleteForever } from "react-icons/md"
-import API from '../API/API.js';
-
 import { FaBackward } from "react-icons/fa";
 
 import '../customStyle.css';
@@ -20,7 +18,7 @@ const LectureList = (props) => {
 
   return (
     <AuthContext.Consumer>
-      {(context) => (
+      {() => (
         <>
           <Link id="goback" to={"/teacher/courses"}> <FaBackward /> </Link>
           <h4>{courseName}</h4>
@@ -84,7 +82,7 @@ const LectureItem = (props) => {
               <td><Image
                 width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt="" onClick={(event) => {
                   event.stopPropagation();
-                  cancelLecture(context.authUser.id, lecture.lecId)} 
+                  cancelLecture(context.authUser.id, lecture.lecId)}
                 }/>
               </td> : <td><MdDeleteForever size={25} /></td>
             }
