@@ -232,7 +232,6 @@ exports.checkStudentInWaitingList = (studentId, lectureId) => {
  * 1. make sure there are free seats for student
  * 2. if there are free seats, update the bookable attribute to 1
  */
-// TODO: To check whether there are free seats of a lecture or not
 
 exports.checkSeatsOfLecture = (lectureId) => {
     return new Promise (((resolve, reject) =>{
@@ -309,8 +308,22 @@ exports.getWaitingList = ( studentId) => {
 /**
  * @Feihong
  * @param {*} lectureId 
- * TODO: delete a waiting item
+ * Functions:
+ * 1. delete a waiting item
+ * 2. add the lecture and student of the waiting item to booking table
+ * 3. get the informations of the stuedent who picked from waiting table and was added into booking table with a lecture
  * 
+ * Return values:
+    rejected:
+        0: Find waiting err;
+        -1: There is no such a lecture in waiting list;
+        -2: Delete waiting err
+        -3: Add new booking err;
+        -4: Find student informations err
+        -5: There is no such a student, so can not find informations of the student
+
+    resolve:
+        row: it contains student's informations: letture date, course description, class name, student name, student surname, student email, and student id
  */
 exports.deleteWaitingAddBooking = (lectureId) =>{
     return new Promise ((resolve, reject) => {
@@ -328,24 +341,58 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
                     db.run(delQuery, [sId, lectureId], (err) => {
                         if (err) {
                             console.log("----delete waiting err : "+ err)
-                            reject(0)
+                            reject(-2)
                         } else {
                             let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ sId },${ lectureId },${ moment().valueOf() })`
                             db.run(bookQuery, [], (err) => {
                                 if (err){
                                     console.log("----sid: " + sId + "  lectureid:  "+ lectureId);
                                     console.log("----delete waiting err, can not add a new booking : "+ err)
-                                    reject(0)
+                                    reject(-3)
                                 }else {
                                     console.log("++++ delete waiting sucessful, add a new booking successfully. studentid: "+ sId + "  lectureid: " + lectureId);
-                                    resolve(1)
+                                    // TODO: resolve the row, that include the student informations
+                                    let infosQuery = `  SELECT  LE.date AS lectureDate,
+                                                                CO.desc AS courseDescription,
+                                                                CL.desc  AS lectureClass,
+                                                                ST.name As studentName,
+                                                                ST.surname AS studentSurname,
+                                                                ST.email   AS studentEmail,
+                                                                ST.id AS studentId
+                                                        FROM    student ST,
+                                                                lecture LE,
+                                                                class   CL,
+                                                                course  CO,
+                                                                booking B
+                                                        WHERE   B.ref_lecture = ${lectureId} AND
+                                                                B.ref_student = ${sId} AND
+                                                                ST.id = ${sId} AND
+                                                                LE.id = ${lectureId} AND
+                                                                LE.ref_class = CL.id AND
+                                                                LE.ref_course = CO.id AND
+                                                                B.active = 1`
+                                    db.get(infosQuery, [], (err, row) => {
+                                        if(err){
+                                            console.log("----delete waiting err, Student information query is wrong : "+ err)
+                                            reject (-4)
+                                        } else {
+                                            if(row){
+                                                console.log("++++ delete waiting sucessful, successfully get the student informations: "+ row);
+                                                resolve(row)
+                                            } else{
+                                                console.log("----delete waiting err, can not get student information: "+ row)
+                                                reject(-5)
+                                            }
+                                        }
+                                    })
+
                                 }
                             })
                         }
                     })
                 } else {
                     console.log("----delete waiting err, no such a lecture in waiting list : "+ err)
-                    reject(0)
+                    reject(-1)
                 }
             }
         })
@@ -357,6 +404,7 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
  /**
   * @Feihong
   * @param {*} lectureId 
+  * 
   * TODO: 
   */
 

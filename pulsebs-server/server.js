@@ -466,11 +466,60 @@ app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) =>
         res.status(401).end('can not find lecture');
     } else {
         pulsebsDAO.deleteWaitingAddBooking(lectureId)
-            .then( (response) => res.status(200).json( {response}))
-            .catch( ( err ) => {
-                res.status( 500 ).json( {
-                                            errors: [ {'param': 'Server', 'message': err} ],
-                                        } );
+            .then( (studentAndLectureInfo) => {
+                res.status(200).json( 
+                    {
+                    message: "The lecture was find in the waiting table,"+
+            "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: "+lectureId
+                    })
+                    // if ( process.env.TEST && process.env.TEST === '0' ) {
+                        let mailOptions;
+                        mailOptions = {
+                            from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                            // to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                            to: 'shinylover520@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                            // subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
+                            subject: 'Your waiting lecture was picked from the waiting list',
+                            text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
+                                " (" + studentAndLectureInfo.studentId + ")," +
+                                " the lesson of the course " + studentAndLectureInfo.courseDescription + " that in your waiting list was picked, and it was " +
+                                " planned to take place in class " + studentAndLectureInfo.lectureClass +
+                                " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( 'MMMM Do YYYY, h:mm:ss a' ) + "."  + "\n\n" +
+                                "Have a good lesson.\n\n - PULSeBS Team9."
+                        };
+                        transporter.sendMail( mailOptions, function ( error, info ) {
+                            if ( error ) {
+                                console.log( "Some error occured in sending the email to shinylover520@gmail.com :"+ error );
+                            } else {
+                                console.log( 'Email sent to: ' + studentAndLectureInfo.studentId);
+                            }
+                        } );    
+                    // }
+                
+            })
+            .catch( ( exitCode ) => {
+                if ( exitCode === 0 ) {
+                    res.status( 404 ).json( {message: "Find waiting err."} );
+                } else if ( exitCode === -1 ) {
+                    res.status( 404 ).json( {message: "There is no such a lecture in waiting list with id " + lectureId + " ."} );
+                } else if ( exitCode === -2 ) {
+                    res.status( 409 ).json( {message: "Delete waiting err."} );
+                } else if ( exitCode === -3 ) {
+                    res.status( 409 ).json( {
+                                                message: "Add new booking err."
+                                            } );
+                } else if ( exitCode === -4 ) {
+                    res.status( 409 ).json( {
+                                                message: "Find student informations err."
+                                            } );
+                } else if ( exitCode === -5 ) {
+                    res.status( 500 ).json(
+                        {
+                            message:
+                                "There is no such a student, so can not find informations of the student"
+                        }
+                    );
+                }
             } );
     }
 })
