@@ -102,7 +102,7 @@ class StudentPage extends React.Component {
 
 
     //add Delete method in mybookings
-    // FIXME:   already successfully refactor the URI 
+    // FIXME:   already successfully refactor the URI
     cancelBooking = (studentId, bookingId) => {
         API.cancelBooking(studentId, bookingId)
             .then(() => {
@@ -121,7 +121,7 @@ class StudentPage extends React.Component {
             return (
               <AuthContext.Consumer>
                   {(context)=>(
-                     <> 
+                     <>
                   {context.authUser && <>
                     <UserNavBar userId={context.authUser.id}/>
                     <Container>
@@ -136,10 +136,13 @@ class StudentPage extends React.Component {
                         </Col>
 
                         <Col sm={8}>
-                    
+
                     <Switch>
                                 <Route exact path={this.props.match.url + "/lectures"}>
-                                    <LecturesList lectures={this.state.lectures} bookings={this.state.bookings} bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked} />
+                                    <LecturesList lectures={this.state.lectures} bookings={this.state.bookings}
+                                                  bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked}
+                                                  cancelBooking={this.cancelBooking}
+                                    />
                                 </Route>
                                 <Route exact path={this.props.match.url + "/bookings"}>
                                     <BookingsList bookings={this.state.bookings} cancelBooking={this.cancelBooking} />
