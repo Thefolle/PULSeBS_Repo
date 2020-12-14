@@ -41,7 +41,7 @@ class StudentPage extends React.Component {
           .then((lectures) => {
               API.getStudentBookings()
                   .then((bookings) => {
-                      this.setState((state, props) => ({ lectures: lectures, bookings: bookings }));
+                      this.setState(() => ({ lectures: lectures, bookings: bookings }));
                   })
                   .catch((err) => {
                       this.handleErrors(err);

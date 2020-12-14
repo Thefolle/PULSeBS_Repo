@@ -1,6 +1,7 @@
-import Lecture from './Lecture.js'
-import Booking from './Booking.js'
+import Lecture        from './Lecture.js'
+import Booking        from './Booking.js'
 import LectureTeacher from './LectureTeacher.js'
+
 const baseURL = "/api";
 
 
@@ -21,9 +22,9 @@ async function login(email, password) {
                 // analyze the cause of error
                 response.json()
                     .then((obj) => { reject(obj); }) // error msg in the response body
-                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+                    .catch(() => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
             }
-        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+        }).catch(() => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     });
 }
 
@@ -38,7 +39,7 @@ async function logout() {
                 // analyze the cause of error
                 response.json()
                     .then((obj) => { reject(obj); }) // error msg in the response body
-                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+                    .catch(() => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
             }
         });
     });
@@ -54,8 +55,7 @@ async function getStudentLectures() {
         //console.log(lecturesJson);
         return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.course, l.name, l.surname, l.class));
     } else {
-        let err = { status: response.status, errObj: lecturesJson };
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj: lecturesJson};  // An object with the error coming from the server
     }
 }
 
@@ -76,9 +76,9 @@ async function bookSeat(studentId, lectureId) {
             console.log("errore msg");
             response.json()
             .then( (obj) => {reject(obj);} ) // error msg in the response body
-            .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            .catch( () => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
         }
-    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    }).catch( () => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
  });
 }
 
@@ -91,8 +91,7 @@ async function getStudentBookings() {
         //console.log(bookingsJson);
         return bookingsJson.map((b) => new Booking(b.id,b.ref_student, b.ref_lecture, b.date, b.course, b.class, b.presence, b.activeB));
     } else {
-        let err = { status: response.status, errObj: bookingsJson };
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj: bookingsJson};  // An object with the error coming from the server
     }
 
 }
@@ -109,9 +108,9 @@ async function cancelBooking(studentId, bookingId) {
                 // analyze the cause of error
                 response.json()
                     .then((obj) => { reject(obj); })
-                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); //something else
+                    .catch(() => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); //something else
             }
-        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+        }).catch(() => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     })
 }
 
@@ -124,20 +123,18 @@ async function getTeacherLectures() {
     if(response.ok){
         return lecturesJson.map((l) => new LectureTeacher(l.course, l.class, l.id,l.lecId, l.date, l.endTime, l.presence, l.bookable, l.active));
     }else{
-        let err = {status: response.status, errObj:lecturesJson};
-        throw err;
+        throw {status: response.status, errObj: lecturesJson};
     }
 }
 
-async function getStudents(filter) {
+async function getStudents() {
     let url = "/teacher/getStudentsForLecture";
     const response = await fetch(baseURL + url);
     const idJson = await response.json();
     if (response.ok) {
         return idJson;
     } else {
-        let err = { status: response.status, errObj: idJson };
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj: idJson};  // An object with the error coming from the server
     }
 }
 
@@ -180,9 +177,9 @@ async function cancelLecture(teacherId, lectureId) {
                 // analyze the cause of error
                 response.json()
                 .then( (obj) => {reject(obj);})
-                .catch( (err) => { reject({errors: [{ param: "Application", msg: "Cannot parse server response" }]})}); //something else
+                .catch( () => { reject({errors: [{ param: "Application", msg: "Cannot parse server response" }]})}); //something else
             }
-        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+        }).catch( () => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     })
 }
 
@@ -194,8 +191,7 @@ async function isAuthenticated(){
     if(response.ok){
         return userJson;
     } else {
-        let err = {status: response.status, errObj:userJson};
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj: userJson};  // An object with the error coming from the server
     }
 }
 
@@ -212,8 +208,8 @@ async function getTeacherStatistics(teacherId, courseId, groupBy) {
     }
     else if (response.status === 200) {
         const responseJson = await response.json();
+        let x = responseJson.map(lectureStatistics => lectureStatistics.bookingsNumber);
         if (groupBy === 'Lecture') {
-            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingsNumber);
             let y = responseJson.map(lectureStatistics => lectureStatistics.lectureDate);
             let average;
             if (y.length === 0) average = 0;
@@ -221,14 +217,12 @@ async function getTeacherStatistics(teacherId, courseId, groupBy) {
             return {x, y, average};
         } else if (groupBy === 'Week') {
             console.log(responseJson);
-            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
             let y = responseJson.map(lectureStatistics => lectureStatistics.week);
             let average;
             if (y.length === 0) average = 0;
             else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
             return {x, y, average};
         } else if (groupBy === 'Month') {
-            let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
             let y = responseJson.map(lectureStatistics => lectureStatistics.month);
             let average;
             if (y.length === 0) average = 0;

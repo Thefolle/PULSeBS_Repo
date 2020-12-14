@@ -481,7 +481,7 @@ exports.turnLectureIntoOnline = (lectureId,teacherId = 0) => {
                 reject(-2);
             } else if (now > couple.date - 1800000 && now < couple.date) {
                 reject(-3);
-            } else if (error) {
+            } else if (error1) {
                 reject(-4);
             } else {
                 db.run(query2, [], function (error2) {

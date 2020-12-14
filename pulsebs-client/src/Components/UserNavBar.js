@@ -48,7 +48,7 @@ class UserNavBar extends React.Component {
               <Navbar.Brand> <FaUserCircle className={"ml-1"} /> {this.props.userId} </Navbar.Brand>
               <div>
                 <LinkContainer to='/'>
-                  <Nav.Link id="logout-button" onClick={event => context.logoutUser()}>Log out</Nav.Link>
+                  <Nav.Link id="logout-button" onClick={() => context.logoutUser()}>Log out</Nav.Link>
                 </LinkContainer>
               </div>
             </Navbar>

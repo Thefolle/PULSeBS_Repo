@@ -11,12 +11,12 @@ class StudentCalendar extends React.Component {
         //Loading and preparing bookings
         let events = [];
         this.props.bookings.forEach( booking => {
-            events.push( {title: booking.course, date: moment( booking.date ).format()} );
+            if(booking.active === 1 ) events.push( {title: booking.course, date: moment( booking.date ).format()} );
         } )
 
         return(
           <AuthContext.Consumer>
-              {(context)=>(
+              {()=>(
                   <>
                   <Container id="calendar">
                       <hr/>

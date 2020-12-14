@@ -9,7 +9,7 @@ const BookingsList = ( props ) => {
 
     return (
       <AuthContext.Consumer>
-            {(context)=>(
+            {()=>(
                 <>
                 <Table className="table">
                     <thead>

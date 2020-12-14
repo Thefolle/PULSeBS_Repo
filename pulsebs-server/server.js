@@ -39,7 +39,7 @@ app.use( morgan( 'tiny' ) );
 app.use( express.json() );
 
 // Transporter needed to send emails
-var mailOptions = null;
+let mailOptions = null;
 let transporter = nodemailer.createTransport( {
                                                   service: 'gmail',
                                                   port: 587,
@@ -145,7 +145,7 @@ app.use(
 );
 
 // To return a better object in case of errors
-app.use( function ( err, req, res,  ) {
+app.use( function ( err, req, res, next ) {
     if ( err.name === 'UnauthorizedError' ) {
         res.status( 401 ).json( authErrorObj );
     }
@@ -327,8 +327,8 @@ app.post( '/api/students/:studentId/booking', ( req, res ) => {
                                         pulsebsDAO.getInfoByStudentId( user )
                                                   .then( ( student ) => {
                                                       //var email = student.email;
-                                                      var name = student.name;
-                                                      var surname = student.surname;
+                                                      let name = student.name;
+                                                      let surname = student.surname;
 
 
                                                       // Send booking email to student
@@ -420,9 +420,9 @@ app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                                                       if ( students.length !== 0 ) {
                                                           students.forEach( s => {
                                                               //var email = s.email;
-                                                              var name = s.name;
-                                                              var surname = s.surname;
-                                                              var user = s.id;
+                                                              let name = s.name;
+                                                              let surname = s.surname;
+                                                              let user = s.id;
                                                               mailOptions = {
                                                                   from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
                                                                   //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS
