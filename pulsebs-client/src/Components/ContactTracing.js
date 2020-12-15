@@ -92,15 +92,15 @@ const ShowTraceResult = (props) => {
   let { students, teachers, studentToTrace } = props;
 
 
-  console.log("showTrace:");
-  console.log(students);
-  console.log(teachers);
+  // console.log("showTrace:");
+  // console.log(students);
+  // console.log(teachers);
 
   return (
     <AuthContext.Consumer>
       {(context) => (
         <>
-          {studentToTrace != "" &&
+          {studentToTrace !== "" &&
             <>
               <h5 align="left">Result for: {studentToTrace}</h5>
               {students !== null && teachers !== null ?
