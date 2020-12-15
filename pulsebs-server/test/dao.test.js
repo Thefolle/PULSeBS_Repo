@@ -45,21 +45,21 @@ test('Try to book a new seat', () => {
 //GET STUDENT LECTURES
 test('Try to get a student\'s lectures', () => {
     return DAO.getStudentLectures('269901').then(result => {
-        expect(result.length).toEqual(7);
+        expect(result.length).toEqual(8);
     })
 });
 
 //GET TEACHER LECTURES
 test('Try to get a teacher\'s lectures', () => {
     return DAO.getTeacherLectures('239901').then(result => {
-        expect(result.length).toBe(7); //or toEqual
+        expect(result.length).toBe(8); //or toEqual
     });
 });
 
 //GET STUDENTS BOOKED FOR LECTURE ID
 test('Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2('239901').then(result => {
-        expect(result.length).toBe(3);
+        expect(result.length).toBe(5);
     });
 });
 
@@ -91,7 +91,7 @@ test( 'Try to get students booked for lecture 4', () => {
 //GET ALL STUDENT'S BOOKINGS
 test('Try to get all student\'s bookings', () => {
     return DAO.getStudentBookings('269901').then(result => {
-        expect(result.length).toEqual(2);
+        expect(result.length).toEqual(4);
     })
 });
 
@@ -260,7 +260,7 @@ describe('[PUL 10] Get teacher statistics', () => {
 describe("[PUL-11] Get statistics for manager",()=>{
     test('get All Bookings 1',()=>{
         return DAO.getAllBookings().then(b=>{
-            expect(b.length).toBe(1);
+            expect(b.length).toBe(4);
         })
     });
 
@@ -282,7 +282,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
      test('get All Attendances 1',()=>{
         return DAO.getAllAttendances().then(b=>{
-            expect(b.length).toBe(0);
+            expect(b.length).toBe(3);
         })
     });
 
@@ -290,7 +290,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
         let course="Analisi 1";
         let lecture=2;
         return DAO.getAllAttendances(course,lecture).then(b=>{
-            expect(b.length).toBe(0);
+            expect(b.length).toBe(1);
         })
     });
 
@@ -354,10 +354,18 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
     test('get All Lectures',()=>{
         return DAO.getAllLectures().then(c=>{
-            expect(c.length).toBe(7); //change value(depends of cardinality of lectures)
+            expect(c.length).toBe(8); //change value(depends of cardinality of lectures)
         });
     });
 
+});
+
+// MANAGER contact tracing
+test('Try to see if correct students\' contract tracing datas are received', () =>{
+    return DAO.getContactsWithPositiveStudent(269901, true).then(result => {
+        expect(result.uniqTeachers[0]).toBe(239901);
+        expect(result.involvedStudents[0]).toBe(269902);
+    })
 });
 
 describe( 'CSV loading tests', () => {

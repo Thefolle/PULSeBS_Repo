@@ -8,6 +8,7 @@ import { AuthContext } from '../auth/AuthContext';
 import {AiOutlineTable} from 'react-icons/ai';
 import { FaBookOpen, FaCalendarAlt, FaUserCircle} from "react-icons/fa";
 import { IoIosStats } from 'react-icons/io';
+import { RiVirusFill } from 'react-icons/ri'
 
 import '../App.css';
 import '../customStyle.css';
@@ -52,6 +53,7 @@ class UserNavBar extends React.Component {
                       <Nav.Link href="/manager/cancellationsLectures">Cancellations Lectures <AiOutlineTable className={"ml-0.5"} /></Nav.Link>
                       <Nav.Link href="/manager/cancellationsBookings">Cancellations Bookings <AiOutlineTable className={"ml-0.5"} /></Nav.Link>
                       <Nav.Link href="/manager/attendances">Attendances <AiOutlineTable className={"ml-0.5"} /></Nav.Link>
+                      <Nav.Link href="/manager/tracing">Contact tracing <RiVirusFill className={"ml-0.5"} /></Nav.Link>
                     </Nav>
                   </Navbar.Collapse>
                 </Route>

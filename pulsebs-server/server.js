@@ -561,6 +561,27 @@ app.get('/api/manager/getAllLectures',(req,res)=>{
               } );
 });
 
+app.get('/api/manager/contactWith/:studentId', (req, res) => {
+    const studentId = req.params.studentId;
+    // console.log("server up:");
+    // console.log(studentId);
+    if (!studentId) {
+        res.status(401).end();
+    } else {
+        pulsebsDAO.getContactsWithPositiveStudent(studentId)
+            .then( (contacts) => {
+                // console.log("server down:");
+                // console.log(contacts);
+                res.status(200).json(contacts);
+            })
+            .catch( (err) => {
+                res.status( 500 ).json( {
+                    errors: [ {'message': err} ],
+                } );
+            });
+    }
+});
+
 
 // Exported for E2E testing
 exports.server = app;

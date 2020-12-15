@@ -336,7 +336,19 @@ async function getAllLectures() {
     }
 }
 
+async function getContactsWithPositiveStudent(studentId) {
+    let url = `/manager/contactWith/${studentId}`;
+    const response = await fetch(baseURL + url);
+    const contactsJson = await response.json();
+    if (response.ok) {
+        return contactsJson;
+    } else {
+        //console.log("API");
+        //console.log(response);
+        let err = { status: response.status, errObj: contactsJson };
+        throw err;  // An object with the error coming from the server
+    }
+}
 
-
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent };
 export default API;

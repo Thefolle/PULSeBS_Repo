@@ -838,15 +838,15 @@ exports.getAllAttendances = (course, lecture) => {
 * Get all attendance of a positive student and the relative people involved in
 * */
 
-exports.studentContactTracing = (studentId) => {
-    return new Promise(((resolve, reject) => {
-        let now = moment();
-        let twoWeeksAgo = now.subtract(14, 'days');
+// This function get the lecture and teacher that were in contact with the positive student
 
-        let query = `SELECT S.name as sname,
-                            S.surname as ssurname,
-                            T.name as tname,
-                            T.surname as tsurname
+function getInvolvedLecturesAndTeacher(studentId, test) {
+    return new Promise(((resolve, reject) => {
+        let now = moment().valueOf();
+        let twoWeeksAgo = moment().subtract(14, 'days').valueOf();
+
+        let query = `SELECT L.id as lecID,
+                            T.id as tID
                      FROM   booking B,
                             lecture L,
                             student S,
@@ -859,17 +859,107 @@ exports.studentContactTracing = (studentId) => {
                             B.id IN (   SELECT  B.id
                                         FROM    booking B,
                                                 lecture L
-                                        WHERE   B.ref_lecture = L.lecture AND
+                                        WHERE   B.ref_lecture = L.id AND
                                                 B.ref_student = ${studentId} AND
                                                 B.presence = 1 AND
-                                                L.date < ${now.valueOf()} AND
-                                                L.date > ${twoWeeksAgo.valueOf()} );`
+                                                L.date < ${test ? 1607960293000 : now} AND
+                                                L.date > ${test ? 1606837080000 : twoWeeksAgo} );`
         db.all(query, [], (err, rows) => {
+            if (err) reject(err);
+            if (rows) {
+                if(rows.length === 0) {
+                    resolve (null);
+                }
+                resolve(rows);
+            }
+            else resolve(0);
+        });
+    }));
+}
+
+function getInvolvedStudents(involvedLectures, studentId) {
+    return new Promise(((resolve, reject) => {
+        
+        let query = `SELECT DISTINCT(B.ref_student) as sID
+                    FROM booking B,
+                        lecture L
+                    WHERE B.ref_lecture = L.id AND
+                        B.presence = 1 AND
+                        B.active = 1 AND
+                        B.ref_student != ? AND `
+
+        // add the lectures, such as:  (B.ref_lecture = 7 OR B.ref_lecture = 9) ..
+
+        //let queryToAdd = `(B.ref_lecture = `
+
+        let involvedLec = involvedLectures.map((lectureId, i) => {
+            if(i === 0)
+                return '(B.ref_lecture = ' + lectureId;
+            else
+                return ' OR B.ref_lecture = ' + lectureId;
+        })
+            .reduce((previousValue, currentValue, currentIndex) => {
+                if (currentIndex === 0)
+                    return currentValue;
+                else return previousValue.concat(currentValue);
+            });
+        query = query.concat(involvedLec).concat(');');
+        //console.log(query);
+
+        db.all(query, [studentId], (err, rows) => {
             if (err) reject(err);
             if (rows) resolve(rows);
             else resolve(0);
         });
     }));
+}
+
+exports.getContactsWithPositiveStudent = function (studentId, test = false) {
+    return new Promise(async (resolve, reject) => {
+        let involved = await getInvolvedLecturesAndTeacher(studentId, test);
+        //  console.log("involved:");
+        //  console.log(involved);
+
+        if(involved != null) {
+            let involvedTeachers = involved.map(r => r.tID);
+            let uniqTeachers = [...new Set(involvedTeachers)];
+            let involvedLectures = involved.map(r => r.lecID);
+            // console.log("involved teachers:");
+            // console.log(uniqTeachers);
+            // console.log("involved lectures:");
+            // console.log(involvedLectures);
+
+            let involvedStudents = await getInvolvedStudents(involvedLectures, studentId);
+            involvedStudents = involvedStudents.map(s => s.sID);
+            //console.log(involvedStudents);
+            //let involvedStudents;
+
+            // involvedLectures.forEach(lecID => {
+            //     involvedStudents = await getInvolvedStudents(lecID, studentId);
+            //     console.log("involved students:");
+            //     console.log(involvedStudents);
+            // });
+
+            // const involvedStudents = await involvedLectures
+            //     .map(async lecID => {
+            //         const invStudents = await getInvolvedStudents(lecID, studentId)
+            //         console.log(invStudents);
+            //         involvedStudents = involvedStudents.concat(invStudents);
+            //         return invStudents
+            //     })
+
+            // let involvedTot = involvedTeachers.concat(involvedStudents);
+            // console.log("involved tot:")
+            // console.log(involvedTot);
+            // resolve(involvedTot);
+            resolve({uniqTeachers, involvedStudents});
+        }
+        else {
+            let uniqTeachers = null;
+            let involvedStudents = null;
+            resolve({uniqTeachers, involvedStudents});
+        }
+    });
 }
 
 /*

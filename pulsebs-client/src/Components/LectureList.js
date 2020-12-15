@@ -30,7 +30,9 @@ const LectureList = (props) => {
                 <th>End Time</th>
                 <th>Presence</th>
                 <th>Class</th>
-                <th colSpan='2'>Actions</th>
+                <th>Change to online</th>
+                <th>Delete</th>
+                {/*<th colSpan='2'>Actions</th>*/}
               </tr>
             </thead>
             <tbody>
@@ -71,7 +73,7 @@ const LectureItem = (props) => {
             <td>{lecture.classC}</td>
             <td>
               {lecture.presence === 1 && lecture.active === 1 && moment(lecture.date).isAfter(moment().add(30, 'minute')) ?
-                <Image width="50" height="50" className="img-button" type="button" src="/svg/fromPresenceToOnline2.png" alt=""
+                <Image width="50" height="50" className="img-button" type="button" src="/svg/changeToVirtual.svg" alt=""
                   onClick={(event) => {
                     event.stopPropagation();
                     turnLectureIntoOnline(index, context.authUser.id);
