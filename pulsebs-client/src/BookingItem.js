@@ -6,25 +6,23 @@ import { AuthContext } from './auth/AuthContext';
 
 const BookingItem = ( props ) => {
 
-    let {booking, cancelBooking} = props;
+  let {booking, cancelBooking, deleteWaitingAddBooking} = props;
 
-    return (
-        <AuthContext.Consumer>
-            { ( context ) => (
-                <>
-                    { booking.active === 1 ? <tr key={ booking.id }>
-                        <td>{ moment( new Date( booking.date ) ).format( "YYYY-MM-DD" ) }</td>
-                        <td>{ booking.course }</td>
-                        <td>{ booking.class }</td>
-                        <td>{ booking.presence === 1 ? "Presence" : "Remote" }</td>
-                        <td><Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg"
-                                   alt="" onClick={ () => cancelBooking( context.authUser.id, booking.id ) }/></td>
-                    </tr> : null }
-                </>
+  return (
+    <AuthContext.Consumer>
 
-            ) }
-        </AuthContext.Consumer>
-    );
+        {(context)=>(
+          <tr key={booking.id}>
+              <td>{moment(new Date(booking.date)).format("YYYY-MM-DD")}</td>
+              <td>{booking.course}</td>
+              <td>{booking.class}</td>
+              <td>{booking.presence === 1 ? "Presence" : "Remote"}</td>
+              <td><Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>{cancelBooking(context.authUser.id, booking.id); deleteWaitingAddBooking(context.authUser.id, booking.ref_lecture)}}/></td>
+          </tr>
+          )}
+
+    </AuthContext.Consumer>
+  );
 }
 
 export default BookingItem;

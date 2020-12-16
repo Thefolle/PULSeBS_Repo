@@ -1,9 +1,10 @@
 import React from 'react';
 import { Table } from "react-bootstrap";
 import { AuthContext } from '../auth/AuthContext';
-import { Form, Col, Row } from 'react-bootstrap';
+import { Form, Col, Row, Button } from 'react-bootstrap';
 //import ShowTraceResult from './ShowTraceResult';
 import API from '../API/API';
+import { jsPDF } from "jspdf";
 
 class ContactTracing extends React.Component {
   constructor(props) {
@@ -105,6 +106,8 @@ const ShowTraceResult = (props) => {
               <h5 align="left">Result for: {studentToTrace}</h5>
               {students !== null && teachers !== null ?
               <>
+              <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>
+              <Button onClick={() => getPDF(teachers, students)}>Download PDF</Button>
               <Table className="table" id="teachers-table">
                 <thead>
                   <tr>
@@ -137,6 +140,46 @@ const ShowTraceResult = (props) => {
       )}
     </AuthContext.Consumer>
   );
+
+  function getCSV(teachersID, studentsID) {
+    const csvRows = ["id"];
+    for(const Tid of teachersID) {
+      csvRows.push(Tid);
+    }
+    for(const Sid of studentsID) {
+      csvRows.push(Sid);
+    }
+    downloadCSV(csvRows.join('\n'));
+  }
+
+  function downloadCSV(data) {
+    const blob = new Blob([data], {type: 'text/csv'});
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'contactTracing.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  function getPDF(teachersID, studentsID) {
+    const csvRows = ["id"];
+    for(const Tid of teachersID) {
+      csvRows.push(Tid);
+    }
+    for(const Sid of studentsID) {
+      csvRows.push(Sid);
+    }
+    downloadPDF(csvRows.join('\n'));
+  }
+
+  function downloadPDF(data) {
+    const doc = new jsPDF();
+    doc.text(data, 10, 10);
+    doc.save("ContactTracing.pdf");
+  };
 }
 
 const CTitem = (props) => {

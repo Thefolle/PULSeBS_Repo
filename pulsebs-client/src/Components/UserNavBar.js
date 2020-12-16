@@ -32,7 +32,7 @@ class UserNavBar extends React.Component {
                     <Nav className="mr-auto">
                       {/*<Nav.Link href='/student'> Home <FaHome className={"ml-0.5"} /></Nav.Link>*/}
                       <Nav.Link href='/student/lectures'> Lectures <FaBookOpen className={"ml-0.5"} /> </Nav.Link>
-                      <Nav.Link href='/student/bookings'> Bookings <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
+                      <Nav.Link href='/student/bookings'> Bookings&Waitings <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
                       <Nav.Link href='/student/calendar'> Calendar <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
                     </Nav>
                   </Navbar.Collapse>

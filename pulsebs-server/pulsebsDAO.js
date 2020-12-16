@@ -195,6 +195,235 @@ exports.bookSeat = (lectureId, studentId) => {
     }));
 }
 
+/**
+ * @Feihong
+ * @param {*} bookingId 
+ * Update a booking
+ */
+// FIXME: to fix get bookings method 
+exports.cancelBooking = ( bookingId ) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
+        db.run( query, [], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) {
+
+                resolve( 1 );
+            } 
+            else resolve( 0 );
+        } );
+    } ) );
+}
+
+/**
+ * @Feihong
+ * Add a student to waiting list
+ * @param {*} lectureId 
+ */
+ exports.addStudentToWaitingList = (studentId, lectureId) => {
+     return new Promise( ( (resolve, reject) =>{
+        let addToWaiting = `INSERT INTO waiting(ref_student, ref_lecture, date) VALUES ( ${studentId}, ${lectureId}, ${ moment().valueOf()})`
+        db.run(addToWaiting, [], (err) => {
+            err ? reject("DB problem") : resolve("successful insert");
+        })
+     } ) )
+ }
+
+ /**
+  * @Feihong
+  * @param {*} lectureId 
+  */
+
+exports.checkStudentInWaitingList = (studentId, lectureId) => {
+    return new Promises( ( (resolve, reject) => {
+        let checkWaiting = `SELECT ref_student FROM waiting WHERE ref_student = ${studentId} And ref_lecture = ${lectureId}`
+        db.get( checkWaiting, [], (err, row) => {
+            if (row){
+                reject("You already in the Waiting List")
+            } else {
+                resolve(0)
+            }
+        })
+    }))
+}
+
+
+/**
+ * @Feihong 
+ * @param {*} lectureId 
+ * Functions:
+ * 1. make sure there are free seats for student
+ * 2. if there are free seats, update the bookable attribute to 1
+ */
+
+exports.checkSeatsOfLecture = (lectureId) => {
+    return new Promise (((resolve, reject) =>{
+        let upadteLecture = `UPDATE lecture SET bookable = 1 WHERE id = ${lectureId}`
+        let upadteLectureNo = `UPDATE lecture SET bookable = 0 WHERE id = ${lectureId}`
+        let numOfBookings = `SELECT    B.id,
+                                    L.id
+                          FROM      booking B,
+                                    lecture L
+                          WHERE     L.id = ${lectureId} AND
+                                    L.id = B.ref_lecture AND
+                                    B.active = 1`
+        let seats = `SELECT C.seats FROM class C, lecture L WHERE L.ref_class = C.id AND L.id = ${lectureId}`
+        db.all(numOfBookings, [], (err, rows) => {
+            if (err){
+                console.log('------------------' + err)
+                    reject(0) 
+            } else{
+                db.get(seats, [], (err, row) =>{
+                    if (row.seats > rows.length){
+                        // console.log("You can book the lecture, already booking numbers:  " + rows.length + " Total numbers of seat are: " + row.seats + " lecture id is " + lectureId)
+                        db.run(upadteLecture,[], (err) =>{
+                            if(err) {
+                                // console.log("-------------------"+err)
+                            }
+                        })
+                        resolve(1)
+                    }else {
+                        // console.log("There is no free seats for student. err massage is:" + err)
+                        db.run(upadteLectureNo)
+                        resolve(0)
+                    }
+                })
+            }
+        })
+    }))
+}
+
+
+
+/**
+ * @Feihong 
+ * @param {*} studentId 
+ * get the waiting list of a student 
+ */
+// TODO:
+exports.getWaitingList = ( studentId) => {
+    return new Promise ((resolve, reject) =>{
+        let query = `SELECT W.id, 
+                            W.ref_student, 
+                            W.ref_lecture, 
+                            W.date, 
+                            W.active, 
+                            CO.desc, 
+                            CL.desc AS cldesc,
+                            L.presence,
+                            L.date AS lecdate
+                        FROM waiting W, 
+                            lecture L, 
+                            course CO,
+                            class  CL 
+                        WHERE W.ref_student = ${studentId} AND
+                            W.ref_lecture = L.id AND
+                            L.ref_course = CO.id AND
+                            L.ref_class  = CL.id`
+        db.all(query, [], ( err, rows ) => {
+            if (err) reject('can not get waiting list')
+            if (rows) resolve(rows)
+            else reject(0)
+        })
+    })
+}
+
+/**
+ * @Feihong
+ * @param {*} lectureId 
+ * Functions:
+ * 1. delete a waiting item
+ * 2. add the lecture and student of the waiting item to booking table
+ * 3. get the informations of the stuedent who picked from waiting table and was added into booking table with a lecture
+ * 
+ * Return values:
+    rejected:
+        0: Find waiting err;
+        -1: There is no such a lecture in waiting list;
+        -2: Delete waiting err
+        -3: Add new booking err;
+        -4: Find student informations err
+        -5: There is no such a class, so can not find informations of the class
+
+    resolve:
+        row: it contains student's informations: letture date, course description, class name, student name, student surname, student email, and student id
+ */
+exports.deleteWaitingAddBooking = (lectureId) =>{
+    return new Promise ((resolve, reject) => {
+        let getQuery = `SELECT ref_student, ref_lecture FROM waiting WHERE ref_lecture = ${lectureId}`
+        let delQuery = `DELETE FROM waiting WHERE ref_student = ? AND ref_lecture = ?`
+        
+        db.get(getQuery, [], (err, row) => {
+            if(err){
+                console.log("----delete waiting err, getQuery wrong "+ err)
+                reject (0)
+            } else {
+                if (row){
+                    var sId = row.ref_student
+                    console.log("++++sid: " + sId);
+                    db.run(delQuery, [sId, lectureId], (err) => {
+                        if (err) {
+                            console.log("----delete waiting err : "+ err)
+                            reject(-2)
+                        } else {
+                            let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ sId },${ lectureId },${ moment().valueOf() })`
+                            db.run(bookQuery, [], (err) => {
+                                if (err){
+                                    console.log("----sid: " + sId + "  lectureid:  "+ lectureId);
+                                    console.log("----delete waiting err, can not add a new booking : "+ err)
+                                    reject(-3)
+                                }else {
+                                    console.log("++++ delete waiting sucessful, add a new booking successfully. studentid: "+ sId + "  lectureid: " + lectureId);
+                                    // TODO: resolve the row, that include the student informations
+                                    let infosQuery = `  SELECT  LE.date AS lectureDate,
+                                                                CO.desc AS courseDescription,
+                                                                CL.desc  AS lectureClass,
+                                                                ST.name As studentName,
+                                                                ST.surname AS studentSurname,
+                                                                ST.email   AS studentEmail,
+                                                                ST.id AS studentId
+                                                        FROM    student ST,
+                                                                lecture LE,
+                                                                class   CL,
+                                                                course  CO,
+                                                                booking B
+                                                        WHERE   B.ref_lecture = ${lectureId} AND
+                                                                B.ref_student = ${sId} AND
+                                                                ST.id = ${sId} AND
+                                                                LE.id = ${lectureId} AND
+                                                                LE.ref_class = CL.id AND
+                                                                LE.ref_course = CO.id AND
+                                                                B.active = 1`
+                                    db.get(infosQuery, [], (err, row) => {
+                                        if(err){
+                                            console.log("----delete waiting err, Student information query is wrong : "+ err)
+                                            reject (-4)
+                                        } else {
+                                            if(row){
+                                                console.log("++++ delete waiting sucessful, successfully get the student informations: "+ row);
+                                                resolve(row)
+                                            } else{
+                                                console.log("----delete waiting err, can not get student information: "+ row)
+                                                reject(-5)
+                                            }
+                                        }
+                                    })
+
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    console.log("----delete waiting err, no such a lecture in waiting list : "+ err)
+                    reject(-1)
+                }
+            }
+        })
+        
+    })
+}
+
+
 /*
 * Get lecture statistics
 * */
@@ -376,14 +605,14 @@ exports.getStudentBookings = (studentId) => {
                                 L.ref_class = CL.id AND
                                 L.ref_course = C.id AND
                                 C.ref_teacher = T.id AND
-                                B.active=1 AND
-                                B.ref_student = ${studentId};`
-        db.all(query, [], (err, rows) => {
-            if (err) reject(err);
-            if (rows) resolve(rows);
-            else resolve(0);
-        });
-    }));
+                                B.ref_student = ${ studentId } AND
+                                B.active = 1;`
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+            else resolve( 0 );
+        } );
+    } ) );
 }
 
 /*
