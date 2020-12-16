@@ -366,7 +366,7 @@ class SupportOfficePage extends React.Component {
                                             <ListGroup.Item>
                                                     <Form.File as={Row} >
                                                         <Col sm="4">
-                                                            <Form.File.Label column sm="3">LECTURES:</Form.File.Label>
+                                                            <Form.File.Label>LECTURES:</Form.File.Label>
                                                         </Col>
                                                         <Col sm="6">
                                                             <Form.File.Input
@@ -392,7 +392,7 @@ class SupportOfficePage extends React.Component {
                                             <ListGroup.Item>
                                                     <Form.File as={Row} >
                                                         <Col sm="4">
-                                                            <Form.File.Label column sm="3">SCHEDULE:</Form.File.Label>
+                                                            <Form.File.Label>SCHEDULE:</Form.File.Label>
                                                         </Col>
                                                         <Col sm="6">
                                                             <Form.File.Input
