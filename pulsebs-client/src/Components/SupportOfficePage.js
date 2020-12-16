@@ -147,7 +147,7 @@ class SupportOfficePage extends React.Component {
     updateStudentsData(result) {
         var data = result.data.map(e => ({ id: e.Id, name: e.Name, surname: e.Surname, city: e.City, email: e.Email, bday: e.Birthday, ssn: e.SSN, password: e.Password }));
         //this.setState({ students: data.slice(0, data.length-1) }); //USE THIS to upload all the rows -> requires too much time (expires)
-        this.setState({ students: data.slice(0, 10) });
+        this.setState({ students: data.slice(0, 15) });
     }
 
     updateTeachersData(result) {
@@ -159,32 +159,30 @@ class SupportOfficePage extends React.Component {
     updateCoursesData(result) {
         var data = result.data.map(e => ({ id: e.Id, year: e.Year, semester: e.Semester, course: e.Desc, teacher: e.Teacher }));
        // this.setState({ courses: data.slice(0, data.length-1) });
-       this.setState({ courses: data.slice(0, 10) });
+       this.setState({ courses: data.slice(0, 20) });
     }
 
     updateEnrollmData(result) {
         var data = result.data.map(e => ({ cid: e.Code, sid: e.Student }));
-        //this.setState({ enrollments: data.slice(0, data.length-1) });
-        this.setState({ enrollments: data.slice(6, 10) });
+        this.setState({ enrollments: data.slice(0, data.length-1) });
     }
 
     updateLecturesData(result) {
         var data = result.data.map(e => ({ course: e.ref_course, ref_class: e.ref_class, start_date: e.start_date, end_date: e.end_date, presence: e.presence, bookable: e.bookable, active: e.active }));
        // this.setState({ lectures: data.slice(0, data.length-1) });
-       this.setState({ lectures: data.slice(5, 10) });
+       this.setState({ lectures: data.slice(0, 30) });
     }
 
     updateClassesData(result) {
         var data = result.data.map(e => ({ id: e.Id, desc: e.Desc, seats: e.Seats }));
-        console.log(data);
       //  this.setState({ classes: data.slice(0, data.length-1) });
-      this.setState({ classes: data.slice(6, 10) });
+      this.setState({ classes: data.slice(0, 30) });
     }
 
     updateScheduleData(result) {
         var data = result.data.map(e => ({ id: e.Code, room: e.Room, date: e.Date, seats: e.Seats, time: e.Time }));
         //this.setState({ schedule: data.slice(0, data.length-1) });
-        this.setState({ schedule: data.slice(0, 10) });
+        this.setState({ schedule: data.slice(0, 30) });
     }
 
 
@@ -237,6 +235,9 @@ class SupportOfficePage extends React.Component {
                                         {this.state.failed === 0 &&
                                             <p>Upload completed.</p>                                            
                                         }
+                                        {this.state.failed === '' &&
+                                            <p>Please, SELECT and IMPORT your files and then UPLOAD them.</p>                                            
+                                        }
                                         <ListGroup variant="flush">
                                             <ListGroup.Item>
                                                     <Form.File as={Row} >
@@ -253,6 +254,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="students"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2">
@@ -278,6 +280,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="teachers"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2">                   
@@ -303,6 +306,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="courses"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2"> {this.state.courses.length === 0 ? 
@@ -327,6 +331,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="classes"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2">
@@ -352,6 +357,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="enrollments"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2">
@@ -377,6 +383,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="lectures"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2"> {this.state.lectures.length === 0 ? 
@@ -402,6 +409,7 @@ class SupportOfficePage extends React.Component {
                                                                 name="schedule"
                                                                 placeholder={null}
                                                                 onChange={this.handleChange}
+                                                                onClick={(e) => e.target.value = null }
                                                             />
                                                         </Col>
                                                         <Col sm="2">
