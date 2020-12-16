@@ -1,27 +1,20 @@
-import React from 'react';
-import moment from 'moment';
-import Image from 'react-bootstrap/Image';
+import React       from 'react';
+import moment      from 'moment';
+import Image       from 'react-bootstrap/Image';
 import { BiCalendarX } from "react-icons/bi";
-import { ImCross } from "react-icons/im";
-import { AuthContext } from './auth/AuthContext';
+import {AuthContext} from './auth/AuthContext';
 import Lecture from './API/Lecture';
 
-const LectureItem = (props) => {
+const LectureItem = ( props ) => {
 
-    let {lecture, waitings, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, alreadyWaited, getBookingFromLecture} = props;
+    let {lecture, waitings, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, alreadyWaited} = props;
 
-    alreadyBooked = (lectureId, studentId) => {
-        const booking = getBookingFromLecture(lectureId, studentId);
-        if (booking === 0) return true;
-        return booking.active !== 1;
-    }
-
-    getBookingFromLecture = (lectureId, studentId) => {
-        let booking = bookings.find((b) => {
-            return b.ref_lecture === lectureId && b.ref_student === studentId
-        })
-        if (!booking) return 0;
-        else return booking;
+    alreadyBooked = (lectureId) => {
+            const ids = bookings.map((b) => b.ref_lecture );
+            if(ids.includes(lectureId) === true)
+              return 1;
+            else
+              return 0;
     }
 
     alreadyWaited = (lectureId) => {
@@ -36,7 +29,7 @@ const LectureItem = (props) => {
     return (
         <AuthContext.Consumer>
             {(context)=>(
-            <>
+            <> 
                 <tr key={lecture.id}>
                     <td>{ moment( new Date( lecture.date ) ).format( "YYYY-MM-DD" ) }</td>
                     <td>{ moment( new Date( lecture.date ) ).format( "HH:mm" ) }</td>
