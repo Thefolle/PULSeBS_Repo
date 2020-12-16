@@ -208,7 +208,7 @@ async function getTeacherStatistics(teacherId, courseId, groupBy) {
     }
     else if (response.status === 200) {
         const responseJson = await response.json();
-        let x = responseJson.map(lectureStatistics => lectureStatistics.bookingsNumber);
+        let x = responseJson.map(lectureStatistics => lectureStatistics.bookingNumber);
         if (groupBy === 'Lecture') {
             let y = responseJson.map(lectureStatistics => lectureStatistics.lectureDate);
             let average;
@@ -216,7 +216,7 @@ async function getTeacherStatistics(teacherId, courseId, groupBy) {
             else average = x.reduce((partialSum, currentValue) => partialSum + currentValue, 0) / y.length;
             return {x, y, average};
         } else if (groupBy === 'Week') {
-            console.log(responseJson);
+            //console.log(responseJson);
             let y = responseJson.map(lectureStatistics => lectureStatistics.week);
             let average;
             if (y.length === 0) average = 0;

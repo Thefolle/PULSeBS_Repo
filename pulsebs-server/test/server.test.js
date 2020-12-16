@@ -47,7 +47,7 @@ describe('API STUDENT', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(8);
+            expect(response.body.length).toEqual(14);
         });
 
     });
@@ -72,7 +72,7 @@ describe('API STUDENT', () => {
     describe('Try to cancel some bookings', () => {
         test('Try to cancel a booking correctly', async function () {
             let studentId = 269901;
-            let bookingId = 2;
+            let bookingId = 1;
             let response = await request(server)
                 .delete('/api/students/' + studentId + '/bookings/' + bookingId)
                 .set('Cookie', `token=${token}`)
@@ -87,7 +87,7 @@ describe('API STUDENT', () => {
         });
         test('Try to cancel a booking wrongly - Wrong params', async function () {
             let studentId = 123456;
-            let bookingId = 20;
+            let bookingId = 60;
             let response = await request(server)
                 .delete('/api/students/' + studentId + '/bookings/' + bookingId)
                 .set('Cookie', `token=${token}`)
@@ -222,7 +222,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(8);
+            expect(response.body.length).toEqual(11);
         });
 
     });
@@ -238,7 +238,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(3);
+            expect(response.body.length).toBe(20);
         });
     });
 
@@ -306,7 +306,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(5);
+            expect(response.body.length).toEqual(8);
         });
 
     });
@@ -320,7 +320,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(8);
+            expect(response.body.length).toEqual(22);
         });
 
     });
@@ -330,12 +330,12 @@ describe('API MANAGER', () => {
 
             const response = await request(server)
                 .get('/api/manager/getAllBookings')
-                .query({course:"All",lecture:-1})
+                .query({ course: "All", lecture: -1 })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(3);
+            expect(response.body.length).toBe(24);
         });
     });
 
@@ -344,12 +344,12 @@ describe('API MANAGER', () => {
 
             const response = await request(server)
                 .get('/api/manager/getAllBookings')
-                .query({course:"Analisi 1",lecture:-1})
+                .query({ course: "Analisi 1", lecture: -1 })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(3);
+            expect(response.body.length).toBe(14);
         });
     });
 
@@ -358,12 +358,12 @@ describe('API MANAGER', () => {
 
             const response = await request(server)
                 .get('/api/manager/getAllCancellationsLectures')
-                .query({course:"All",lectures:-1})
+                .query({ course: "All", lectures: -1 })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(3);
+            expect(response.body.length).toBe(7);
         });
     });
 
@@ -372,26 +372,26 @@ describe('API MANAGER', () => {
 
             const response = await request(server)
                 .get('/api/manager/getAllCancellationsBookings')
-                .query({course:"All",lecture:-1})
+                .query({ course: "All", lecture: -1 })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(1);
+            expect(response.body.length).toBe(2);
         });
     });
 
-     describe('/api/manager/getAllAttendances', () => {
+    describe('/api/manager/getAllAttendances', () => {
         it('should return a 200 if succeed', async () => {
 
             const response = await request(server)
                 .get('/api/manager/getAllAttendances')
-                .query({course:"All",lecture:-1})
+                .query({ course: "All", lecture: -1 })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(3); //change this value
+            expect(response.body.length).toBe(24); //change this value
         });
     });
 
@@ -406,7 +406,7 @@ describe('API MANAGER', () => {
     }, 10);
 });
 
-describe('API Officer',()=>{
+describe('API Officer', () => {
     beforeAll((done) => {
 
         request(server)
@@ -419,73 +419,27 @@ describe('API Officer',()=>{
             });
     });
 
-describe( 'CSV loading tests', () => {
-    let data = {
-        "classes": [
-            {
-                "id": "15",
-                "desc": "12A",
-                "seats": "72"
-            }
-        ],
-        "teachers": [
-            {
-                "id": "239910",
-                "email": "abc@gmail.com",
-                "password": "hash123",
-                "name": "nome",
-                "surname": "cognome"
-            }
-        ],
-        "students": [
-            {
-                "id": "269910",
-                "email": "abc@gmail.com",
-                "password": "hash123",
-                "name": "nome",
-                "surname": "cognome"
-            }
-        ],
-        "courses": [
-            {
-                "id": "90",
-                "desc": "ABC course",
-                "ref_teacher": "239910"
-            }
-        ],
-        "subscriptions": [
-            {
-                "ref_student": "269910",
-                "ref_course": "90"
-            }
-        ],
-        "lectures": [
-            {
-                "ref_course": "90",
-                "ref_class": "15",
-                "date": "123456789",
-                "endTime": "123456789",
-                "presence": "0",
-                "bookable": "0 ",
-                "active": "0"
-            }
-        ]
-    };
-
-    test( "Try to load a correct CSV file content", async function () {
-        let response = await request(server)
-            .put('/api/sofficer/')
-            .set('Cookie', `token=${token}`)
-            .set('Content-Type', 'application/json')
-            .send(data);
-        expect(response.status).toBe(200);
-    } );
-
-    test( "Try to load a wrong CSV file content", async function () {
-        data = {
+    describe('CSV loading tests', () => {
+        let data = {
+            "classes": [
+                {
+                    "id": "15",
+                    "desc": "12A",
+                    "seats": "72"
+                }
+            ],
+            "teachers": [
+                {
+                    "id": "239910",
+                    "email": "abc@gmail.com",
+                    "password": "hash123",
+                    "name": "nome",
+                    "surname": "cognome"
+                }
+            ],
             "students": [
                 {
-                    "id": "269901",
+                    "id": "269910",
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
@@ -508,6 +462,7 @@ describe( 'CSV loading tests', () => {
             "lectures": [
                 {
                     "ref_course": "90",
+                    "ref_class": "15",
                     "date": "123456789",
                     "endTime": "123456789",
                     "presence": "0",
@@ -516,14 +471,59 @@ describe( 'CSV loading tests', () => {
                 }
             ]
         };
-        let response = await request(server)
-            .put('/api/sofficer/')
-            .set('Cookie', `token=${token}`)
-            .set('Content-Type', 'application/json')
-            .send(data);
-        expect(response.status).toBe(400);
-        } );
-    } );
+
+        test("Try to load a correct CSV file content", async function () {
+            let response = await request(server)
+                .put('/api/sofficer/')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .send(data);
+            expect(response.status).toBe(200);
+        });
+
+        test("Try to load a wrong CSV file content", async function () {
+            data = {
+                "students": [
+                    {
+                        "id": "269901",
+                        "email": "abc@gmail.com",
+                        "password": "hash123",
+                        "name": "nome",
+                        "surname": "cognome"
+                    }
+                ],
+                "courses": [
+                    {
+                        "id": "90",
+                        "desc": "ABC course",
+                        "ref_teacher": "239910"
+                    }
+                ],
+                "subscriptions": [
+                    {
+                        "ref_student": "269910",
+                        "ref_course": "90"
+                    }
+                ],
+                "lectures": [
+                    {
+                        "ref_course": "90",
+                        "date": "123456789",
+                        "endTime": "123456789",
+                        "presence": "0",
+                        "bookable": "0 ",
+                        "active": "0"
+                    }
+                ]
+            };
+            let response = await request(server)
+                .put('/api/sofficer/')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .send(data);
+            expect(response.status).toBe(400);
+        });
+    });
 
     // logout and server shutdown
     afterAll(async () => {

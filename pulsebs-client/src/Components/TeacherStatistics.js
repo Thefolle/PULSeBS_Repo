@@ -276,11 +276,6 @@ class TeacherStatistics extends React.Component {
             </Row>
             <Row>
                 <Col>
-                    <label>The average of booked students per {this.state.groupBy.toLowerCase()} is {this.state.average.toFixed(2)}.</label>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
                     <div id='plotId' />
                 </Col>
             </Row>

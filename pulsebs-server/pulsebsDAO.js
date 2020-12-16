@@ -533,7 +533,7 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
             // no rows are returned if a the course is not assigned to the teacher
             // L.id is needed for sqlite (group by requires it in the select), but it is useless for showing statistics
             // the course description is not needed, it is already present in the front end
-            let perLectureQuery = `SELECT COUNT(*) as bookingsNumber,
+            let perLectureQuery = `SELECT COUNT(*) as bookingNumber,
                             L.id as lectureId,
                             L.date as lectureDate
                     FROM    booking B,
@@ -567,7 +567,7 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                     // different lectures but in the same week; it is just an expedient to keep
                     // trace of which week the bookingNumber belongs to
                     let getStatisticsInWeekQuery = `
-                        SELECT  COUNT(*) as bookingNumber, MAX(L.date) as sampleDate
+                        SELECT  COUNT(*)/COUNT(DISTINCT L.id) as avgNumbers, MAX(L.date) as sampleDate, COUNT(*) as bookingNumber, COUNT(DISTINCT L.id) as totLectures
                         FROM    lecture L,
                                 booking B,
                                 course C
@@ -591,8 +591,8 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                             if (error) reject(error);
                             else {
                                 // if in the considered week there was at least one lecture
-                                if (!(row.sampleDate == null && row.bookingNumber === 0)) {
-                                    statistics.push({ bookingNumber: row.bookingNumber, week: moment(row.sampleDate).startOf('week').valueOf() });
+                                if (row.sampleDate !== null && row.bookingNumber !== 0) {
+                                    statistics.push({ bookingNumber: parseFloat(row.bookingNumber) / parseFloat(row.totLectures), week: moment(row.sampleDate).startOf('week').valueOf() });
                                 }
                                 // infer if it this is the last executed query
                                 numberOfCallbacks++;
@@ -626,7 +626,7 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                     // seems to directly use the earliestMonth variable, but the callback should
                     // not rely upon changing variables
                     let getStatisticsInMonthQuery = `
-                        SELECT  COUNT(*) as bookingNumber, MAX(L.date) as sampleDate
+                        SELECT  COUNT(*)/COUNT(DISTINCT L.id) as avgNumbers, MAX(L.date) as sampleDate, COUNT(*) as bookingNumber, COUNT(DISTINCT L.id) as totLectures
                         FROM    lecture L,
                                 booking B,
                                 course C
@@ -650,8 +650,8 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                             if (error) reject(error);
                             else {
                                 // if in the considered month there was at least one lecture
-                                if (!(row.sampleDate == null && row.bookingNumber === 0)) {
-                                    statistics.push({ bookingNumber: row.bookingNumber, month: moment(row.sampleDate).startOf('month').valueOf() });
+                                if (row.sampleDate !== null && row.bookingNumber !== 0) {
+                                    statistics.push({ bookingNumber: parseFloat(row.bookingNumber) / parseFloat(row.totLectures), month: moment(row.sampleDate).startOf('month').valueOf() });
                                 }
                                 // infer if it this is the last executed query
                                 numberOfCallbacks++;
@@ -879,7 +879,7 @@ function getInvolvedLecturesAndTeacher(studentId, test) {
 
 function getInvolvedStudents(involvedLectures, studentId) {
     return new Promise(((resolve, reject) => {
-        
+
         let query = `SELECT DISTINCT(B.ref_student) as sID
                     FROM booking B,
                         lecture L

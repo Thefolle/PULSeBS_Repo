@@ -45,28 +45,28 @@ test('Try to book a new seat', () => {
 //GET STUDENT LECTURES
 test('Try to get a student\'s lectures', () => {
     return DAO.getStudentLectures('269901').then(result => {
-        expect(result.length).toEqual(8);
+        expect(result.length).toEqual(14); //old value 7
     })
 });
 
 //GET TEACHER LECTURES
 test('Try to get a teacher\'s lectures', () => {
     return DAO.getTeacherLectures('239901').then(result => {
-        expect(result.length).toBe(8); //or toEqual
+        expect(result.length).toBe(11); //old value 11
     });
 });
 
 //GET STUDENTS BOOKED FOR LECTURE ID
 test('Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2('239901').then(result => {
-        expect(result.length).toBe(5);
+        expect(result.length).toBe(21); //old value 3
     });
 });
 
 // GET STUDENTS BOOKED FOR 1 LECTURE
 test( 'Try to get students booked for lecture 1', () => {
     return DAO.getStudentsForLecture( '1' ).then( result => {
-        expect( result.length ).toBe( 1 );
+        expect( result.length ).toBe( 4); //old value 1
     } )
 
 } );
@@ -91,27 +91,27 @@ test( 'Try to get students booked for lecture 4', () => {
 //GET ALL STUDENT'S BOOKINGS
 test('Try to get all student\'s bookings', () => {
     return DAO.getStudentBookings('269901').then(result => {
-        expect(result.length).toEqual(4);
+        expect(result.length).toEqual(5); //old value 3
     })
 });
 
 //GET TOMORROW LESSONS STATS
 test( 'Try to get all students booked for tomorrow lectures', () => {
     return DAO.getTomorrowLessonsStats( true ).then( result => {
-        expect( result.length ).toEqual( 1 );
+        expect( result.length ).toEqual( 0 ); //old value 1
     } );
 } );
 
 describe('Turn a lecture to be online instead of in presence', () => {
     describe('Unit testing', () => {
         test('Turnable lecture', () => {
-            return DAO.turnLectureIntoOnline(239901, 1).then(information => {
+            return DAO.turnLectureIntoOnline(9,239901).then(information => {
                 expect(information).toEqual(
                     [
                         {
-                            "courseDescription": "Analisi 1",
+                            "courseDescription": "Elettrotecnica",
                             "lectureClass": "VIRTUAL CLASSROOM",
-                            "lectureDate": 1605526200000,
+                            "lectureDate": 1611046800000,
                             "studentEmail": "davide.calarco@gmail.com",
                             "studentId": 269901,
                             "studentName": "Davide",
@@ -136,7 +136,7 @@ describe('Turn a lecture to be online instead of in presence', () => {
         });
 
         test('Non-active lecture', () => {
-            return DAO.turnLectureIntoOnline(5, 239901).then(exitCode => {
+            return DAO.turnLectureIntoOnline(9, 239901).then(exitCode => {
                 console.log("Test failure message: ");
                 console.log(exitCode);
             }).catch(exitCode => {
@@ -192,9 +192,9 @@ test('Try to see if student infos are correct', () => {
 // GET LECTURE STATS
 test('Try to see if lecture stats are the correct ones', () => {
     return DAO.getLectureStats(1).then(result => {
-        expect(result.date).toBe(1605526200000);
-        expect(result.course).toBe('Analisi 1');
-        expect(result.classroom).toBe('VIRTUAL CLASSROOM');
+        expect(result.date).toBe(1605684600000);//expect(result.date).toBe(1605526200000);
+        expect(result.course).toBe('Analisi 1');//expect(result.course).toBe('Analisi 1');
+        expect(result.classroom).toBe("12");//expect(result.classroom).toBe('VIRTUAL CLASSROOM');
     })
 });
 
@@ -203,23 +203,13 @@ test('Try to see if lecture stats are the correct ones', () => {
 //      - the locale of moment is set to 'it' from the beginning of pulsebsDAO, not in the function itself;
 describe('[PUL 10] Get teacher statistics', () => {
     test('per lecture', () => {
-        DAO.getTeacherBookingStatistics(239903, 5, 'lecture').then(statistics => {
+        DAO.getTeacherBookingStatistics(239902, 3, 'lecture').then(statistics => {
             expect(statistics).toEqual(
                 [
                     {
-                        "bookingsNumber": 2,
-                        "lectureDate": 1605526200000,
-                        "lectureId": 1
-                    },
-                    {
-                        "bookingsNumber": 1,
-                        "lectureDate": 1605699000000,
-                        "lectureId": 2
-                    },
-                    {
-                        "bookingsNumber": 1,
-                        "lectureDate": 1606303800000,
-                        "lectureId": 4
+                        "bookingNumber": 1,
+                        "lectureDate": 1607774400000,
+                        "lectureId": 10
                     }
                 ]
             );
@@ -227,16 +217,16 @@ describe('[PUL 10] Get teacher statistics', () => {
     });
 
     test('per week', () => {
-        return DAO.getTeacherBookingStatistics(239903, 5, 'week').then(statistics => {
+        return DAO.getTeacherBookingStatistics(239901, 2, 'week').then(statistics => {
             expect(statistics).toEqual(
                 [
                     {
-                        "bookingNumber": 3,
-                        "week": 1605481200000
+                        "bookingNumber": 2,
+                        "week": 1606690800000
                     },
                     {
-                        "bookingNumber": 1,
-                        "week": 1606086000000
+                        "bookingNumber": 4,
+                        "week": 1607295600000
                     }
                 ]
             );
@@ -244,12 +234,12 @@ describe('[PUL 10] Get teacher statistics', () => {
     });
 
     test('per month', () => {
-        return DAO.getTeacherBookingStatistics(239903, 5, 'month').then(statistics => {
+        return DAO.getTeacherBookingStatistics(239901, 2, 'month').then(statistics => {
             expect(statistics).toEqual(
                 [
                     {
-                        "bookingNumber": 4,
-                        "month": 1604185200000
+                        "bookingNumber": 3,
+                        "month":1606777200000
                     }
                 ]
             );
@@ -260,7 +250,7 @@ describe('[PUL 10] Get teacher statistics', () => {
 describe("[PUL-11] Get statistics for manager",()=>{
     test('get All Bookings 1',()=>{
         return DAO.getAllBookings().then(b=>{
-            expect(b.length).toBe(4);
+            expect(b.length).toBe(24);
         })
     });
 
@@ -268,7 +258,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
         let course="Analisi 1";
         let lecture=2;
         return DAO.getAllBookings(course,lecture).then(b=>{
-            expect(b.length).toBe(1);
+            expect(b.length).toBe(5);
         })
     });
 
@@ -282,7 +272,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
      test('get All Attendances 1',()=>{
         return DAO.getAllAttendances().then(b=>{
-            expect(b.length).toBe(3);
+            expect(b.length).toBe(24);
         })
     });
 
@@ -290,7 +280,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
         let course="Analisi 1";
         let lecture=2;
         return DAO.getAllAttendances(course,lecture).then(b=>{
-            expect(b.length).toBe(1);
+            expect(b.length).toBe(5);
         })
     });
 
@@ -304,13 +294,13 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
     test('get All cancelled Lectures 1',()=>{
         return DAO.getAllCancellationsLectures().then(c=>{
-            expect(c.length).toBe(2);
+            expect(c.length).toBe(6);
         });
     });
 
     test('get All cancelled Lectures 2',()=>{
         let course = "Analisi 1";
-        let lecture = 5;
+        let lecture = 18;
         return DAO.getAllCancellationsLectures(course,lecture).then(c=>{
             expect(c.length).toBe(1);
         });
@@ -326,7 +316,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
     test('get All cancelled Booking 1',()=>{
         return DAO.getAllCancellationsBookings().then(c=>{
-            expect(c.length).toBe(1);
+            expect(c.length).toBe(2);
         });
     });
 
@@ -348,13 +338,13 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
     test('get All Courses',()=>{
         return DAO.getAllCourses().then(c=>{
-            expect(c.length).toBe(5); //change value(depends of cardinality of courses)
+            expect(c.length).toBe(8); //change value(depends of cardinality of courses)
         });
     });
 
     test('get All Lectures',()=>{
         return DAO.getAllLectures().then(c=>{
-            expect(c.length).toBe(8); //change value(depends of cardinality of lectures)
+            expect(c.length).toBe(22); //change value(depends of cardinality of lectures)
         });
     });
 
