@@ -11,6 +11,7 @@
     "bootstrap": "^4.4.1",
     "formik": "^2.1.4",
     "install": "^0.13.0",
+    "jspdf": "^2.2.0",
     "moment": "^2.29.1",
     "papaparse": "^5.3.0",
     "plotly": "^1.0.6",
