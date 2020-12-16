@@ -67,6 +67,12 @@ describe('get /api/student/bookings', () => {
     });
 });
 
+/**
+ * @Feihong 
+ * 
+ * @Note
+ * 
+ */
 //  DELETE cancle the lecture that already booked
 // FIXME:
 describe( '/api/students/:studentId/bookings/:bookingId', () => {
@@ -169,5 +175,102 @@ afterAll(async () => {
     // expect(response.status).toBe(200);
     handleToCloseServer.close();
 }, 10);
+
+ /**
+ * @Feihong
+ * Add a student to a waiting list 
+ * @Note 
+ * 
+ */
+describe( '/api/students/:studentId/lectures/:lectureId', () => {
+    it( 'should return a 201 if add successful', async () => {
+
+          await request( server )
+            .put( '/api/students/269901/lectures/1' )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 201 );
+            } );
+    } );
+} );
+
+
+ /**
+ * @Feihong
+ * get waiting list of lecures of a student
+ * @Note 
+ * there should be at least a lecture for current student here 
+ */
+describe( '/api/student/waitings', () => {
+    it( 'should return a 200 if get waitings', async () => {
+
+          await request( server )
+            .get( '/api/student/waitings' )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 200 );
+            } );
+    } );
+} );
+
+  /**
+ * @Feihong
+ * According the free seats of a lecture, to Update the bookable attribute of table lecture 
+ * @Note 
+ * there are free seats of lecture 1's class room
+ */
+describe( '/api/students/:studentId/lectures/checkSeats/:lectureId', () => {
+    it( 'should return a 200 if there are free seats for lecture 1', async () => {
+
+          await request( server )
+            .post( '/api/students/269901/lectures/checkSeats/1'  )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 200 );
+            } );
+    } );
+} );
+
+  /**
+ * @Feihong
+ * cancle a booking 
+ * @Note 
+ * there is a booing in booking table with id 1
+ */
+describe( '/api/students/:studentId/bookings/:bookingId', () => {
+    it( 'should return a 200 if successful', async () => {
+
+          await request( server )
+            .post( '/api/students/269901/bookings/1'  )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 200 );
+            } );
+    } );
+} );
+
+
+  /**
+ * @Feihong
+ * delete a waiting item from waiting table and add a new booking 
+ * @Note 
+ * for lecture 1, there sould be waiting item in wait table
+ */
+describe( '/api/students/:studentId/lectures/:lectureId/waiting', () => {
+    it( 'should return a 200 if successful', async () => {
+
+          await request( server )
+            .delete( '/api/students/269901/lectures/1/waiting'  )
+            .set( 'Cookie', `token=${ token }` )
+            .set( 'Content-Type', 'application/json' )
+            .then( ( res ) => {
+                expect( res.status ).toBe( 200 );
+            } );
+    } );
+} );
 
 

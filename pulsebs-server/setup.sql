@@ -77,6 +77,8 @@ create table subscription
     primary key (ref_student, ref_course)
 );
 
+
+-- Feihong
 create table waiting
 (
     id          INTEGER primary key,

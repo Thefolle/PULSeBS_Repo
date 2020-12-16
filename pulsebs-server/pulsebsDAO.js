@@ -195,7 +195,6 @@ exports.cancelBooking = ( bookingId ) => {
  * Add a student to waiting list
  * @param {*} lectureId 
  */
-// TODO: 
  exports.addStudentToWaitingList = (studentId, lectureId) => {
      return new Promise( ( (resolve, reject) =>{
         let addToWaiting = `INSERT INTO waiting(ref_student, ref_lecture, date) VALUES ( ${studentId}, ${lectureId}, ${ moment().valueOf()})`
@@ -209,7 +208,6 @@ exports.cancelBooking = ( bookingId ) => {
   * @Feihong
   * @param {*} lectureId 
   */
-// TODO: To check if the student in the waiting list or not 
 
 exports.checkStudentInWaitingList = (studentId, lectureId) => {
     return new Promises( ( (resolve, reject) => {
@@ -218,7 +216,7 @@ exports.checkStudentInWaitingList = (studentId, lectureId) => {
             if (row){
                 reject("You already in the Waiting List")
             } else {
-                resolve("You can add this lecture to Waiting List")
+                resolve(0)
             }
         })
     }))
@@ -252,7 +250,7 @@ exports.checkSeatsOfLecture = (lectureId) => {
             } else{
                 db.get(seats, [], (err, row) =>{
                     if (row.seats > rows.length){
-                        // console.log("You can book the lecture, already booked numbers:  " + rows.length + " Total numbers of seat are: " + row.seats + " lecture id is " + lectureId)
+                        // console.log("You can book the lecture, already booking numbers:  " + rows.length + " Total numbers of seat are: " + row.seats + " lecture id is " + lectureId)
                         db.run(upadteLecture,[], (err) =>{
                             if(err) {
                                 // console.log("-------------------"+err)
@@ -320,7 +318,7 @@ exports.getWaitingList = ( studentId) => {
         -2: Delete waiting err
         -3: Add new booking err;
         -4: Find student informations err
-        -5: There is no such a student, so can not find informations of the student
+        -5: There is no such a class, so can not find informations of the class
 
     resolve:
         row: it contains student's informations: letture date, course description, class name, student name, student surname, student email, and student id
@@ -332,7 +330,7 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
         
         db.get(getQuery, [], (err, row) => {
             if(err){
-                console.log("----delete waiting err, no such a lecture in waiting list : "+ err)
+                console.log("----delete waiting err, getQuery wrong "+ err)
                 reject (0)
             } else {
                 if (row){
@@ -400,13 +398,6 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
     })
 }
 
-
- /**
-  * @Feihong
-  * @param {*} lectureId 
-  * 
-  * TODO: 
-  */
 
 /*
 * Get lecture statistics

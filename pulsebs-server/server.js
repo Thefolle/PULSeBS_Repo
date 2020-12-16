@@ -357,7 +357,7 @@ app.post('/api/students/:studentId/booking', (req, res) => {
  * @Feihong 
  * PUT /api/students/:studentId/lectures/:lectureId
  */
-// TODO: Add a student to a waiting list 
+// Add a student to a waiting list 
 app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
     const studentId = req.params.studentId;
     const lectureId = req.params.lectureId;
@@ -366,8 +366,7 @@ app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
     } else {
         const user = req.user && req.user.user
         pulsebsDAO.addStudentToWaitingList(user, lectureId)
-        .then( (response) => {
-            // TODO: add some operations 
+        .then( (response) => { 
             res.status( 201 ).json( {response} )
         })
         .catch ( (err) => {
@@ -457,7 +456,7 @@ app.post('/api/students/:studentId/bookings/:bookingId', (req, res) => {
 /**
  * @Feihong
  * DELETE /students/:studentId/lectures/:lectureId/waiting
- * TODO: delete a waiting item from waiting table
+ *  delete a waiting item from waiting table and add a new booking 
  */
 app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) => {
     const studentId = req.params.studentId;
