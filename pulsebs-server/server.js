@@ -311,7 +311,7 @@ app.get( '/api/student/lectures', ( req, res ) => {
 } );
 
 
-//POST /student/booking
+//  POST /student/booking
 // FIXME: refactor
 app.post( '/api/students/:studentId/booking', ( req, res ) => {
     const lectureId = req.body.lectureId;
@@ -366,6 +366,67 @@ app.post( '/api/students/:studentId/booking', ( req, res ) => {
     }
 } );
 
+/**
+ * @Feihong 
+ * PUT /api/students/:studentId/lectures/:lectureId
+ */
+// Add a student to a waiting list 
+app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
+    const studentId = req.params.studentId;
+    const lectureId = req.params.lectureId;
+    if (!lectureId) {
+        res.status(401).end();
+    } else {
+        const user = req.user && req.user.user
+        pulsebsDAO.addStudentToWaitingList(user, lectureId)
+        .then( (response) => { 
+            res.status( 201 ).json( {response} )
+        })
+        .catch ( (err) => {
+            res.status( 500 ).json({errors: [ {'param': 'Server', 'msg': err} ]  })
+        })
+    }
+})
+
+/**
+ * @Feihong 
+ * GET /student/waitings
+ */
+//  get waiting list of lecures of a student 
+
+app.get('/api/student/waitings', (req, res) => {
+    const studentId = req.user && req.user.user
+    pulsebsDAO.getWaitingList(studentId)
+                .then( (waitings) => {
+                    res.json( waitings )
+                })
+                .catch( (err) => {
+                    res.status(500).json({
+                        errors: [{'message': err}]
+                    })
+                } )
+})
+
+/**
+ * @Feihong 
+ * POST /students/studentId/lectures/lectureId
+ */
+//According the free seats of a lecture, to Update the bookable attribute of table lecture 
+app.post('/api/students/:studentId/lectures/checkSeats/:lectureId', (req, res) => {
+    const studentId = req.user && req.user.user
+    const lectureId = req.params.lectureId
+    if (!lectureId) {
+        res.status(400).end("Can not get lecture!");
+    }
+    else {
+        pulsebsDAO.checkSeatsOfLecture(lectureId)
+                    .then( (lectureId) => res.status(200).json({"lectureId": lectureId}))
+                    .catch( (err) =>{
+                        res.status(500).json({ errors: [{'param': 'Server-checkSeatsOfLecture', 'msg': err}], })
+                    })
+    }
+})
+
 
 //GET /student/bookings
 
@@ -383,9 +444,13 @@ app.get( '/api/student/bookings', ( req, res ) => {
               } );
 } )
 
-// DELETE /student/bookings
-//FIXME: refactor
-app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
+/**
+ * @Feihong
+ * POST /student/bookings
+ */
+//  FIXME: refactor
+app.post('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+    const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
     if ( !bookingId ) {
         res.status( 401 ).end();
@@ -402,7 +467,79 @@ app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
                                               } );
                   } );
     }
-} );
+});
+
+/**
+ * @Feihong
+ * DELETE /students/:studentId/lectures/:lectureId/waiting
+ *  delete a waiting item from waiting table and add a new booking 
+ */
+app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) => {
+    const studentId = req.params.studentId;
+    const lectureId = req.params.lectureId;
+    if (!lectureId) {
+        res.status(401).end('can not find lecture');
+    } else {
+        pulsebsDAO.deleteWaitingAddBooking(lectureId)
+            .then( (studentAndLectureInfo) => {
+                res.status(200).json( 
+                    {
+                    message: "The lecture was find in the waiting table,"+
+            "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: "+lectureId
+                    })
+                    // if ( process.env.TEST && process.env.TEST === '0' ) {
+                        let mailOptions;
+                        mailOptions = {
+                            from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                            // to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                            to: 'shinylover520@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                            // subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
+                            subject: 'Your waiting lecture was picked from the waiting list',
+                            text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
+                                " (" + studentAndLectureInfo.studentId + ")," +
+                                " the lesson of the course " + studentAndLectureInfo.courseDescription + " that in your waiting list was picked, and it was " +
+                                " planned to take place in class " + studentAndLectureInfo.lectureClass +
+                                " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( 'MMMM Do YYYY, h:mm:ss a' ) + "."  + "\n\n" +
+                                "Have a good lesson.\n\n - PULSeBS Team9."
+                        };
+                        transporter.sendMail( mailOptions, function ( error, info ) {
+                            if ( error ) {
+                                console.log( "Some error occured in sending the email to shinylover520@gmail.com :"+ error );
+                            } else {
+                                console.log( 'Email sent to: ' + studentAndLectureInfo.studentId);
+                            }
+                        } );    
+                    // }
+                
+            })
+            .catch( ( exitCode ) => {
+                if ( exitCode === 0 ) {
+                    res.status( 404 ).json( {message: "Find waiting err."} );
+                } else if ( exitCode === -1 ) {
+                    res.status( 404 ).json( {message: "There is no such a lecture in waiting list with id " + lectureId + " ."} );
+                } else if ( exitCode === -2 ) {
+                    res.status( 409 ).json( {message: "Delete waiting err."} );
+                } else if ( exitCode === -3 ) {
+                    res.status( 409 ).json( {
+                                                message: "Add new booking err."
+                                            } );
+                } else if ( exitCode === -4 ) {
+                    res.status( 409 ).json( {
+                                                message: "Find student informations err."
+                                            } );
+                } else if ( exitCode === -5 ) {
+                    res.status( 500 ).json(
+                        {
+                            message:
+                                "There is no such a student, so can not find informations of the student"
+                        }
+                    );
+                }
+            } );
+    }
+})
+
+
 // FIXME:
 app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
     const lectureId = req.params.lectureId;

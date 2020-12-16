@@ -55,7 +55,10 @@ class PULSeBSApp extends React.Component {
 
       API.login(email,password).then((user) => {
         //this.setFullName(user.id, user.name, user.surname, user.type);
-        this.setState({authUser: new User(user.id, user.name, user.surname, user.type),authErr:null });
+        this.setState({
+            authUser: new User(user.id, user.name, user.surname, user.type),
+            authErr:null 
+        });
 
       }).catch((err) => {
         console.log(err);

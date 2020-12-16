@@ -89,7 +89,6 @@ async function bookSeat(studentId, lectureId) {
  });
 }
 
-
 async function getStudentBookings() {
     let url = "/student/bookings";
     const response = await fetch(baseURL + url);
@@ -103,11 +102,34 @@ async function getStudentBookings() {
 
 }
 
+
+/**
+ * @Feihong
+ * GET /student/waitings
+ */
+// TODO: get waiting list of lecures of a student 
+async function getWaitingList(){
+    let url = "/student/waitings";
+    const response = await fetch(baseURL + url);
+    const waitingsJson = await response.json()
+    if (response.ok){
+        return waitingsJson.map( (w) => new Waiting(w.id, w.ref_student, w.ref_lecture, w.date, w.active, w.desc, w.cldesc, w.presence, w.lecdate))
+    } else{
+        let err  ={ status: response.status, errObj: waitingsJson};
+        throw err;
+    }
+}
+
+
+
+/**
+ * @Feihong
+ */
 // FIXME: already successfully refactor the URI
 async function cancelBooking(studentId, bookingId) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + '/students/' + studentId + '/bookings/' + bookingId, {
-            method: 'DELETE'
+            method: 'POST'
         }).then((response) => {
             if (response.ok) {
                 resolve(null);
@@ -121,6 +143,82 @@ async function cancelBooking(studentId, bookingId) {
     })
 }
 
+/**
+ * @Feihong
+ * /api/students/:studentId/lectures/:lectureId
+ */
+// TODO: Add a student to waiting list, when there is no set 
+async function addStudentToWaitingList(studentId, lectureId) {
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + '/students/' + studentId + '/lectures/' + lectureId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ lectureId: lectureId })
+        }).then((response) => {
+            if (response.ok) {
+                resolve(response)
+            } else {
+                // 
+                console.log("error: addStudentToWaitingList()")
+                response.json()
+                .then( (obj) =>{reject(obj)} )
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "AddWaiting Cannot parse server response" }] }) });
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    })
+}
+
+/**
+ * @Feihong 
+ * api/students/:studentId/lectures/checkSeats/:lectureId
+ */
+// TODO: According the free seats of a lecture, to Update the bookable attribute of table lecture 
+async function checkSeatsOfLecture(studentId, lectureId){
+    return new Promise((resolve, reject) =>{
+        fetch(baseURL + '/students/' + studentId + '/lectures/checkSeats/' + lectureId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({studentId: studentId, lectureId: lectureId})
+        }).then( (response) => {
+            if( response.status === 200){
+                response.json()
+                resolve(1)
+            } else{
+                response.json()
+                reject(0)
+            }
+        })
+    })
+}
+
+/**
+ * @Feihong
+ * /api/students/:studentId/lectures/:lectureId/waiting
+ */
+// TODO: delete a waiting item from waiting table
+async function deleteWaitingAddBooking(studentId, lectureId){
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + '/students/' + studentId + '/lectures/' + lectureId + '/waiting', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({studentId: studentId, lectureId: lectureId})
+        }).then( ( response ) => {
+            if (response.ok) {
+                response.json()
+                resolve(1)
+            } else {
+                response.json()
+                reject(0)
+            }
+        })
+    })
+}
 
 /****** TEACHER *******/
 async function getTeacherLectures() {
@@ -392,5 +490,5 @@ async function getContactsWithPositiveStudent(studentId) {
     }
 }
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent, importCSV };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, getWaitingList, getStudentBookings, cancelBooking, addStudentToWaitingList, deleteWaitingAddBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent, importCSV };
 export default API;

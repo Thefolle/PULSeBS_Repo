@@ -471,3 +471,133 @@ describe( 'CSV loading tests', () => {
                   .catch( err => expect( err ).toBe( 0 ) );
     } );
 } );
+
+
+
+ /**
+ * @Feihong
+ *  Functions:
+ * 1. delete a waiting item
+ * 2. add the lecture and student of the waiting item to booking table
+ * 3. get the informations of the stuedent who picked from waiting table and was added into booking table with a lecture
+ * 
+ * Return values:
+    rejected:
+        0: Find waiting err;
+        -1: There is no such a lecture in waiting list;
+        -2: Delete waiting err
+        -3: Add new booking err;
+        -4: Find student informations err
+        -5: There is no such a class, so can not find informations of the class
+
+    resolve:
+        row: it contains student's informations: letture date, course description, class name, student name, student surname, student email, and student id
+ * @Note 
+    1. booking a lecture: the lecture 1 and student 269901 should in waiting list
+    2. Non-existing lecture: the lecture 5 should not in waiting table 
+    3. Non-existing class: lectur 4 should not have a class
+ */
+describe( 'when cancle a lecture, trigger this function to find a waiting student, and add her/him to booking table ', () => {
+    describe( 'Unit testing', () => {
+        test( 'booking a lecture', () => {
+            return DAO.deleteWaitingAddBooking(1).then( information => {
+                expect( information.studentId ).toEqual(1);
+            } ).catch( exitCode => {
+                // test failed because the lecture should have been turnable into online
+                console.log( "Test failure message: " );
+                console.log( exitCode );
+            } );
+        } );
+
+        test( 'Non-existing lecture', () => {
+            return DAO.deleteWaitingAddBooking(5).then( exitCode => {
+                console.log( "Test failure message: " );
+                console.log( exitCode );
+            } ).catch( exitCode => {
+                // test failed because the lecture should have been turnable into online
+                expect( exitCode ).toBe( -1 );
+            } );
+        } );
+
+        test( 'Non-existing class', () => {
+            return DAO.deleteWaitingAddBooking(4).then( exitCode => {
+                console.log( "Test failure message: " );
+                console.log( exitCode );
+            } ).catch( exitCode => {
+                // test failed because the lecture should have been turnable into online
+                expect( exitCode ).toBe( -5 );
+            } );
+        } );
+
+        // ( 'Lecture is starting within 30 minutes', () => {
+        //     return DAO.turnLectureIntoOnline( 239901,6 ).then( exitCode => {
+        //         console.log( "Test failure message: " );
+        //         console.log( exitCode );
+        //     } ).catch( exitCode => {
+        //         // test failed because the lecture should have been turnable into online
+        //         expect( exitCode ).toBe( -3 );
+        //     } );
+        // } );
+    } );
+    // Cannot test exitCode === -4
+} );
+
+
+ /**
+ * @Feihong
+ * get the waiting list of a student 
+ * @Note 
+ * student 269901 shuld in table waiting
+ */
+test( 'get waiting list of student 269901', () => {
+    return DAO.getWaitingList(269901).then( result => {
+        expect( result[0].id ).toBe(269901);
+    } )
+} );
+
+ /**
+ * @Feihong
+ * 1. make sure there are free seats for student
+ * 2. if there are free seats, update the bookable attribute to 1
+ * @Note 
+ * 1. there are free seats of lecture 1's class room
+ * 2. there no free seats of lectuere 2's class room   
+ */
+describe('Cancel/edit operations',() => {
+    //EDIT PRESENCE LECTURE
+    test( 'Update bookable of lecture 1 to 1', () => {
+        return DAO.checkSeatsOfLecture(1).then( result => {
+            expect( result ).toEqual( 1 );
+        } );
+    } );
+
+//CANCEL A BOOKING
+    test( 'Update bookable of lecture 2 to 0', () => {
+        return DAO.checkSeatsOfLecture(2).then( result => {
+            expect( result ).toEqual( 0 );
+        } );
+    } );
+})
+
+
+ /**
+ * @Feihong
+ * To check if the student in the waiting list or not 
+ * @Note 
+ * student 269901 and lecture 1 should in the waiting table
+ */
+test( 'To check if the student in the waiting list or not', () => {
+    return DAO.checkStudentInWaitingList(269901, 1).then( result => {
+        expect( result ).toBe("You already in the Waiting List");
+    } )
+} );
+
+ /**
+ * @Feihong
+ * Add a student to waiting list
+ */
+test( 'Add a student to waiting list', () => {
+    return DAO.addStudentToWaitingList(269901, 1).then( result => {
+        expect( result ).toBe("successful insert");
+    } )
+} );
