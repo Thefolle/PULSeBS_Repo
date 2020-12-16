@@ -157,7 +157,7 @@ class SupportOfficePage extends React.Component {
 
     updateCoursesData(result) {
         var data = result.data.map(e => ({ id: e.Id, year: e.Year, semester: e.Semester, course: e.Desc, teacher: e.Teacher }));
-        this.setState({ courses: data.slice(0, 30) });
+        this.setState({ courses: data.slice(0, data.length) });
     }
 
     updateEnrollmData(result) {

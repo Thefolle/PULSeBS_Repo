@@ -4,7 +4,6 @@ import Student from './Student'
 import Teacher from './Teacher'
 import Course from './Course'
 import Enrollment from './Enrollment'
-import Schedule from './Schedule'
 import Class from './Class'
 import scheduledLecture from './scheduledLecture'
 import LectureTeacher from './LectureTeacher.js'
@@ -59,7 +58,6 @@ async function getStudentLectures() {
     const response = await fetch(baseURL + url);
     const lecturesJson = await response.json();
     if(response.ok){
-        //console.log(lecturesJson);
         return lecturesJson.map((l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active, l.course, l.name, l.surname, l.class));
     } else {
         throw {status: response.status, errObj: lecturesJson};  // An object with the error coming from the server
