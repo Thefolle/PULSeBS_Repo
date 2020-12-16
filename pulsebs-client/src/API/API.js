@@ -3,6 +3,7 @@ import Booking from './Booking.js'
 import Student from './Student'
 import Teacher from './Teacher'
 import Course from './Course'
+import Waiting from './Waiting'
 import Enrollment from './Enrollment'
 import Schedule from './Schedule'
 import Class from './Class'
@@ -490,5 +491,5 @@ async function getContactsWithPositiveStudent(studentId) {
     }
 }
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, getWaitingList, getStudentBookings, cancelBooking, addStudentToWaitingList, deleteWaitingAddBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent, importCSV };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, getWaitingList, getStudentBookings, cancelBooking, addStudentToWaitingList, checkSeatsOfLecture, deleteWaitingAddBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent, importCSV };
 export default API;
