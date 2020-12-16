@@ -1080,6 +1080,7 @@ exports.loadCsvData = (data) => {
         data.lectures.forEach( ( lecture ) => {
             query += `insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (${ lecture.ref_course },${ lecture.ref_class },${ lecture.date },${ lecture.endTime },${ lecture.presence },${ lecture.bookable },${ lecture.active }); `
         } );
+        console.log(query);
         db.exec( "BEGIN TRANSACTION; " + query + " COMMIT;", ( err ) => {
             err ? reject( 0 ) : resolve( 0 );
         } );

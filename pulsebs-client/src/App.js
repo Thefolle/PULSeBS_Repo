@@ -7,6 +7,7 @@ import User        from './User';
 import LoginPage   from './LoginPage';
 import StudentPage from './studentPage';
 import TeacherPage   from './Components/TeacherPage';
+import SupportOfficePage from './Components/SupportOfficePage'
 import { AuthContext } from './auth/AuthContext';
 import Header from './Components/Header';
 
@@ -82,6 +83,9 @@ class PULSeBSApp extends React.Component {
                         </Route>
                         <Route path='/manager'>
                             <BookingManager />
+                        </Route>
+                        <Route path='/supportOffice'>
+                            <SupportOfficePage />
                         </Route>
                         <Route exact path='/'>
                             <Redirect to='Login'/>

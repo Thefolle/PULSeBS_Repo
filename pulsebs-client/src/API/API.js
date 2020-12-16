@@ -1,5 +1,12 @@
-import Lecture        from './Lecture.js'
-import Booking        from './Booking.js'
+import Lecture from './Lecture.js'
+import Booking from './Booking.js'
+import Student from './Student'
+import Teacher from './Teacher'
+import Course from './Course'
+import Enrollment from './Enrollment'
+import Schedule from './Schedule'
+import Class from './Class'
+import scheduledLecture from './scheduledLecture'
 import LectureTeacher from './LectureTeacher.js'
 
 const baseURL = "/api";
@@ -184,6 +191,41 @@ async function cancelLecture(teacherId, lectureId) {
 }
 
 
+/**** SUPPORT OFFICE ****/
+
+async function importCSV(students, teachers, courses, enrollments, classes, lectures) {
+    console.log(students);
+    return new Promise((resolve, reject) => {
+    fetch(baseURL + "/sofficer/", {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ students: students.map((s) => new Student(s.id, s.name, s.surname, s.email, s.city, s.bday, s.ssn, s.password)),
+                               teachers: teachers.map((t) => new Teacher(t.id, t.name, t.surname, t.email, t.password)),
+                               courses: courses.map((c) => new Course(c.id, c.year, c.semester, c.course, c.teacher)), 
+                               subscriptions: enrollments.map((e) => new Enrollment(e.cid, e.sid)),
+                               classes: classes.map((c) => new Class(c.id, c.desc, c.seats)),
+                               lectures: lectures.map((l) => new scheduledLecture(l.course, l.ref_class, l.start_date, l.end_date, l.presence, l.bookable, l.active))
+                              // schedule: schedules.map((s) => new Schedule(s.id, s.room, s.date, s.seats, s.time))
+        }),
+    }).then((response) => {
+        if(response.ok) {
+            console.log("ok");
+            resolve(response);
+        } else {
+            // analyze the cause of error
+            console.log("errore msg");
+            response.json()
+            .then( (obj) => {reject(obj);} ) // error msg in the response body
+            .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+        }
+    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+ });
+}
+
+
+
 async function isAuthenticated(){
     let url = "/user";
     const response = await fetch(baseURL + url);
@@ -350,5 +392,5 @@ async function getContactsWithPositiveStudent(studentId) {
     }
 }
 
-const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent };
+const API = { login, logout, getStudentLectures, bookSeat, getStudentBookings, cancelBooking, getTeacherLectures, getStudents,isAuthenticated, turnLectureIntoOnline, cancelLecture, getTeacherStatistics,getAllBookings,getAllCancellationsLectures,getAllCancellationsBookings, getAllCourses,getAllLectures,getAllAttendances, getContactsWithPositiveStudent, importCSV };
 export default API;

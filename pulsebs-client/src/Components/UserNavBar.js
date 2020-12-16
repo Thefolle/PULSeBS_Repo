@@ -57,6 +57,12 @@ class UserNavBar extends React.Component {
                     </Nav>
                   </Navbar.Collapse>
                 </Route>
+                <Route path='/supportOffice'>
+                  <Navbar.Collapse id="basic-navbar-nav">
+                   <Nav className="mr-auto">
+                    </Nav>
+                   </Navbar.Collapse>
+                  </Route>
               </Switch>
               <Navbar.Brand> <FaUserCircle className={"ml-1"} /> {this.props.userId} </Navbar.Brand>
               <div>

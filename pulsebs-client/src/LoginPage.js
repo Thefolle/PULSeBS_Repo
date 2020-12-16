@@ -35,7 +35,7 @@ class LoginPage extends React.Component {
       <AuthContext.Consumer>
           {(context)=>(
            <>
-            {context.authUser && this.state.redirect ? <Redirect to={{ pathname: context.authUser.type === 0 ? '/student/lectures' : context.authUser.type === 1 ? '/teacher/courses' : context.authUser.type===2 ? '/manager/allStats': '/officer'}} /> : undefined}
+            {context.authUser && this.state.redirect ? <Redirect to={{ pathname: context.authUser.type === 0 ? '/student/lectures' : context.authUser.type === 1 ? '/teacher/courses' : context.authUser.type===2 ? '/manager/allStats': '/supportOffice'}} /> : undefined}
             <Form id='loginForm' method="POST" onSubmit={(event) => this.login(event, context.loginUser)}>
               <header><h1>Login</h1></header>
               <Form.Group controlId="formEmail">

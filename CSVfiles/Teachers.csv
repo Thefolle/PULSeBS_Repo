@@ -1,0 +1,12 @@
+Id,Name,Surname,Email,Password
+9000,Ines,Beneventi,Ines.Beneventi@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9001,Nino,Lucciano,Nino.Lucciano@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9002,Agostina,Costa,Agostina.Costa@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9003,Catena,Piazza,Catena.Piazza@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9004,Marisa,Fiorentini,Marisa.Fiorentini@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9005,Ester,Genovesi,Ester.Genovesi@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9006,Marina,Castiglione,Marina.Castiglione@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9007,Pupa,Sal,Pupa.Sal@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9008,Landro,Toscano,Landro.Toscano@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9009,Blanda,Lombardo,Blanda.Lombardo@politu.it,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
+9010,Hyeronimus,Bosch,hyeronimus.bosch@gmail.com,$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG
