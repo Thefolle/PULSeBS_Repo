@@ -774,6 +774,7 @@ exports.getTeacherBookingStatistics = (teacherId, courseId, groupBy) => {
                             C.ref_teacher = ? AND
                             C.id = ? AND
                             L.presence = 1
+                            AND L.date<${moment().valueOf()}
                     GROUP BY lectureId
                     ORDER BY lectureDate
                     ;`
