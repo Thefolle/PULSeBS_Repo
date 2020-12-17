@@ -531,6 +531,19 @@ describe('API MANAGER', () => {
         });
     });
 
+    describe('get /api/manager/contactWith/:studentId', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let studentId = 269901;
+            const response = await request(server)
+                .get('/api/manager/contactWith/' + studentId)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+        });
+    });
+
     // logout and server shutdown
     afterAll(async () => {
         // Although logout works, being sure to close the server is needed to end the testing session gracefully;
