@@ -154,7 +154,6 @@ class StudentPage extends React.Component {
      */
     // TODO: delete a waiting item and add a this student and lecture to book table
     deleteWaitingAddBooking = (studentId, lectureId, bookingId) => {
-        console.log("qui" + bookingId);
        if(window.confirm("If you cancel this book, may be there is another student will book your seat")){
            API.deleteWaitingAddBooking(studentId, lectureId)
                 .then(() => {
@@ -213,7 +212,6 @@ class StudentPage extends React.Component {
 
     getBookingId = (lectureId) => {
             let id = this.state.bookings.filter(function(b){ return b.ref_lecture === lectureId; }).map((b) => b.id )[0];
-            console.log("qui2" + id);
            return id; 
     }   
 
