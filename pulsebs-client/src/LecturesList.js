@@ -11,6 +11,7 @@ const LecturesList = (props) => {
       <AuthContext.Consumer>
             {(context)=>(
               <>
+              <h2>Lectures</h2>
                 { lectures.length !== 0 &&
                 <Table className="table" id="lectures-table">
                     <thead>

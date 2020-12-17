@@ -21,7 +21,7 @@ describe('API STUDENT', () => {
     // FIXME:
     describe('post /api/students/:studentId/booking', () => {
         it('POST should return a 1', async () => {
-            const lectureId = 2;
+            const lectureId = 4;
 
             const res = await request(server)
                 .post('/api/students/269901/booking')
@@ -47,7 +47,7 @@ describe('API STUDENT', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(14);
+            expect(response.body.length).toEqual(15);
         });
 
     });
@@ -181,7 +181,7 @@ describe('API STUDENT', () => {
         it( 'should return a 201 if add successful', async () => {
 
             await request( server )
-                .put( '/api/students/269901/lectures/1' )
+                .put( '/api/students/269905/lectures/23' )
                 .set( 'Cookie', `token=${ token }` )
                 .set( 'Content-Type', 'application/json' )
                 .then( ( res ) => {
@@ -239,11 +239,11 @@ describe('API STUDENT', () => {
         it( 'should return a 200 if successful', async () => {
 
             await request( server )
-                .post( '/api/students/269901/bookings/1'  )
+                .delete( '/api/students/269901/bookings/1'  )
                 .set( 'Cookie', `token=${ token }` )
                 .set( 'Content-Type', 'application/json' )
                 .then( ( res ) => {
-                    expect( res.status ).toBe( 200 );
+                    expect( res.status ).toBe( 201 );
                 } );
         } );
     } );
@@ -259,7 +259,7 @@ describe('API STUDENT', () => {
         it( 'should return a 200 if successful', async () => {
 
             await request( server )
-                .delete( '/api/students/269901/lectures/1/waiting'  )
+                .delete( '/api/students/269903/lectures/23/waiting'  )
                 .set( 'Cookie', `token=${ token }` )
                 .set( 'Content-Type', 'application/json' )
                 .then( ( res ) => {
@@ -358,7 +358,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(11);
+            expect(response.body.length).toEqual(12);
         });
 
     });
@@ -374,7 +374,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(20);
+            expect(response.body.length).toBe(24);
         });
     });
 
@@ -456,7 +456,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(22);
+            expect(response.body.length).toEqual(23);
         });
 
     });
@@ -471,7 +471,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(24);
+            expect(response.body.length).toBe(28);
         });
     });
 
@@ -485,7 +485,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(14);
+            expect(response.body.length).toBe(18);
         });
     });
 
@@ -527,7 +527,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(24); //change this value
+            expect(response.body.length).toBe(28); //change this value
         });
     });
 

@@ -45,21 +45,21 @@ test('Try to book a new seat', () => {
 //GET STUDENT LECTURES
 test('Try to get a student\'s lectures', () => {
     return DAO.getStudentLectures('269901').then(result => {
-        expect(result.length).toEqual(14); //old value 7
+        expect(result.length).toEqual(15); //old value 7
     })
 });
 
 //GET TEACHER LECTURES
 test('Try to get a teacher\'s lectures', () => {
     return DAO.getTeacherLectures('239901').then(result => {
-        expect(result.length).toBe(11); //old value 11
+        expect(result.length).toBe(12); //old value 11
     });
 });
 
 //GET STUDENTS BOOKED FOR LECTURE ID
 test('Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2('239901').then(result => {
-        expect(result.length).toBe(21); //old value 3
+        expect(result.length).toBe(23); //old value 3
     });
 });
 
@@ -91,7 +91,7 @@ test( 'Try to get students booked for lecture 4', () => {
 //GET ALL STUDENT'S BOOKINGS
 test('Try to get all student\'s bookings', () => {
     return DAO.getStudentBookings('269901').then(result => {
-        expect(result.length).toEqual(5); //old value 3
+        expect(result.length).toEqual(6); //old value 3
     })
 });
 
@@ -105,13 +105,13 @@ test( 'Try to get all students booked for tomorrow lectures', () => {
 describe('Turn a lecture to be online instead of in presence', () => {
     describe('Unit testing', () => {
         test('Turnable lecture', () => {
-            return DAO.turnLectureIntoOnline(9,239901).then(information => {
+            return DAO.turnLectureIntoOnline(6,239901).then(information => {
                 expect(information).toEqual(
                     [
                         {
-                            "courseDescription": "Elettrotecnica",
+                            "courseDescription": "Analisi 1",
                             "lectureClass": "VIRTUAL CLASSROOM",
-                            "lectureDate": 1611046800000,
+                            "lectureDate": 1611138600000,
                             "studentEmail": "davide.calarco@gmail.com",
                             "studentId": 269901,
                             "studentName": "Davide",
@@ -136,7 +136,7 @@ describe('Turn a lecture to be online instead of in presence', () => {
         });
 
         test('Non-active lecture', () => {
-            return DAO.turnLectureIntoOnline(9, 239901).then(exitCode => {
+            return DAO.turnLectureIntoOnline(18, 239901).then(exitCode => {
                 console.log("Test failure message: ");
                 console.log(exitCode);
             }).catch(exitCode => {
@@ -222,12 +222,12 @@ describe('[PUL 10] Get teacher statistics', () => {
                 [
                     {
                         "bookingNumber": 2,
-                        "week": 1606690800000
+                        "week": 1606690800000,
                     },
                     {
                         "bookingNumber": 4,
-                        "week": 1607295600000
-                    }
+                        "week": 1607295600000,
+                    },
                 ]
             );
         });
@@ -250,7 +250,7 @@ describe('[PUL 10] Get teacher statistics', () => {
 describe("[PUL-11] Get statistics for manager",()=>{
     test('get All Bookings 1',()=>{
         return DAO.getAllBookings().then(b=>{
-            expect(b.length).toBe(24);
+            expect(b.length).toBe(26);
         })
     });
 
@@ -272,7 +272,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
      test('get All Attendances 1',()=>{
         return DAO.getAllAttendances().then(b=>{
-            expect(b.length).toBe(24);
+            expect(b.length).toBe(26);
         })
     });
 
@@ -344,7 +344,7 @@ describe("[PUL-11] Get statistics for manager",()=>{
 
     test('get All Lectures',()=>{
         return DAO.getAllLectures().then(c=>{
-            expect(c.length).toBe(22); //change value(depends of cardinality of lectures)
+            expect(c.length).toBe(23); //change value(depends of cardinality of lectures)
         });
     });
 
@@ -500,8 +500,8 @@ describe( 'CSV loading tests', () => {
 describe( 'when cancle a lecture, trigger this function to find a waiting student, and add her/him to booking table ', () => {
     describe( 'Unit testing', () => {
         test( 'booking a lecture', () => {
-            return DAO.deleteWaitingAddBooking(1).then( information => {
-                expect( information.studentId ).toEqual(1);
+            return DAO.deleteWaitingAddBooking(23).then( information => {
+                expect( information.studentId ).toEqual(269903);
             } ).catch( exitCode => {
                 // test failed because the lecture should have been turnable into online
                 console.log( "Test failure message: " );
@@ -515,7 +515,7 @@ describe( 'when cancle a lecture, trigger this function to find a waiting studen
                 console.log( exitCode );
             } ).catch( exitCode => {
                 // test failed because the lecture should have been turnable into online
-                expect( exitCode ).toBe( -1 );
+                expect( exitCode ).toBe(-1);
             } );
         } );
 
@@ -525,7 +525,7 @@ describe( 'when cancle a lecture, trigger this function to find a waiting studen
                 console.log( exitCode );
             } ).catch( exitCode => {
                 // test failed because the lecture should have been turnable into online
-                expect( exitCode ).toBe( -5 );
+                expect( exitCode ).toBe( -1 );
             } );
         } );
 
@@ -549,9 +549,9 @@ describe( 'when cancle a lecture, trigger this function to find a waiting studen
  * @Note 
  * student 269901 shuld in table waiting
  */
-test( 'get waiting list of student 269901', () => {
-    return DAO.getWaitingList(269901).then( result => {
-        expect( result[0].id ).toBe(269901);
+test( 'get waiting list of student 269903', () => {
+    return DAO.getWaitingList(269904).then( result => {
+        expect( result[0].id).toBe(2);
     } )
 } );
 
@@ -574,7 +574,7 @@ describe('Cancel/edit operations',() => {
 //CANCEL A BOOKING
     test( 'Update bookable of lecture 2 to 0', () => {
         return DAO.checkSeatsOfLecture(2).then( result => {
-            expect( result ).toEqual( 0 );
+            expect( result ).toEqual( 1 );
         } );
     } );
 })
@@ -587,7 +587,7 @@ describe('Cancel/edit operations',() => {
  * student 269901 and lecture 1 should in the waiting table
  */
 test( 'To check if the student in the waiting list or not', () => {
-    return DAO.checkStudentInWaitingList(269901, 1).then( result => {
+    return DAO.checkStudentInWaitingList(269904, 23).then( result => {
         expect( result ).toBe("You already in the Waiting List");
     } )
 } );

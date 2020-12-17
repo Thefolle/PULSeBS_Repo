@@ -239,7 +239,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                             " (" + studentAndLectureInfo.studentId + ")," +
                             " the lesson of the course " + studentAndLectureInfo.courseDescription + "," +
                             " planned to take place in class " + studentAndLectureInfo.lectureClass +
-                            " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( 'MMMM Do YYYY, h:mm:ss a' ) + "," +
+                            " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" )  + "," +
                             " has been just turnt to be online by the teacher." + "\n\n" +
                             "Have a good virtual lesson.\n\n - PULSeBS Team9."
                     };
@@ -449,7 +449,7 @@ app.get( '/api/student/bookings', ( req, res ) => {
  * POST /student/bookings
  */
 //  FIXME: refactor
-app.post('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
     const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
     if ( !bookingId ) {
@@ -487,19 +487,19 @@ app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) =>
                     message: "The lecture was find in the waiting table,"+
             "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: "+lectureId
                     })
-                    // if ( process.env.TEST && process.env.TEST === '0' ) {
+                    if ( process.env.TEST && process.env.TEST === '0' ) {
                         let mailOptions;
                         mailOptions = {
                             from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                            // to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
-                            to: 'shinylover520@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                            to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
+                            //to: 'shinylover520@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
                             // subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
                             subject: 'Your waiting lecture was picked from the waiting list',
                             text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
                                 " (" + studentAndLectureInfo.studentId + ")," +
                                 " the lesson of the course " + studentAndLectureInfo.courseDescription + " that in your waiting list was picked, and it was " +
                                 " planned to take place in class " + studentAndLectureInfo.lectureClass +
-                                " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( 'MMMM Do YYYY, h:mm:ss a' ) + "."  + "\n\n" +
+                                " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" )  + "."  + "\n\n" +
                                 "Have a good lesson.\n\n - PULSeBS Team9."
                         };
                         transporter.sendMail( mailOptions, function ( error, info ) {
@@ -509,7 +509,7 @@ app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) =>
                                 console.log( 'Email sent to: ' + studentAndLectureInfo.studentId);
                             }
                         } );    
-                    // }
+                    }
                 
             })
             .catch( ( exitCode ) => {
@@ -539,6 +539,27 @@ app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) =>
     }
 })
 
+// DELETE /student/bookings
+//FIXME: refactor
+/*app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
+    const studentId = req.params.studentId;
+    const bookingId = req.params.bookingId;
+    if ( !bookingId ) {
+        res.status( 401 ).end();
+    } else {
+        // const user = req.user && req.user.user;
+        pulsebsDAO.cancelBookings( bookingId )
+                  .then( ( response ) => response === 1 ?
+                      res.status( 201 ).json( {response} ) :
+                      res.status( 401 ).json( {response} )
+                  )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'param': 'Server', 'message': err} ],
+                                              } );
+                  } );
+    }
+} );*/
 
 // FIXME:
 app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {

@@ -37,10 +37,26 @@ class BookingManager extends React.Component {
                             API.getAllCancellationsBookings(this.state.course, this.state.lecture).then((cancellationsB)=>{
                                 this.setState({ courses: courses }); 
                                 this.setState({ lectures: lectures });
-                                this.setState({bookings:bookings});
-                                this.setState({attendances:attendances});
-                                this.setState({cancellations:cancellations});
-                                this.setState({cancellationsBookings:cancellationsB});
+                                this.setState({
+                                    bookings: bookings.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })
+                                });
+                                this.setState({
+                                    attendances: attendances.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId
+                                    })
+                                });
+                                this.setState({
+                                    cancellations: cancellations.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })
+                                });
+                                this.setState({
+                                    cancellationsBookings: cancellationsB.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId
+                                    })
+                                });
                             }).catch((err)=>{
                                 this.handleErrors(err);
                             });
@@ -81,10 +97,18 @@ class BookingManager extends React.Component {
                 API.getAllCancellationsLectures(course,this.state.lecture).then((cancellations)=>{
                     API.getAllCancellationsBookings(course,this.state.lecture).then((cancellationsB)=>{
                         this.setState({course:course});
-                        this.setState({bookings:bookings});
-                        this.setState({attendances:attendances});
-                        this.setState({cancellations:cancellations});
-                        this.setState({cancellationsBookings:cancellationsB});
+                        this.setState({bookings:bookings.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
+                        this.setState({attendances:attendances.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
+                        this.setState({cancellations:cancellations.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
+                        this.setState({cancellationsBookings:cancellationsB.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
                     }).catch((err)=>{
                         this.handleErrors(err);
                     });
@@ -106,9 +130,15 @@ class BookingManager extends React.Component {
                     API.getAllCancellationsBookings(this.state.course,lecture).then((cancellationsB)=>{
                         this.setState({lecture:parseInt(lecture)});
                         this.setState({bookings:bookings});
-                        this.setState({attendances:attendances});
-                        this.setState({cancellations:cancellations});
-                        this.setState({cancellationsBookings:cancellationsB});
+                        this.setState({attendances:attendances.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
+                        this.setState({cancellations:cancellations.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
+                        this.setState({cancellationsBookings:cancellationsB.sort(function (a, b) {
+                                        return a.dataStart - b.dataStart || a.course - b.course ||  a.userSurname - b.userSurname || a.userName - b.userName || a.userId - b.userId;
+                                    })});
                     }).catch((err)=>{
                         this.handleErrors(err);
                     });
@@ -139,9 +169,7 @@ class BookingManager extends React.Component {
                                     <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
                                         <ListGroup className="sidebar" variant="flush" >
                                             <h5>POLITECNICO DI TORINO</h5>
-                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
-                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                            <h3>BOOKING MANAGER</h3>
                                         </ListGroup>
                                     </Col>
                                     <Col sm={8}>

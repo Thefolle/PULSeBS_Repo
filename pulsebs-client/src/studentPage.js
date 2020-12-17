@@ -48,7 +48,9 @@ class StudentPage extends React.Component {
                     // Feihong 
                     // add waiting status, below next 6 lines
                     API.getWaitingList().then((waitings) =>{
-                        this.setState((state, props) => ({ waitings: waitings, lectures: lectures, bookings: bookings }));
+                        this.setState({ waitings: waitings, lectures: lectures.sort(function (a, b) {
+                                        return a.date - b.date || a.course - b.course ||  a.surname - b.surname || a.name - b.name || a.id - b.id;
+                                    }), bookings: bookings });
                     })
                     .catch((err) => {
                         this.handleErrors(err)
@@ -150,10 +152,11 @@ class StudentPage extends React.Component {
      * @param {*} lectureId 
      */
     // TODO: delete a waiting item and add a this student and lecture to book table
-    deleteWaitingAddBooking = (studentId, lectureId) => {
+    deleteWaitingAddBooking = (studentId, lectureId,bookingId) => {
        if(window.confirm("If you cancel this book, may be there is another student will book your seat")){
            API.deleteWaitingAddBooking(studentId, lectureId)
                 .then(() => {
+                    this.cancelBooking(studentId,bookingId);
                     alert('delete and add successful')
                 })
                 .catch((errorObj)=>{

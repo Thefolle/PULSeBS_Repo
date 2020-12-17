@@ -1,9 +1,9 @@
 import React       from 'react';
 import moment      from 'moment';
 import Image       from 'react-bootstrap/Image';
-import { BiCalendarX } from "react-icons/bi";
+//import { BiCalendarX } from "react-icons/bi";
 import {AuthContext} from './auth/AuthContext';
-import Lecture from './API/Lecture';
+//import Lecture from './API/Lecture';
 
 const LectureItem = ( props ) => {
 
@@ -24,7 +24,6 @@ const LectureItem = ( props ) => {
         else 
             return 0;
     }
-    let a = 0
 
     return (
         <AuthContext.Consumer>
@@ -45,7 +44,7 @@ const LectureItem = ( props ) => {
                     </td> : 
                     // TODO: Merge Waiting column to actions 
                     // TODO: check there is seats or not
-                   alreadyWaited(lecture.id) === 1|| (alreadyBooked(lecture.id) === 1 && lecture.date > moment().valueOf()) ?
+                   alreadyWaited(lecture.id) === 1|| (alreadyBooked(lecture.id) === 1 && lecture.date > moment().valueOf()) || lecture.date < moment().valueOf() ?
                     <td>
                         <Image width="30" height="30" className="img-button" type="button" src="/svg/forbid.svg" onClick= {() =>{ alert("You can not book this lecture!") } }/>
                     </td> :

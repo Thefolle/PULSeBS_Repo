@@ -35,7 +35,9 @@ class TeacherPage extends React.Component {
     turnLectureIntoOnline = (lectureId, teacherId) => {
         API.turnLectureIntoOnline(lectureId, teacherId).then( () => {
             API.getTeacherLectures().then((lectures) => {
-                this.setState({ lectures: lectures });
+                this.setState({ lectures: lectures.sort(function (a, b) {
+                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
+                                    }) });
             });
         }).catch(error => {
             console.log(error);
@@ -46,7 +48,9 @@ class TeacherPage extends React.Component {
         API.getTeacherLectures()
             .then((lectures) => {
                 this.setState({
-                    lectures: lectures
+                    lectures: lectures.sort(function (a, b) {
+                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
+                                    })
                 });
                 this.getStudentsByLecture();
                 this.getCourses(lectures);
@@ -100,7 +104,9 @@ class TeacherPage extends React.Component {
     getTeacherLectures = () => {
         API.getTeacherLectures()
             .then((lectures) => {
-                this.setState({ lectures: lectures });
+                this.setState({ lectures: lectures.sort(function (a, b) {
+                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
+                                    }) });
                 this.getCourses(lectures);
                 this.getStudentsByLecture();
             })
@@ -113,7 +119,9 @@ class TeacherPage extends React.Component {
         API.cancelLecture(teacherId, lectureId)
             .then(() => {
                 //get the updated list of tasks from the server
-                API.getTeacherLectures().then((lectures) => this.setState({ lectures: lectures }))
+                API.getTeacherLectures().then((lectures) => this.setState({ lectures: lectures.sort(function (a, b) {
+                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
+                                    }) }))
                     .catch((err) => {
                         this.handleErrors(err);
                     });

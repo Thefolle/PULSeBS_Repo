@@ -17,7 +17,11 @@ const BookingItem = ( props ) => {
               <td>{booking.course}</td>
               <td>{booking.class}</td>
               <td>{booking.presence === 1 ? "Presence" : "Remote"}</td>
-              <td><Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>{cancelBooking(context.authUser.id, booking.id); deleteWaitingAddBooking(context.authUser.id, booking.ref_lecture)}}/></td>
+              { booking.date>moment().valueOf()?
+                <td><Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>{/*cancelBooking(context.authUser.id, booking.id);*/ deleteWaitingAddBooking(context.authUser.id, booking.ref_lecture,booking.id)}}/></td>
+                :null //or undefined
+              }
+              
           </tr>
           )}
 

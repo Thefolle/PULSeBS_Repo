@@ -111,6 +111,7 @@ class TeacherStatistics extends React.Component {
                 hovermode: "closest",
                 showlegend: false,
                 xaxis: {
+                    title: 'Number of Bookings',
                     range: [0, maximumValue],
                     showgrid: false,
                     fixedrange: true
@@ -173,6 +174,7 @@ class TeacherStatistics extends React.Component {
                 hovermode: "closest",
                 showlegend: false,
                 xaxis: {
+                    title: 'Number of Bookings',
                     showgrid: false,
                     fixedrange: true,
                     range: [0, maximumValue]
@@ -234,6 +236,7 @@ class TeacherStatistics extends React.Component {
                 hovermode: "closest",
                 showlegend: false,
                 xaxis: {
+                    title: 'Number of Bookings',
                     showgrid: false,
                     fixedrange: true,
                     range: [0, maximumValue]

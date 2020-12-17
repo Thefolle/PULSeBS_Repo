@@ -103,7 +103,6 @@ const ShowTraceResult = (props) => {
         <>
           {studentToTrace !== "" &&
             <>
-              <h5 align="left">Result for: {studentToTrace}</h5>
               {students !== null && teachers !== null ?
               <>
               <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>

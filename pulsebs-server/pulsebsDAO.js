@@ -235,13 +235,14 @@ exports.cancelBooking = ( bookingId ) => {
   */
 
 exports.checkStudentInWaitingList = (studentId, lectureId) => {
-    return new Promises( ( (resolve, reject) => {
+    return new Promise( ( (resolve, reject) => {
         let checkWaiting = `SELECT ref_student FROM waiting WHERE ref_student = ${studentId} And ref_lecture = ${lectureId}`
-        db.get( checkWaiting, [], (err, row) => {
+        db.all( checkWaiting, [], (err, row) => {
+            if(err) reject(-1);
             if (row){
-                reject("You already in the Waiting List")
+                resolve("You already in the Waiting List");
             } else {
-                resolve(0)
+                resolve(0);
             }
         })
     }))
