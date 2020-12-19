@@ -1,0 +1,9 @@
+TEACHER
+hyeronimus.bosch@gmail.com
+BOOKING MANAGER
+harry.houdini@gmail.com
+STUDENTS
+elisa.ratto@gmail.com
+davide.calarco@gmail.com
+SUPPORT OFFICERS
+john.doe@gmail.com
