@@ -197,10 +197,10 @@ exports.bookSeat = (lectureId, studentId) => {
 
 /**
  * @Feihong
- * @param {*} bookingId 
+ * @param {*} bookingId
  * Update a booking
  */
-// FIXME: to fix get bookings method 
+// FIXME: to fix get bookings method
 exports.cancelBooking = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
@@ -209,7 +209,7 @@ exports.cancelBooking = ( bookingId ) => {
             if ( this.changes ) {
 
                 resolve( 1 );
-            } 
+            }
             else resolve( 0 );
         } );
     } ) );
@@ -218,7 +218,7 @@ exports.cancelBooking = ( bookingId ) => {
 /**
  * @Feihong
  * Add a student to waiting list
- * @param {*} lectureId 
+ * @param {*} lectureId
  */
  exports.addStudentToWaitingList = (studentId, lectureId) => {
      return new Promise( ( (resolve, reject) =>{
@@ -231,7 +231,7 @@ exports.cancelBooking = ( bookingId ) => {
 
  /**
   * @Feihong
-  * @param {*} lectureId 
+  * @param {*} lectureId
   */
 
 exports.checkStudentInWaitingList = (studentId, lectureId) => {
@@ -250,8 +250,8 @@ exports.checkStudentInWaitingList = (studentId, lectureId) => {
 
 
 /**
- * @Feihong 
- * @param {*} lectureId 
+ * @Feihong
+ * @param {*} lectureId
  * Functions:
  * 1. make sure there are free seats for student
  * 2. if there are free seats, update the bookable attribute to 1
@@ -272,7 +272,7 @@ exports.checkSeatsOfLecture = (lectureId) => {
         db.all(numOfBookings, [], (err, rows) => {
             if (err){
                 console.log('------------------' + err)
-                    reject(0) 
+                    reject(0)
             } else{
                 db.get(seats, [], (err, row) =>{
                     if (row.seats > rows.length){
@@ -297,9 +297,9 @@ exports.checkSeatsOfLecture = (lectureId) => {
 
 
 /**
- * @Feihong 
- * @param {*} studentId 
- * get the waiting list of a student 
+ * @Feihong
+ * @param {*} studentId
+ * get the waiting list of a student
  */
 // TODO:
 exports.getWaitingList = ( studentId) => {
@@ -331,12 +331,12 @@ exports.getWaitingList = ( studentId) => {
 
 /**
  * @Feihong
- * @param {*} lectureId 
+ * @param {*} lectureId
  * Functions:
  * 1. delete a waiting item
  * 2. add the lecture and student of the waiting item to booking table
  * 3. get the informations of the stuedent who picked from waiting table and was added into booking table with a lecture
- * 
+ *
  * Return values:
     rejected:
         0: Find waiting err;
@@ -353,7 +353,7 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
     return new Promise ((resolve, reject) => {
         let getQuery = `SELECT ref_student, ref_lecture FROM waiting WHERE ref_lecture = ${lectureId}`
         let delQuery = `DELETE FROM waiting WHERE ref_student = ? AND ref_lecture = ?`
-        
+
         db.get(getQuery, [], (err, row) => {
             if(err){
                 console.log("----delete waiting err, getQuery wrong "+ err)
@@ -420,7 +420,7 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
                 }
             }
         })
-        
+
     })
 }
 
@@ -1311,8 +1311,7 @@ exports.loadCsvData = (data) => {
         data.lectures.forEach( ( lecture ) => {
             query += `insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (${ lecture.ref_course },${ lecture.ref_class },${ lecture.date },${ lecture.endTime },${ lecture.presence },${ lecture.bookable },${ lecture.active }); `
         } );
-        console.log(query);
-        db.exec( "BEGIN TRANSACTION; " + query + " COMMIT;", ( err ) => {
+        db.exec( query , ( err ) => {
             err ? reject( 0 ) : resolve( 0 );
         } );
     });
