@@ -415,8 +415,8 @@ exports.deleteWaitingAddBooking = (lectureId) =>{
                         }
                     })
                 } else {
-                    console.log("----delete waiting err, no such a lecture in waiting list : "+ err)
-                    reject(-1)
+                    console.log("---- delete waiting err, no such a lecture in waiting list : "+ err)
+                    resolve(0);
                 }
             }
         })

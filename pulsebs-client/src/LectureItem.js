@@ -5,9 +5,10 @@ import Image       from 'react-bootstrap/Image';
 import {AuthContext} from './auth/AuthContext';
 //import Lecture from './API/Lecture';
 
+
 const LectureItem = ( props ) => {
 
-    let {lecture, waitings, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, alreadyWaited} = props;
+    let {lecture, waitings, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, alreadyWaited, deleteWaitingAddBooking, getBookingId} = props;
 
     alreadyBooked = (lectureId) => {
             const ids = bookings.map((b) => b.ref_lecture );
@@ -24,6 +25,7 @@ const LectureItem = ( props ) => {
         else 
             return 0;
     }
+
 
     return (
         <AuthContext.Consumer>
@@ -56,6 +58,12 @@ const LectureItem = ( props ) => {
                         
                     </td>
                     
+                    }
+                    {alreadyBooked(lecture.id) && lecture.date > moment().valueOf() ?
+                         <td>
+                             <Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {() => { 
+                                 deleteWaitingAddBooking(context.authUser.id, lecture.id, getBookingId(lecture.id) ) } }/>
+                         </td> : <td></td>
                     }
                 </tr>
             </>

@@ -140,6 +140,7 @@ class StudentPage extends React.Component {
             .then(() => {
                 //get the updated list of tasks from the server
                 API.getStudentBookings().then((bookings) => this.setState({ bookings: bookings }));
+                console.log(this.state.bookings);
             })
             .catch((errorObj) => {
                 this.handleErrors(errorObj);
@@ -152,7 +153,7 @@ class StudentPage extends React.Component {
      * @param {*} lectureId 
      */
     // TODO: delete a waiting item and add a this student and lecture to book table
-    deleteWaitingAddBooking = (studentId, lectureId,bookingId) => {
+    deleteWaitingAddBooking = (studentId, lectureId, bookingId) => {
        if(window.confirm("If you cancel this book, may be there is another student will book your seat")){
            API.deleteWaitingAddBooking(studentId, lectureId)
                 .then(() => {
@@ -208,6 +209,13 @@ class StudentPage extends React.Component {
         }
     }
 
+
+    getBookingId = (lectureId) => {
+            let id = this.state.bookings.filter(function(b){ return b.ref_lecture === lectureId; }).map((b) => b.id )[0];
+           return id; 
+    }   
+
+
     render() {
 
             return (
@@ -237,6 +245,8 @@ class StudentPage extends React.Component {
                                     onload= { this.upDateBookable(context.authUser.id, this.state.lectures) }
                                     waitings = {this.state.waitings} 
                                     addStudentToWaitingList={this.addStudentToWaitingList}
+                                    deleteWaitingAddBooking={this.deleteWaitingAddBooking}
+                                    getBookingId={this.getBookingId}
                                 />
                             </Route>
                             <Route exact path={this.props.match.url + "/bookings"}>
