@@ -53,11 +53,11 @@ sections:
 - Technical Debt management:
     - Total hours estimated : 3h 30m
     - Total hours spent : 2h 40m
-    - Hours estimated for remediation by SonarQube: 2h 52m
+    - Hours estimated for remediation by SonarQube: 5h 34m
     - Hours spent on remediation : 1h 15m
-    - debt ratio (as reported by SonarQube under "Measures-Maintainability"): 0.3%
+    - debt ratio (as reported by SonarQube under "Measures-Maintainability"): 0.7%
     - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ):
-	    - Reliability: C
+	    - Reliability: A
 	    - Security: A
 	    - Maintainability: A
 
@@ -79,4 +79,4 @@ sections:
 	- Achieve a perfect coordination on git regarding merging stories’ branch into main one
 
 - One thing you are proud of as a Team!!
-    - We are proud of our members’ estimation skills as a team. We’re learning what we can do and how much effort stories require.
+    - We are proud of our members’ estimation skills as a team. We’re learning what we can do and how much effort stories require. Actually we are really satisfied of the work done during this sprint; it was also in previous sprints, but this was even better.
