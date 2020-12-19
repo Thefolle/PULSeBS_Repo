@@ -43,7 +43,7 @@ sections:
     - Total hours estimated: 15h
     - Total hours spent: 10h 6m
     - Nr of automated unit test cases: 52 (DAO) + 32 (server)
-    - Coverage (if available): 56.61%
+    - Coverage (if available): 67.8%
 - E2E testing:
     - Total hours estimated: 2h
     - Total hours spent: 27m
@@ -53,7 +53,7 @@ sections:
 - Technical Debt management:
     - Total hours estimated : 3h 30m
     - Total hours spent : 2h 40m
-    - Hours estimated for remediation by SonarQube: 5h 34m
+    - Hours estimated for remediation by SonarQube: 2h 52m
     - Hours spent on remediation : 1h 15m
     - debt ratio (as reported by SonarQube under "Measures-Maintainability"): 0.7%
     - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ):
