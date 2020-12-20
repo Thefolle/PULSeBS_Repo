@@ -33,11 +33,7 @@ class PresencePage extends React.Component {
 
     mapToJson = ( map ) => {
         let res = [];
-        for ( let entry of map ) {
-            let obj = {};
-            obj[entry[0]] = entry[1];
-            res.push( obj )
-        }
+        for ( let entry of map ) res.push( entry[0] )
         return res;
     }
 
