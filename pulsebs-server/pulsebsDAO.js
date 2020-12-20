@@ -272,7 +272,6 @@ exports.checkSeatsOfLecture = ( lectureId ) => {
         let seats = `SELECT C.seats FROM class C, lecture L WHERE L.ref_class = C.id AND L.id = ${ lectureId }`
         db.all( numOfBookings, [], ( err, rows ) => {
             if ( err ) {
-                console.log( '------------------' + err )
                 reject( 0 )
             } else {
                 db.get( seats, [], ( err, row ) => {
@@ -357,25 +356,19 @@ exports.deleteWaitingAddBooking = ( lectureId ) => {
 
         db.get( getQuery, [], ( err, row ) => {
             if ( err ) {
-                console.log( "----delete waiting err, getQuery wrong " + err )
                 reject( 0 )
             } else {
                 if ( row ) {
                     var sId = row.ref_student
-                    console.log( "++++sid: " + sId );
                     db.run( delQuery, [ sId, lectureId ], ( err ) => {
                         if ( err ) {
-                            console.log( "----delete waiting err : " + err )
                             reject( -2 )
                         } else {
                             let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ sId },${ lectureId },${ moment().valueOf() })`
                             db.run( bookQuery, [], ( err ) => {
                                 if ( err ) {
-                                    console.log( "----sid: " + sId + "  lectureid:  " + lectureId );
-                                    console.log( "----delete waiting err, can not add a new booking : " + err )
                                     reject( -3 )
                                 } else {
-                                    console.log( "++++ delete waiting sucessful, add a new booking successfully. studentid: " + sId + "  lectureid: " + lectureId );
                                     // TODO: resolve the row, that include the student informations
                                     let infosQuery = `  SELECT  LE.date AS lectureDate,
                                                                 CO.desc AS courseDescription,
@@ -398,14 +391,11 @@ exports.deleteWaitingAddBooking = ( lectureId ) => {
                                                                 B.active = 1`
                                     db.get( infosQuery, [], ( err, row ) => {
                                         if ( err ) {
-                                            console.log( "----delete waiting err, Student information query is wrong : " + err )
                                             reject( -4 )
                                         } else {
                                             if ( row ) {
-                                                console.log( "++++ delete waiting sucessful, successfully get the student informations: " + row );
                                                 resolve( row )
                                             } else {
-                                                console.log( "----delete waiting err, can not get student information: " + row )
                                                 reject( -5 )
                                             }
                                         }
@@ -416,7 +406,6 @@ exports.deleteWaitingAddBooking = ( lectureId ) => {
                         }
                     } )
                 } else {
-                    console.log( "---- delete waiting err, no such a lecture in waiting list : " + err )
                     resolve( 0 );
                 }
             }
@@ -1144,7 +1133,6 @@ function getInvolvedStudents( involvedLectures, studentId ) {
                                               else return previousValue.concat( currentValue );
                                           } );
         query = query.concat( involvedLec ).concat( ');' );
-        //console.log(query);
 
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
@@ -1330,12 +1318,12 @@ function parsePresence(inClass, query, lectureId){
     let size = inClass.length;
     inClass.forEach( student => {
         if ( count === size - 1 )
-            query += `ref_student = ${ student })`;
+            query += `ref_student = ${ student }`;
         else
             query += `ref_student = ${ student } OR `;
         count++;
     } );
-    query += ` AND ref_lecture = ${ lectureId }`;
+    query += `) AND ref_lecture = ${ lectureId }`;
     return query;
 }
 
@@ -1352,27 +1340,29 @@ exports.setStudentPresencesForLecture = ( lectureId, studentsIds ) => {
         if(inClass.length > 0 && notInClass.length > 0) {
             query = parsePresence(inClass, query, lectureId);
             query2 = parsePresence(notInClass, query2, lectureId);
-            db.exec( query, ( err ) => {
-                if ( err ) reject( err );
-                else db.exec( query2, ( err ) => {
-                    if ( err ) reject( err );
-                    else resolve( 0 );
+            db.run( query, [], function ( err ) {
+                if ( err ) reject( -1 );
+                else db.run( query2,[],function ( err ) {
+                    if ( err ) reject( -1 );
+                    else resolve( this.changes );
                 } )
             } )
         }
         else if( inClass.length === 0) {
             query2 = parsePresence(notInClass, query2, lectureId);
-            db.exec( query2, ( err ) => {
-                if ( err ) reject( err );
-                else resolve( 0 );
+            db.run( query2,[], function ( err ) {
+                if ( err ) reject( -1 );
+                else resolve( this.changes );
             } )
         }
-        else {
+        else if( notInClass.length === 0 ) {
             query = parsePresence(inClass, query, lectureId);
-            db.exec( query, ( err ) => {
-                if ( err ) reject( err );
-                else resolve( 0 );
+            db.run( query,[],function ( err ) {
+                if ( err ) reject( -1 );
+                else resolve( this.changes );
             } )
+        }else{
+            reject(-1);
         }
 
     } );
