@@ -160,7 +160,10 @@ class TeacherPage extends React.Component {
                                                 <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} turnLectureIntoOnline={this.turnLectureIntoOnline} />
                                             )} />
                                             <Route exact path={"/teacher/:courseId/lecture/:lectureId/presence"} render={({ match }) => (
-                                                <PresencePage courseId={match.params.courseId} lectureId={match.params.lectureId}/>
+                                                <PresencePage
+                                                              course={ this.state.courses.find( course => course.id === parseInt(match.params.courseId)) }
+                                                              lecture={ this.state.lectures.find( lecture => lecture.lecId === parseInt(match.params.lectureId)) }
+                                                />
                                         )} />
                                             <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                                                 <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />

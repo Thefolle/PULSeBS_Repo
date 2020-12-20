@@ -2,6 +2,7 @@ import React                        from 'react';
 import PropTypes                    from 'prop-types';
 import { Table, Form, Row, Button } from "react-bootstrap";
 import API                          from "../API/API.js";
+import moment                       from "moment";
 
 
 class PresencePage extends React.Component {
@@ -15,7 +16,7 @@ class PresencePage extends React.Component {
     }
 
     componentDidMount() {
-        API.getStudentForLecture( this.props.courseId, this.props.lectureId )
+        API.getStudentForLecture( this.props.course.id, this.props.lecture.lecId )
            .then( studentsList => {
                console.log( studentsList );
                let presences = new Map();
@@ -30,9 +31,9 @@ class PresencePage extends React.Component {
            } )
     }
 
-    mapToJson = (map) => {
+    mapToJson = ( map ) => {
         let res = [];
-        for(let entry of map){
+        for ( let entry of map ) {
             let obj = {};
             obj[entry[0]] = entry[1];
             res.push( obj )
@@ -41,8 +42,8 @@ class PresencePage extends React.Component {
     }
 
     handleSubmit = ( event ) => {
-        let str = this.mapToJson(this.state.presences);
-        console.log(JSON.stringify(str));
+        let str = this.mapToJson( this.state.presences );
+        console.log( JSON.stringify( str ) );
         event.preventDefault();
     }
 
@@ -63,9 +64,9 @@ class PresencePage extends React.Component {
                 <td>{ student.email }</td>
                 <td><Form.Check
                     type={ 'checkbox' }
-                    value={ this.state.presences.get(student.id) }
-                    name={student.id}
-                    onChange={ (event ) => this.handleChange(parseInt(event.target.name),event.target.value) }
+                    value={ this.state.presences.get( student.id ) }
+                    name={ student.id }
+                    onChange={ ( event ) => this.handleChange( parseInt( event.target.name ), event.target.value ) }
                 /></td>
             </tr> ) )
         } else {
@@ -75,7 +76,10 @@ class PresencePage extends React.Component {
         }
         return <>
             <br/>
-            <h3>Presence for lecture of COURSE - START / END</h3>
+            <h3>Presence for lecture of { this.props.course.course }
+                <br/>
+                { moment( this.props.lecture.date ).format( "YYYY-MM-DD HH:mm" ) } / { moment( this.props.lecture.endDate ).format( "YYYY-MM-DD HH:mm" ) }
+            </h3>
             <Form onSubmit={ this.handleSubmit }>
                 <Table responsive>
                     <thead>
@@ -102,8 +106,8 @@ class PresencePage extends React.Component {
 
 PresencePage
     .propTypes = {
-    lectureId: PropTypes.string.isRequired,
-    courseId: PropTypes.string.isRequired
+    lecture: PropTypes.object.isRequired,
+    course: PropTypes.object.isRequired
 }
 
 export default PresencePage;
