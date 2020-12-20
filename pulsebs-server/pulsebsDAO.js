@@ -520,7 +520,7 @@ exports.getTeacherLectures = ( teacherId ) => {
 exports.getStudentsForLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `
-                        SELECT S.id,S.email,S.name,S.surname 
+                        SELECT S.id,S.email,S.name,S.surname, B.presence 
                         FROM booking B, student S 
                         WHERE B.ref_student=S.id AND
                         B.active=1 AND 
@@ -1322,5 +1322,58 @@ exports.loadCsvData = ( data ) => {
         db.exec( query, ( err ) => {
             err ? reject( 0 ) : resolve( 0 );
         } );
+    } );
+}
+
+function parsePresence(inClass, query, lectureId){
+    let count = 0;
+    let size = inClass.length;
+    inClass.forEach( student => {
+        if ( count === size - 1 )
+            query += `ref_student = ${ student })`;
+        else
+            query += `ref_student = ${ student } OR `;
+        count++;
+    } );
+    query += ` AND ref_lecture = ${ lectureId }`;
+    return query;
+}
+
+exports.setStudentPresencesForLecture = ( lectureId, studentsIds ) => {
+    return new Promise( ( resolve, reject ) => {
+        let query = `UPDATE booking SET presence = 1 WHERE (`;
+        let query2 = `UPDATE booking SET presence = 0 WHERE (`;
+
+        let inClass = [];
+        let notInClass = [];
+
+        studentsIds.forEach( student => !student.presence ? notInClass.push( student.id ) : inClass.push( student.id ) );
+
+        if(inClass.length > 0 && notInClass.length > 0) {
+            query = parsePresence(inClass, query, lectureId);
+            query2 = parsePresence(notInClass, query2, lectureId);
+            db.exec( query, ( err ) => {
+                if ( err ) reject( err );
+                else db.exec( query2, ( err ) => {
+                    if ( err ) reject( err );
+                    else resolve( 0 );
+                } )
+            } )
+        }
+        else if( inClass.length === 0) {
+            query2 = parsePresence(notInClass, query2, lectureId);
+            db.exec( query2, ( err ) => {
+                if ( err ) reject( err );
+                else resolve( 0 );
+            } )
+        }
+        else {
+            query = parsePresence(inClass, query, lectureId);
+            db.exec( query, ( err ) => {
+                if ( err ) reject( err );
+                else resolve( 0 );
+            } )
+        }
+
     } );
 }

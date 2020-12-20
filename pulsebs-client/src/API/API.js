@@ -540,6 +540,18 @@ async function getStudentForLecture( courseId, lectureId ) {
     else throw {status: response.status, errObj: response.json()};
 }
 
+async function setStudentPresencesForLecture( courseId, lectureId,studentIds ) {
+    let url = `/teacher/${ courseId }/lecture/${ lectureId }/presence`;
+    const response = await fetch( baseURL + url,
+                                  {
+                                      method: "PUT",
+                                      headers: {"Content-Type": "application/json"},
+                                      body: JSON.stringify(studentIds)
+                                  });
+    if ( response.ok ) return true
+    else throw {status: response.status, errObj: response.json()};
+}
+
 const API = {
     login,
     logout,
@@ -565,6 +577,7 @@ const API = {
     getAllAttendances,
     getContactsWithPositiveStudent,
     importCSV,
-    getStudentForLecture
+    getStudentForLecture,
+    setStudentPresencesForLecture
 };
 export default API;

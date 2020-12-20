@@ -750,6 +750,14 @@ app.get( '/api/teacher/:courseId/lecture/:lectureId/presence', ( req, res ) => {
                                                      } ).end() );
 } );
 
+app.put( '/api/teacher/:courseId/lecture/:lectureId/presence', ( req, res ) => {
+    pulsebsDAO.setStudentPresencesForLecture( req.params.lectureId, req.body )
+              .then( result => res.status( 200 ).end() )
+              .catch( err => res.status( 500 ).json( {
+                                                         errors: [ {'message': err} ],
+                                                     } ).end() );
+} );
+
 
 // Exported for E2E testing
 exports.server = app;

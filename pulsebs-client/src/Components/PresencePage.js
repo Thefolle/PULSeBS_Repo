@@ -3,6 +3,7 @@ import PropTypes                    from 'prop-types';
 import { Table, Form, Row, Button } from "react-bootstrap";
 import API                          from "../API/API.js";
 import moment                       from "moment";
+import {withRouter} from "react-router-dom"
 
 
 class PresencePage extends React.Component {
@@ -21,7 +22,7 @@ class PresencePage extends React.Component {
                console.log( studentsList );
                let presences = new Map();
                studentsList.forEach( student => {
-                   presences.set( student.id, 0 );
+                   presences.set( student.id, student.presence === 1 );
                } )
                this.setState( {students: studentsList, presences: presences} );
            } )
@@ -33,20 +34,34 @@ class PresencePage extends React.Component {
 
     mapToJson = ( map ) => {
         let res = [];
-        for ( let entry of map ) res.push( entry[0] )
+        for ( let entry of map ) {
+            let obj = {};
+            obj["id"] = entry[0];
+            obj["presence"] = entry[1];
+            res.push( obj )
+        }
         return res;
     }
 
     handleSubmit = ( event ) => {
-        let str = this.mapToJson( this.state.presences );
-        console.log( JSON.stringify( str ) );
+        let studentIds = this.mapToJson( this.state.presences );
+        API.setStudentPresencesForLecture( this.props.course.id, this.props.lecture.lecId, studentIds )
+           .then( res => this.setState( {
+                                            students: [],
+                                            presences: new Map()
+                                        }, () => {
+               window.alert( "Presences setted correctly!" );
+               this.props.history.replace( `/teacher/${ this.props.course.id }/lectures` );
+           } ) )
+           .catch( res => console.log( res ) );
         event.preventDefault();
     }
 
-    handleChange = ( id, value ) => {
-        console.log( id + "-" + value );
+    handleChange = ( id ) => {
+        console.log( id  );
         let presences = this.state.presences;
-        presences.set( id, 1 );
+        let value = this.state.presences.get( id );
+        presences.set( id, !value );
         this.setState( {presences: presences} );
     }
 
@@ -61,8 +76,9 @@ class PresencePage extends React.Component {
                 <td><Form.Check
                     type={ 'checkbox' }
                     value={ this.state.presences.get( student.id ) }
+                    checked={ this.state.presences.get( student.id ) }
                     name={ student.id }
-                    onChange={ ( event ) => this.handleChange( parseInt( event.target.name ), event.target.value ) }
+                    onChange={ ( event ) => this.handleChange( parseInt( event.target.name )) }
                 /></td>
             </tr> ) )
         } else {
@@ -74,7 +90,7 @@ class PresencePage extends React.Component {
             <br/>
             <h3>Presence for lecture of { this.props.course.course }
                 <br/>
-                { moment( this.props.lecture.date ).format( "YYYY-MM-DD HH:mm" ) } / { moment( this.props.lecture.endDate ).format( "YYYY-MM-DD HH:mm" ) }
+                { moment( this.props.lecture.date ).format( "YYYY-MM-DD HH:mm" ) } / { moment( this.props.lecture.endTime ).format( "YYYY-MM-DD HH:mm" ) }
             </h3>
             <Form onSubmit={ this.handleSubmit }>
                 <Table responsive>
@@ -106,4 +122,4 @@ PresencePage
     course: PropTypes.object.isRequired
 }
 
-export default PresencePage;
+export default withRouter(PresencePage);
