@@ -750,7 +750,7 @@ exports.turnLectureIntoOnline = ( lectureId, teacherId = 0 ) => {
 * Get all bookings to be grouped by week, month or single lecture
 * */
 
-exports.getTeacherBookingStatistics = ( teacherId, courseId, groupBy ) => {
+exports.getTeacherBookingStatistics = ( teacherId, courseId, groupBy, presence = "0" ) => {
     return new Promise( ( ( resolve, reject ) => {
         let now = moment();
         if ( groupBy === 'lecture' ) {
@@ -769,6 +769,7 @@ exports.getTeacherBookingStatistics = ( teacherId, courseId, groupBy ) => {
                             C.ref_teacher = ? AND
                             C.id = ? AND
                             L.presence = 1
+                            ${ presence === "1" ? 'AND B.presence  = 1' : '' }
                             AND L.date<${ moment().valueOf() }
                     GROUP BY lectureId
                     ORDER BY lectureDate
@@ -804,6 +805,7 @@ exports.getTeacherBookingStatistics = ( teacherId, courseId, groupBy ) => {
                                 L.date >= ? AND
                                 L.date < ? AND
                                 L.presence = 1
+                            ${ presence === "1" ? 'AND B.presence  = 1' : '' }
                         ORDER BY sampleDate
                     ;`
                     let statistics = [];
@@ -866,6 +868,7 @@ exports.getTeacherBookingStatistics = ( teacherId, courseId, groupBy ) => {
                                 L.date >= ? AND
                                 L.date < ? AND
                                 L.presence = 1
+                            ${ presence === "1" ? 'AND B.presence  = 1' : '' }
                         ORDER BY sampleDate
                     ;`
                     let statistics = [];
