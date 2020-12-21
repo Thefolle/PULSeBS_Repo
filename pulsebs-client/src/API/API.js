@@ -380,8 +380,9 @@ async function isAuthenticated() {
 }
 
 
-async function getTeacherStatistics( teacherId, courseId, groupBy ) {
-    let url = `/teachers/${ teacherId }/statistics/courses/${ courseId }?groupBy=${ groupBy.toLowerCase() }`;
+async function getTeacherStatistics( teacherId, courseId, groupBy, presence ) {
+    presence ? presence = 1 : presence = 0;
+    let url = `/teachers/${ teacherId }/statistics/courses/${ courseId }?groupBy=${ groupBy.toLowerCase() }&presence=${ presence }`;
     const response = await fetch( baseURL + url );
     if ( response.status === 500 ) {
         console.error( 'The server received a malformed request (in method ' + getTeacherStatistics.name + ')' );
@@ -540,14 +541,14 @@ async function getStudentForLecture( courseId, lectureId ) {
     else throw {status: response.status, errObj: response.json()};
 }
 
-async function setStudentPresencesForLecture( courseId, lectureId,studentIds ) {
+async function setStudentPresencesForLecture( courseId, lectureId, studentIds ) {
     let url = `/teacher/${ courseId }/lecture/${ lectureId }/presence`;
     const response = await fetch( baseURL + url,
                                   {
                                       method: "PUT",
                                       headers: {"Content-Type": "application/json"},
-                                      body: JSON.stringify(studentIds)
-                                  });
+                                      body: JSON.stringify( studentIds )
+                                  } );
     if ( response.ok ) return true
     else throw {status: response.status, errObj: response.json()};
 }

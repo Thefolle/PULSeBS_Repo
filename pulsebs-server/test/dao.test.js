@@ -319,22 +319,58 @@ describe( '[PUL 10] Get teacher statistics', () => {
     test( 'per week', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'week' ).then( statistics => {
             expect( statistics.length ).toEqual(2
-              /*  [
-                    {
-                        "bookingNumber": 2,
-                        "week": 1606690800000,
-                    },
-                    {
-                        "bookingNumber": 4,
-                        "week": 1607295600000,
-                    }
-                ] */
+                                                /*  [
+                                                      {
+                                                          "bookingNumber": 2,
+                                                          "week": 1606690800000,
+                                                      },
+                                                      {
+                                                          "bookingNumber": 4,
+                                                          "week": 1607295600000,
+                                                      }
+                                                  ] */
             );
         } );
     } );
 
     test( 'per month', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'month' ).then( statistics => {
+            expect( statistics ).toEqual(
+                [
+                    {
+                        "bookingNumber": 3,
+                        "month": 1606777200000
+                    }
+                ]
+            );
+        } );
+    } );
+
+    test( 'per lecture - Presence ON', () => {
+        DAO.getTeacherBookingStatistics( 239902, 3, 'lecture', "1" ).then( statistics => {
+            expect( statistics ).toEqual( [] );
+        } );
+    } );
+
+    test( 'per week - Presence ON', () => {
+        return DAO.getTeacherBookingStatistics( 239901, 2, 'week',"1" ).then( statistics => {
+            expect( statistics.length ).toEqual(2
+                                                /*  [
+                                                      {
+                                                          "bookingNumber": 2,
+                                                          "week": 1606690800000,
+                                                      },
+                                                      {
+                                                          "bookingNumber": 4,
+                                                          "week": 1607295600000,
+                                                      }
+                                                  ] */
+            );
+        } );
+    } );
+
+    test( 'per month - Presence ON', () => {
+        return DAO.getTeacherBookingStatistics( 239901, 2, 'month', "1" ).then( statistics => {
             expect( statistics ).toEqual(
                 [
                     {
@@ -372,7 +408,7 @@ describe( "[PUL-11] Get statistics for manager", () => {
 
     test( 'get All Attendances 1', () => {
         return DAO.getAllAttendances().then( b => {
-            expect( b.length ).toBe( 23 );
+            expect( b.length ).toBe( 22 );
         } )
     } );
 

@@ -99,7 +99,7 @@ insert into booking (ref_student, ref_lecture, date) values (269901,8,1605628800
 insert into booking (ref_student, ref_lecture, date) values (269903,8,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269904,8,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269905,8,1605628800000);
-insert into booking (ref_student, ref_lecture, date) values (269903,10,1605628800000);
+insert into booking (ref_student, ref_lecture, date, presence) values (269903,10,1605628800000, 0);
 insert into booking (ref_student, ref_lecture, date) values (269901,12,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269905,12,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269905,14,1605628800000);

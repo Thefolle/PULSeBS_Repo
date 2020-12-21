@@ -383,8 +383,8 @@ describe('API TEACHER', () => {
             let teacherId = 239903;
             let courseId = 5;
             request(server)
-                .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId)
-                .query({ groupBy: 'lecture' })
+                .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId )
+                .query({ groupBy: 'lecture', presence: "0" })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .end(function (error, response) {
@@ -393,6 +393,22 @@ describe('API TEACHER', () => {
                     done();
                 });
         });
+
+        test('Check returned status - Presence ON', function (done) {
+            let teacherId = 239903;
+            let courseId = 5;
+            request(server)
+                .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId )
+                .query({ groupBy: 'lecture', presence: "1" })
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .end(function (error, response) {
+                    if (error) return done(error);
+                    expect(response.status).toBe(200);
+                    done();
+                });
+        });
+
     });
 
     describe('Setting multiple student presences', () => {
@@ -558,7 +574,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(28); //change this value
+            expect(response.body.length).toBe(27); //change this value
         });
     });
 

@@ -284,8 +284,9 @@ app.get( '/api/teachers/:teacherId/statistics/courses/:courseId', ( req, res ) =
     const teacherId = req.params.teacherId;
     const courseId = req.params.courseId;
     const groupBy = req.query.groupBy;
+    const presence = req.query.presence;
 
-    pulsebsDAO.getTeacherBookingStatistics( teacherId, courseId, groupBy ).then( statistics => {
+    pulsebsDAO.getTeacherBookingStatistics( teacherId, courseId, groupBy, presence ).then( statistics => {
         res.status( 200 ).json( statistics );
     } ).catch( error => {
         console.log( error );
