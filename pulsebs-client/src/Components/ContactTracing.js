@@ -10,7 +10,8 @@ class ContactTracing extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      studentToTrace: undefined,
+      studentToTrace: "",
+      studentToTraceSSN: "",
       valid: false,
       studentsTraced: [],
       teachersTraced: []
@@ -34,6 +35,27 @@ class ContactTracing extends React.Component {
     }
   }
 
+  setStudentSSN = (studentSSN) => {
+    // console.log("studentMatricola: " + studentMatricola);
+    this.setState({ studentToTraceSSN: studentSSN });
+    if (studentSSN !== undefined) {
+      if(studentSSN.length === 16) {
+        API.getStudentFromSSN(studentSSN)
+          .then((student) => {
+            let studentMatricolaToTrace = student[0].id;
+            this.setState({ valid: true });
+            //console.log(student[0]);
+            //console.log(student[0].id);
+            this.getTrace(student[0].id);
+          }).catch((errorObj) => {
+            this.setState({ valid: false });
+            //console.log(errorObj);
+          });
+      }
+    }
+    // console.log("state: " + this.state.studentToTrace);
+  }
+
   getTrace = (studentToTrace) => {
     API.getContactsWithPositiveStudent(studentToTrace)
       .then((result) => {
@@ -52,30 +74,58 @@ class ContactTracing extends React.Component {
       <AuthContext.Consumer>
         {(context) => (
           <>
-            <h1>Contact tracing</h1>
+            <h1>Student's contact tracing</h1>
 
             <Form>
 
-              <Form.Group as={Row} controlId="contactTracing">
-                <Form.Label column sm={4}>
-                  <h4>Student's matricola</h4>
+              <Form.Group as={Row} controlId="contactTracingMatricola">
+                {!this.state.studentToTraceSSN &&
+                <>
+                <Form.Label column sm={2}>
+                  <h4>Matricola</h4>
                 </Form.Label>
-                <Col sm={6}>
-                  <Form.Control name="studentMatricola" type="text" pattern="[0-9]*"
+                <Col sm={4}>
+                  <Form.Control name="studentMatricola" type="text" pattern="[0-9]*" placeholder="student's matricola"
                     onChange={(ev) => this.setStudentMatricola(ev.target.value)} required />
                 </Col>
+                </>
+                }
+                {!this.state.studentToTrace &&
+                  <>
+                <Form.Label column sm={2}>
+                  <h4>SSN</h4>
+                </Form.Label>
+                <Col sm={4}>
+                  <Form.Control name="studentSsn" type="text" placeholder="student's SSN"
+                    onChange={(ev) => this.setStudentSSN(ev.target.value.toUpperCase())} required />
+                </Col>
+                </>
+                }
               </Form.Group>
+              {/* <p>OR</p>
+              <Form.Group as={Row} controlId="contactTracingSsn">
+                <Form.Label column sm={4}>
+                  <h4>SSN</h4>
+                </Form.Label>
+                <Col sm={6}>
+                  <Form.Control name="studentSsn" type="text" pattern="*"
+                    onChange={(ev) => this.setStudentMatricola(ev.target.value)} required />
+                </Col>
+              </Form.Group> */}
 
               {/*<Form.Group>
                             <Col>
                                 <Button onClick={console.log(this.studentToTrace)}>Trace {this.state.studentToTrace}</Button>
                             </Col>
                           </Form.Group> */}
-              {this.state.valid === true && this.state.studentToTrace.length === 6 ? // Matricola contains only numbers
+              {this.state.valid === true ? // Matricola contains only numbers
                 //this.getTrace(this.state.studentToTrace) &&
-                <ShowTraceResult students={this.state.studentsTraced} teachers={this.state.teachersTraced} studentToTrace={this.state.studentToTrace} />
+                <ShowTraceResult students={this.state.studentsTraced} teachers={this.state.teachersTraced} />
                 :
+                <>
                 <h4>Student's matricola <b>must</b> contain 6 numbers.</h4>
+                <h4>Student's SSN <b>must</b> contain 16 characters.</h4>
+                </>
               }
               {/*<TraceMatricola matricola={this.studentToTrace} />
     */}
@@ -90,7 +140,7 @@ class ContactTracing extends React.Component {
 }
 
 const ShowTraceResult = (props) => {
-  let { students, teachers, studentToTrace } = props;
+  let { students, teachers } = props;
 
 
   // console.log("showTrace:");
@@ -101,8 +151,6 @@ const ShowTraceResult = (props) => {
     <AuthContext.Consumer>
       {(context) => (
         <>
-          {studentToTrace !== "" &&
-            <>
               {students !== null && teachers !== null ?
               <>
               <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>
@@ -133,8 +181,6 @@ const ShowTraceResult = (props) => {
               :
               <h4>Nothing to be traced.</h4>
               }
-            </>
-          }
         </>
       )}
     </AuthContext.Consumer>

@@ -630,7 +630,8 @@ describe('API Officer', () => {
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD1234"
                 }
             ],
             "students": [
@@ -639,7 +640,8 @@ describe('API Officer', () => {
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD1234"
                 }
             ],
             "courses": [

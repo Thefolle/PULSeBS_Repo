@@ -444,6 +444,25 @@ app.get( '/api/student/bookings', ( req, res ) => {
               } );
 } )
 
+app.get( '/api/student/getFromSSN/:ssn', (req, res) => {
+    const ssn = req.params.ssn;
+    if ( !ssn ) {
+        res.status( 401 ).end();
+    } else {
+        pulsebsDAO.getStudentFromSSN(ssn)
+                  .then( ( student ) => {
+                      // console.log("server down:");
+                      // console.log(contacts);
+                      res.status( 200 ).json( student );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
+    }
+})
+
 /**
  * @Feihong
  * POST /student/bookings

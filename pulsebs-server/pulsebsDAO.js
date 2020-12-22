@@ -1193,6 +1193,23 @@ exports.getContactsWithPositiveStudent = function ( studentId, test = false ) {
 }
 
 /*
+* Get student given its ssn code
+* */
+
+exports.getStudentFromSSN = (ssn) => {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT id, email, name, surname
+                    FROM student
+                    WHERE ssn = ?;`
+        db.all(query, [ssn], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+            else resolve( 0 );
+        });
+    });
+}
+
+/*
 * Get all lectures of a positive teacher and the relative people involved in
 * */
 
@@ -1292,11 +1309,11 @@ exports.loadCsvData = ( data ) => {
         } );
         //Teachers inserting
         data.teachers.forEach( ( teacher ) => {
-            query += `insert into teacher (id, email, password, name, surname) VALUES (${ teacher.id },'${ teacher.email }','${ teacher.password }','${ teacher.name }','${ teacher.surname }'); `
+            query += `insert into teacher (id, email, password, name, surname, ssn) VALUES (${ teacher.id },'${ teacher.email }','${ teacher.password }','${ teacher.name }','${ teacher.surname }','${ teacher.ssn }'); `
         } );
         //Students inserting
         data.students.forEach( ( student ) => {
-            query += `insert into student (id, email, password, name, surname) VALUES (${ student.id },'${ student.email }','${ student.password }','${ student.name }','${ student.surname }'); `
+            query += `insert into student (id, email, password, name, surname, ssn) VALUES (${ student.id },'${ student.email }','${ student.password }','${ student.name }','${ student.surname }','${ student.ssn }'); `
         } );
         //Courses inserting
         data.courses.forEach( ( course ) => {
@@ -1310,8 +1327,16 @@ exports.loadCsvData = ( data ) => {
         data.lectures.forEach( ( lecture ) => {
             query += `insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (${ lecture.ref_course },${ lecture.ref_class },${ lecture.date },${ lecture.endTime },${ lecture.presence },${ lecture.bookable },${ lecture.active }); `
         } );
+
+        console.log(query);
         db.exec( query, ( err ) => {
-            err ? reject( 0 ) : resolve( 0 );
+            // err ? reject( 0 ) : resolve( 0 );
+            if(err) {
+                console.log(err);
+                reject(0);
+            } else {
+                resolve(0);
+            }
         } );
     } );
 }

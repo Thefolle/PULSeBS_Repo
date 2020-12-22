@@ -509,16 +509,18 @@ describe( 'CSV loading tests', () => {
                 "email": "abc@gmail.com",
                 "password": "hash123",
                 "name": "nome",
-                "surname": "cognome"
+                "surname": "cognome",
+                "ssn": "ABCD1234ABCD1111"
             }
         ],
         "students": [
             {
                 "id": "269910",
-                "email": "abc@gmail.com",
+                "email": "def@gmail.com",
                 "password": "hash123",
                 "name": "nome",
-                "surname": "cognome"
+                "surname": "cognome",
+                "ssn": "ABCD1234ABCD2222"
             }
         ],
         "courses": [
@@ -555,27 +557,29 @@ describe( 'CSV loading tests', () => {
         data = {
             "classes": [
                 {
-                    "id": "15",
-                    "desc": "12A",
+                    "id": "16",
+                    "desc": "12B",
                     "seats": "72"
                 }
             ],
             "teachers": [
                 {
-                    "id": "239901",
-                    "email": "abc@gmail.com",
+                    "id": "239911",
+                    "email": "ghi@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD3333"
                 }
             ],
             "students": [
                 {
-                    "id": "269901",
-                    "email": "abc@gmail.com",
+                    "id": "269911",
+                    "email": "lmn@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD4444"
                 }
             ],
             "courses": [

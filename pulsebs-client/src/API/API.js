@@ -75,6 +75,20 @@ async function getStudentLectures() {
     }
 }
 
+async function getStudentFromSSN(ssn) {
+    let url = `/student/getFromSSN/${ ssn }`;
+    const response = await fetch( baseURL + url );
+    const studentJson = await response.json();
+    if ( response.ok ) {
+        return studentJson;
+    } else {
+        //console.log("API");
+        //console.log(response);
+        let err = {status: response.status, errObj: studentJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
+
 // FIXME:
 async function bookSeat( studentId, lectureId ) {
     return new Promise( ( resolve, reject ) => {
@@ -579,6 +593,7 @@ const API = {
     getContactsWithPositiveStudent,
     importCSV,
     getStudentForLecture,
-    setStudentPresencesForLecture
+    setStudentPresencesForLecture,
+    getStudentFromSSN
 };
 export default API;
