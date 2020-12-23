@@ -1079,7 +1079,10 @@ function getInvolvedLecturesAndTeacher( studentId, test ) {
         let twoWeeksAgo = moment().subtract( 14, 'days' ).valueOf();
 
         let query = `SELECT L.id as lecID,
-                            T.id as tID
+                            T.id as tID,
+                            T.name,
+							T.surname,
+							T.ssn
                      FROM   booking B,
                             lecture L,
                             student S,
@@ -1112,13 +1115,18 @@ function getInvolvedLecturesAndTeacher( studentId, test ) {
 function getInvolvedStudents( involvedLectures, studentId ) {
     return new Promise( ( ( resolve, reject ) => {
 
-        let query = `SELECT DISTINCT(B.ref_student) as sID
-                    FROM booking B,
-                        lecture L
-                    WHERE B.ref_lecture = L.id AND
-                        B.presence = 1 AND
-                        B.active = 1 AND
-                        B.ref_student != ? AND `
+        let query = `SELECT DISTINCT(B.ref_student) as sID,
+                            S.name,
+                            S.surname,
+                            S.ssn
+                    FROM    booking B,
+                            student S,
+                            lecture L
+                    WHERE   B.ref_lecture = L.id AND
+                            B.ref_student = S.id AND
+                            B.presence = 1 AND
+                            B.active = 1 AND
+                            B.ref_student != ? AND `
 
         // add the lectures, such as:  (B.ref_lecture = 7 OR B.ref_lecture = 9) ..
 
@@ -1136,7 +1144,7 @@ function getInvolvedStudents( involvedLectures, studentId ) {
                                               else return previousValue.concat( currentValue );
                                           } );
         query = query.concat( involvedLec ).concat( ');' );
-
+        
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
@@ -1152,7 +1160,10 @@ exports.getContactsWithPositiveStudent = function ( studentId, test = false ) {
         //  console.log(involved);
 
         if ( involved != null ) {
-            let involvedTeachers = involved.map( r => r.tID );
+            //console.log(involved);
+            //let involvedTeachers = involved.map( r => [r.tID, r.name, r.surname, r.ssn] );
+            const involvedTeachers = involved.map(({lecID, ...item}) => item); // storing only teacher's infos
+            //console.log(involvedTeachers);
             let uniqTeachers = [ ...new Set( involvedTeachers ) ];
             let involvedLectures = involved.map( r => r.lecID );
             // console.log("involved teachers:");
@@ -1161,7 +1172,7 @@ exports.getContactsWithPositiveStudent = function ( studentId, test = false ) {
             // console.log(involvedLectures);
 
             let involvedStudents = await getInvolvedStudents( involvedLectures, studentId );
-            involvedStudents = involvedStudents.map( s => s.sID );
+            //involvedStudents = involvedStudents.map( s => s.sID );
             //console.log(involvedStudents);
             //let involvedStudents;
 
@@ -1328,7 +1339,7 @@ exports.loadCsvData = ( data ) => {
             query += `insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (${ lecture.ref_course },${ lecture.ref_class },${ lecture.date },${ lecture.endTime },${ lecture.presence },${ lecture.bookable },${ lecture.active }); `
         } );
 
-        console.log(query);
+        //console.log(query);
         db.exec( query, ( err ) => {
             // err ? reject( 0 ) : resolve( 0 );
             if(err) {

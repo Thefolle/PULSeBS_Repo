@@ -5,6 +5,7 @@ import { Form, Col, Row, Button } from 'react-bootstrap';
 //import ShowTraceResult from './ShowTraceResult';
 import API from '../API/API';
 import { jsPDF } from "jspdf";
+import 'jspdf-autotable'
 
 class ContactTracing extends React.Component {
   constructor(props) {
@@ -42,7 +43,6 @@ class ContactTracing extends React.Component {
       if(studentSSN.length === 16) {
         API.getStudentFromSSN(studentSSN)
           .then((student) => {
-            let studentMatricolaToTrace = student[0].id;
             this.setState({ valid: true });
             //console.log(student[0]);
             //console.log(student[0].id);
@@ -120,7 +120,7 @@ class ContactTracing extends React.Component {
                           </Form.Group> */}
               {this.state.valid === true ? // Matricola contains only numbers
                 //this.getTrace(this.state.studentToTrace) &&
-                <ShowTraceResult students={this.state.studentsTraced} teachers={this.state.teachersTraced} />
+                <ShowTraceResult students={this.state.studentsTraced} teachers={this.state.teachersTraced} tracedId={this.state.studentToTrace} tracedSSN={this.state.studentToTraceSSN} />
                 :
                 <>
                 <h4>Student's matricola <b>must</b> contain 6 numbers.</h4>
@@ -140,11 +140,11 @@ class ContactTracing extends React.Component {
 }
 
 const ShowTraceResult = (props) => {
-  let { students, teachers } = props;
-
+  let { students, teachers, tracedId, tracedSSN } = props;
+  
 
   // console.log("showTrace:");
-  // console.log(students);
+  // console.log([students]);
   // console.log(teachers);
 
   return (
@@ -153,27 +153,41 @@ const ShowTraceResult = (props) => {
         <>
               {students !== null && teachers !== null ?
               <>
-              <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>
-              <Button onClick={() => getPDF(teachers, students)}>Download PDF</Button>
+              <Row>
+                <Col>
+                  <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>
+                </Col>
+                <Col>
+                  <Button onClick={() => getPDF(teachers, students, tracedId !=="" ? tracedId : tracedSSN)}>Download PDF</Button>
+                </Col>
+              </Row>
               <Table className="table" id="teachers-table">
                 <thead>
                   <tr>
-                    <th>Teachers' ID</th>
+                    <th>Type</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>SSN</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {teachers.map((t, id) => <CTitem key={id} matricola={t} />)}
+                  {teachers.map((t, id) => <CTitem key={id} type={1} matricola={t.tID} name={t.name} surname={t.surname} ssn={t.ssn} />)}
                 </tbody>
               </Table>
               { students.length !== 0 &&
               <Table className="table" id="students-table">
                 <thead>
                   <tr>
-                    <th>Students' ID</th>
+                    <th>Type</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>SSN</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((s, id) => <CTitem key={id} matricola={s} />)}
+                  {students.map((s, id) => <CTitem key={id} type={0} matricola={s.sID} name={s.name} surname={s.surname} ssn={s.ssn}/>)}
                 </tbody>
               </Table>
               }
@@ -186,13 +200,13 @@ const ShowTraceResult = (props) => {
     </AuthContext.Consumer>
   );
 
-  function getCSV(teachersID, studentsID) {
-    const csvRows = ["id"];
-    for(const Tid of teachersID) {
-      csvRows.push(Tid);
+  function getCSV(teachers, students) {
+    const csvRows = ["type,id,name,surname,ssn"];
+    for(const t of teachers) {
+      csvRows.push("teacher," + t.tID + "," + t.name + "," + t.surname + "," + t.ssn);
     }
-    for(const Sid of studentsID) {
-      csvRows.push(Sid);
+    for(const s of students) {
+      csvRows.push("student," + s.sID + "," + s.name + "," + s.surname + "," + s.ssn);
     }
     downloadCSV(csvRows.join('\n'));
   }
@@ -209,29 +223,56 @@ const ShowTraceResult = (props) => {
     document.body.removeChild(a);
   };
 
-  function getPDF(teachersID, studentsID) {
-    const csvRows = ["id"];
-    for(const Tid of teachersID) {
-      csvRows.push(Tid);
+  function getPDF(teachers, students, traced) {
+    var teac = teachers.map( function( el ){ 
+      return ["Teacher", el.tID, el.name, el.surname, el.ssn]; 
+     });
+    var stud = students.map( function( el ){ 
+      return ["Student", el.sID, el.name, el.surname, el.ssn]; 
+     });
+
+    const rows = [];
+    for(const t of teac) {
+      rows.push(t);
     }
-    for(const Sid of studentsID) {
-      csvRows.push(Sid);
+    for(const s of stud) {
+      rows.push(s);
     }
-    downloadPDF(csvRows.join('\n'));
+    
+    //downloadPDF(rows.join('\n'));
+    downloadPDF(rows, traced);
   }
 
-  function downloadPDF(data) {
-    const doc = new jsPDF();
-    doc.text(data, 10, 10);
-    doc.save("ContactTracing.pdf");
+  function downloadPDF(data, traced) {
+    
+    const doc = new jsPDF({
+      orientation: 'landscape'
+    });
+
+    // Change font
+    doc.setFont("courier");
+    doc.setFontSize(20);
+    doc.text("Result of the tracing for the student '" + traced +"':\n", 10, 10);
+    doc.setFontSize(16);
+
+    doc.autoTable({
+      head: [['Type', 'ID', 'Name', 'Surname', 'SSN']],
+      body: data
+    })
+
+    doc.save('ContactTracing.pdf')
   };
 }
 
 const CTitem = (props) => {
-  let { matricola } = props;
+  let { type, matricola, name, surname, ssn } = props;
   return (
     <tr>
+      <td>{type === 0 ? "Student" : "Teacher"}</td>
       <td>{matricola}</td>
+      <td>{name}</td>
+      <td>{surname}</td>
+      <td>{ssn}</td>
     </tr>
   );
 }

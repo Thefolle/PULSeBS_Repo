@@ -489,8 +489,16 @@ describe( "[PUL-11] Get statistics for manager", () => {
 // MANAGER contact tracing
 test( 'Try to see if correct students\' contract tracing datas are received', () => {
     return DAO.getContactsWithPositiveStudent( 269901, true ).then( result => {
-        expect( result.uniqTeachers[0] ).toBe( 239901 );
-        expect( result.involvedStudents[0] ).toBe( 269902 );
+
+        expect( result.uniqTeachers[0].tID ).toBe( 239901 );
+        expect( result.uniqTeachers[0].name ).toBe( "Hyeronimus" );
+        expect( result.uniqTeachers[0].surname ).toBe( "Bosch" );
+        expect( result.uniqTeachers[0].ssn ).toBe( "HYRBCH80A01H501Y" );
+
+        expect( result.involvedStudents[0].sID ).toBe( 269902 );
+        expect( result.involvedStudents[0].name ).toBe( "Francesco" );
+        expect( result.involvedStudents[0].surname ).toBe( "Gallo" );
+        expect( result.involvedStudents[0].ssn ).toBe( "FRNGLL80A01H501H" );
     } )
 } );
 
