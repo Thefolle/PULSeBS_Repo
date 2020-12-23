@@ -339,6 +339,19 @@ async function cancelLecture( teacherId, lectureId ) {
     } )
 }
 
+async function getTeacherFromSSN(ssn) {
+    let url = `/teachers/getFromSSN/${ ssn }`;
+    const response = await fetch( baseURL + url );
+    const teacherJson = await response.json();
+    if ( response.ok ) {
+        return teacherJson;
+    } else {
+        //console.log("API");
+        //console.log(response);
+        let err = {status: response.status, errObj: teacherJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
 
 /**** SUPPORT OFFICE ****/
 
@@ -535,7 +548,21 @@ async function getAllLectures() {
 }
 
 async function getContactsWithPositiveStudent( studentId ) {
-    let url = `/manager/contactWith/${ studentId }`;
+    let url = `/manager/contactWithStudent/${ studentId }`;
+    const response = await fetch( baseURL + url );
+    const contactsJson = await response.json();
+    if ( response.ok ) {
+        return contactsJson;
+    } else {
+        //console.log("API");
+        //console.log(response);
+        let err = {status: response.status, errObj: contactsJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function getContactsWithPositiveTeacher( teacherId ) {
+    let url = `/manager/contactWithTeacher/${ teacherId }`;
     const response = await fetch( baseURL + url );
     const contactsJson = await response.json();
     if ( response.ok ) {
@@ -591,9 +618,11 @@ const API = {
     getAllLectures,
     getAllAttendances,
     getContactsWithPositiveStudent,
+    getContactsWithPositiveTeacher,
     importCSV,
     getStudentForLecture,
     setStudentPresencesForLecture,
-    getStudentFromSSN
+    getStudentFromSSN,
+    getTeacherFromSSN
 };
 export default API;

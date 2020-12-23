@@ -1221,31 +1221,55 @@ exports.getStudentFromSSN = (ssn) => {
 }
 
 /*
-* Get all lectures of a positive teacher and the relative people involved in
+* Get teacher given its ssn code
 * */
 
-exports.teacherContactTracing = ( teacherId ) => {
-    return new Promise( ( ( resolve, reject ) => {
-        let now = moment();
-        let twoWeeksAgo = now.subtract( 14, 'days' );
+exports.getTeacherFromSSN = (ssn) => {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT id, email, name, surname
+                    FROM teacher
+                    WHERE ssn = ?;`
+        db.all(query, [ssn], ( err, rows ) => {
+            if ( err ) reject( err );
+            if ( rows ) resolve( rows );
+            else resolve( 0 );
+        });
+    });
+}
 
-        let query = `SELECT S.name as sname,
-                            S.surname as ssurname
-                     FROM   booking B,
+/*
+* Get all all the students that have been in contact with a given teacher in the past 14 days
+* */
+
+exports.getContactsWithPositiveTeacher = function ( teacherId, test = false ) {
+    return new Promise( ( ( resolve, reject ) => {
+        let now = moment().valueOf();
+        let twoWeeksAgo = moment().subtract( 14, 'days' ).valueOf();
+
+        let query = `SELECT DISTINCT(S.id) as sID,
+                            S.name,
+                            S.surname,
+                            S.ssn
+                    FROM    booking B,
                             lecture L,
                             student S,
                             course C
-                     WHERE  B.ref_student = S.id AND
+                    WHERE   B.ref_student = S.id AND
                             B.ref_lecture = L.id AND
                             L.ref_course = C.id AND
                             C.ref_teacher = ${ teacherId } AND
                             B.presence = 1 AND
-                            L.date < ${ now.valueOf() } AND
-                            L.date > ${ twoWeeksAgo.valueOf() };`
+                            B.active = 1 AND
+                            L.date < ${ test ? 1607960293000 : now } AND
+                            L.date > ${ test ? 1606837080000 : twoWeeksAgo };`
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+            if ( rows ) {
+                if ( rows.length === 0 ) {
+                    resolve( null );
+                }
+                resolve( rows );
+            } else resolve( 0 );
         } );
     } ) );
 }

@@ -6,16 +6,21 @@ import { Form, Col, Row, Button } from 'react-bootstrap';
 import API from '../API/API';
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable'
+import BootstrapSwitchButton from 'bootstrap-switch-button-react'
 
 class ContactTracing extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       studentToTrace: "",
+      teacherToTrace: "",
       studentToTraceSSN: "",
+      teacherToTraceSSN: "",
       valid: false,
       studentsTraced: [],
-      teachersTraced: []
+      teachersTraced: [],
+      checked: true,
+      isStudentTracing: true
     }
   }
 
@@ -27,7 +32,7 @@ class ContactTracing extends React.Component {
       if (studentMatricola.match(/^[0-9]+$/) !== null) {
         if(studentMatricola.length === 6) {
           this.setState({ valid: true });
-          this.getTrace(studentMatricola);
+          this.getTraceStudent(studentMatricola);
         }
       }
       else {
@@ -46,7 +51,7 @@ class ContactTracing extends React.Component {
             this.setState({ valid: true });
             //console.log(student[0]);
             //console.log(student[0].id);
-            this.getTrace(student[0].id);
+            this.getTraceStudent(student[0].id);
           }).catch((errorObj) => {
             this.setState({ valid: false });
             //console.log(errorObj);
@@ -56,7 +61,39 @@ class ContactTracing extends React.Component {
     // console.log("state: " + this.state.studentToTrace);
   }
 
-  getTrace = (studentToTrace) => {
+  setTeacherMatricola = (teacherMatricola) => {
+    // console.log("studentMatricola: " + studentMatricola);
+    this.setState({ teacherToTrace: teacherMatricola });
+    // console.log("state: " + this.state.studentToTrace);
+    if (teacherMatricola !== undefined) {
+      if (teacherMatricola.match(/^[0-9]+$/) !== null) {
+        if(teacherMatricola.length === 6) {
+          this.setState({ valid: true });
+          this.getTraceTeacher(teacherMatricola);
+        }
+      }
+      else {
+        this.setState({ valid: false }); // characters are present
+      }
+    }
+  }
+
+  setTeacherSSN = (teacherSSN) => {
+    this.setState({ teacherToTraceSSN: teacherSSN });
+    if (teacherSSN !== undefined) {
+      if(teacherSSN.length === 16) {
+        API.getTeacherFromSSN(teacherSSN)
+          .then((teacher) => {
+            this.setState({ valid: true });
+            this.getTraceTeacher(teacher[0].id);
+          }).catch((errorObj) => {
+            this.setState({ valid: false });
+          });
+      }
+    }
+  }
+
+  getTraceStudent = (studentToTrace) => {
     API.getContactsWithPositiveStudent(studentToTrace)
       .then((result) => {
         this.setState({ studentsTraced: result.involvedStudents });
@@ -69,10 +106,42 @@ class ContactTracing extends React.Component {
     //console.log("teachers" + this.state.teachersTraced);
   }
 
+  getTraceTeacher = (teacherToTrace) => {
+    API.getContactsWithPositiveTeacher(teacherToTrace)
+      .then((result) => {
+        this.setState({ studentsTraced: result });
+      }
+      ).catch((errorObj) => {
+        console.log(errorObj);
+      });
+    //console.log("students" + this.state.studentsTraced);
+    //console.log("teachers" + this.state.teachersTraced);
+  }
+
   render() {
     return (
       <AuthContext.Consumer>
         {(context) => (
+          <>
+            <BootstrapSwitchButton
+              checked={this.state.checked}
+              width={200}
+              onlabel='Students'
+              offlabel='Teachers'
+              onChange={() => {
+                            this.setState({ isStudentTracing: !this.state.checked })
+                            this.state.checked === true ? this.setState({ checked: false}) : this.setState({ checked: true})
+                            this.setState({studentToTrace: ""})
+                            this.setState({teacherToTrace: ""})
+                            this.setState({studentToTraceSSN: ""})
+                            this.setState({teacherToTraceSSN: ""})
+                            this.setState({valid: false})
+                            this.setState({studentsTraced: []})
+                            this.setState({teachersTraced: []})
+                        }}
+          />
+
+          {this.state.isStudentTracing === true ?
           <>
             <h1>Student's contact tracing</h1>
 
@@ -119,17 +188,57 @@ class ContactTracing extends React.Component {
                             </Col>
                           </Form.Group> */}
               {this.state.valid === true ? // Matricola contains only numbers
-                //this.getTrace(this.state.studentToTrace) &&
-                <ShowTraceResult students={this.state.studentsTraced} teachers={this.state.teachersTraced} tracedId={this.state.studentToTrace} tracedSSN={this.state.studentToTraceSSN} />
+                //this.getTraceStudent(this.state.studentToTrace) &&
+                <ShowTraceResult students={this.state.studentsTraced} teachers={this.state.teachersTraced} tracedId={this.state.studentToTrace} tracedSSN={this.state.studentToTraceSSN} type={0}/>
                 :
                 <>
                 <h4>Student's matricola <b>must</b> contain 6 numbers.</h4>
                 <h4>Student's SSN <b>must</b> contain 16 characters.</h4>
                 </>
               }
-              {/*<TraceMatricola matricola={this.studentToTrace} />
-    */}
             </Form>
+            </>
+          :
+          <>
+          <h1>Teacher's contact tracing</h1>
+            <Form>
+              <Form.Group as={Row} controlId="contactTracingMatricola">
+                {!this.state.teacherToTraceSSN &&
+                  <>
+                    <Form.Label column sm={2}>
+                      <h4>Matricola</h4>
+                    </Form.Label>
+                    <Col sm={4}>
+                      <Form.Control name="teacherMatricola" type="text" pattern="[0-9]*" placeholder="teacher's matricola"
+                        onChange={(ev) => this.setTeacherMatricola(ev.target.value)} required />
+                    </Col>
+                  </>
+                }
+                {!this.state.teacherToTrace &&
+                  <>
+                    <Form.Label column sm={2}>
+                      <h4>SSN</h4>
+                    </Form.Label>
+                    <Col sm={4}>
+                      <Form.Control name="teacherSsn" type="text" placeholder="teacher's SSN"
+                        onChange={(ev) => this.setTeacherSSN(ev.target.value.toUpperCase())} required />
+                    </Col>
+                  </>
+                }
+              </Form.Group>
+              {this.state.valid === true ?
+                <ShowTraceResult students={this.state.studentsTraced} tracedId={this.state.teacherToTrace} tracedSSN={this.state.teacherToTraceSSN} type={1}/>
+                :
+                <>
+                <h4>Teacher's matricola <b>must</b> contain 6 numbers.</h4>
+                <h4>Teacher's SSN <b>must</b> contain 16 characters.</h4>
+                </>
+              }
+              {/*<TraceMatricola matricola={this.studentToTrace} />
+            */}
+            </Form>
+          </>
+        }
 
           </>
         )}
@@ -140,65 +249,105 @@ class ContactTracing extends React.Component {
 }
 
 const ShowTraceResult = (props) => {
-  let { students, teachers, tracedId, tracedSSN } = props;
+  let { students, teachers, tracedId, tracedSSN, type } = props;
   
 
   // console.log("showTrace:");
   // console.log([students]);
   // console.log(teachers);
-
-  return (
-    <AuthContext.Consumer>
-      {(context) => (
-        <>
-              {students !== null && teachers !== null ?
-              <>
-              <Row>
-                <Col>
-                  <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>
-                </Col>
-                <Col>
-                  <Button onClick={() => getPDF(teachers, students, tracedId !=="" ? tracedId : tracedSSN)}>Download PDF</Button>
-                </Col>
-              </Row>
-              <Table className="table" id="teachers-table">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>SSN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teachers.map((t, id) => <CTitem key={id} type={1} matricola={t.tID} name={t.name} surname={t.surname} ssn={t.ssn} />)}
-                </tbody>
-              </Table>
-              { students.length !== 0 &&
-              <Table className="table" id="students-table">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>SSN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((s, id) => <CTitem key={id} type={0} matricola={s.sID} name={s.name} surname={s.surname} ssn={s.ssn}/>)}
-                </tbody>
-              </Table>
-              }
-              </>
-              :
-              <h4>Nothing to be traced.</h4>
-              }
-        </>
-      )}
-    </AuthContext.Consumer>
-  );
+  if(type === 0) {
+    return (
+      <AuthContext.Consumer>
+        {(context) => (
+          <>
+                {students !== null && teachers !== null ?
+                <>
+                <Row>
+                  <Col>
+                    <Button onClick={() => getCSV(teachers, students)}>Download CSV</Button>
+                  </Col>
+                  <Col>
+                    <Button onClick={() => getPDF(teachers, students, tracedId !=="" ? tracedId : tracedSSN, true)}>Download PDF</Button>
+                  </Col>
+                </Row>
+                <Table className="table" id="teachers-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>SSN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teachers.map((t, id) => <CTitem key={id} type={1} matricola={t.tID} name={t.name} surname={t.surname} ssn={t.ssn} />)}
+                  </tbody>
+                </Table>
+                { students.length !== 0 &&
+                <Table className="table" id="students-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>SSN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students.map((s, id) => <CTitem key={id} type={0} matricola={s.sID} name={s.name} surname={s.surname} ssn={s.ssn}/>)}
+                  </tbody>
+                </Table>
+                }
+                </>
+                :
+                <h4>Nothing to be traced.</h4>
+                }
+          </>
+        )}
+      </AuthContext.Consumer>
+    );
+  } else {
+    return (
+      <AuthContext.Consumer>
+        {(context) => (
+          <>
+                {students !== null ?
+                <>
+                <Row>
+                  <Col>
+                    <Button onClick={() => getCSV([], students)}>Download CSV</Button>
+                  </Col>
+                  <Col>
+                    <Button onClick={() => getPDF([], students, tracedId !=="" ? tracedId : tracedSSN, false)}>Download PDF</Button>
+                  </Col>
+                </Row>
+                { students.length !== 0 &&
+                <Table className="table" id="students-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>SSN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students.map((s, id) => <CTitem key={id} type={0} matricola={s.sID} name={s.name} surname={s.surname} ssn={s.ssn}/>)}
+                  </tbody>
+                </Table>
+                }
+                </>
+                :
+                <h4>Nothing to be traced.</h4>
+                }
+          </>
+        )}
+      </AuthContext.Consumer>
+    );
+  }
 
   function getCSV(teachers, students) {
     const csvRows = ["type,id,name,surname,ssn"];
@@ -223,7 +372,7 @@ const ShowTraceResult = (props) => {
     document.body.removeChild(a);
   };
 
-  function getPDF(teachers, students, traced) {
+  function getPDF(teachers, students, traced, tracedIsStudent) {
     var teac = teachers.map( function( el ){ 
       return ["Teacher", el.tID, el.name, el.surname, el.ssn]; 
      });
@@ -240,11 +389,10 @@ const ShowTraceResult = (props) => {
     }
     
     //downloadPDF(rows.join('\n'));
-    downloadPDF(rows, traced);
+    downloadPDF(rows, traced, tracedIsStudent);
   }
 
-  function downloadPDF(data, traced) {
-    
+  function downloadPDF(data, traced, tracedIsStudent) {
     const doc = new jsPDF({
       orientation: 'landscape'
     });
@@ -252,7 +400,11 @@ const ShowTraceResult = (props) => {
     // Change font
     doc.setFont("courier");
     doc.setFontSize(20);
-    doc.text("Result of the tracing for the student '" + traced +"':\n", 10, 10);
+    if(tracedIsStudent)
+      doc.text("Result of the tracing for the student '" + traced +"':\n", 10, 10);
+    else
+      doc.text("Result of the tracing for the teacher '" + traced +"':\n", 10, 10);
+
     doc.setFontSize(16);
 
     doc.autoTable({
@@ -278,50 +430,3 @@ const CTitem = (props) => {
 }
 
 export default ContactTracing;
-
-/*
-const ContactTracing = (props) => {
-
-    let { studentToTrace, setStudentMatricola } = props;
-
-    var studentMatricola = '';
-
-    updateField = (value) => {
-        this.studentMatricola = value;
-    }
-
-    return (
-        <AuthContext.Consumer>
-            {(context) => (
-                <>
-                    <h1>Contact tracing</h1>
-
-                    <Form>
-
-                      <Form.Group as={Row} controlId="contactTracing">
-                        <Form.Label column sm={4}>
-                          <h4>Student's matricola</h4>
-                        </Form.Label>
-                        <Col sm={6}>
-                          <Form.Control name="studentMatricola" value={studentToTrace}
-                            onChange={(ev) => this.updateField(ev.target.value)} required/>
-                        </Col>
-                      </Form.Group>
-
-                      <Form.Group>
-                        <Col>
-                          <Button onClick={console.log("niente")}>Trace</Button>
-                        </Col>
-                      </Form.Group>
-
-                    </Form>
-
-                </>
-            )}
-        </AuthContext.Consumer>
-    );
-
-}
-
-export default ContactTracing;
-*/

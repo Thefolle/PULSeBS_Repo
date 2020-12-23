@@ -290,6 +290,8 @@ describe('API STUDENT', () => {
     } );
 
 
+
+
 //DELETE TEACHER'S LECTURE
 // FIXME:
 describe('delete /api/teachers/:teacherId/lectures/:lectureId', () => {
@@ -578,12 +580,25 @@ describe('API MANAGER', () => {
         });
     });
 
-    describe('get /api/manager/contactWith/:studentId', () => {
+    describe('get /api/manager/contactWithStudent/:studentId', () => {
         it('should return a 200 if succeed', async() => {
 
             let studentId = 269901;
             const response = await request(server)
-                .get('/api/manager/contactWith/' + studentId)
+                .get('/api/manager/contactWithStudent/' + studentId)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe('get /api/manager/contactWithTeacher/:teacherId', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let teacherId = 239901;
+            const response = await request(server)
+                .get('/api/manager/contactWithStudent/' + teacherId)
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
@@ -600,6 +615,33 @@ describe('API MANAGER', () => {
         // expect(response.status).toBe(200);
         handleToCloseServer.close();
     }, 10);
+});
+
+describe('Get student and teacher infos starting from their ssn code', () => {
+
+    describe('get /api/student/getFromSSN/:ssn', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let ssn = "CLRDVD80A01H501C";
+            const response = await request(server)
+                .get('/api/student/getFromSSN/' + ssn)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe('get /api/teachers/getFromSSN/:ssn', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let ssn = "HYRBCH80A01H501Y";
+            const response = await request(server)
+                .get('/api/teachers/getFromSSN/' + ssn)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+            expect(response.status).toBe(200);
+        });
+    });
 });
 
 describe('API Officer', () => {

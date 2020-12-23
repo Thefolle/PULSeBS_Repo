@@ -487,20 +487,33 @@ describe( "[PUL-11] Get statistics for manager", () => {
 } );
 
 // MANAGER contact tracing
-test( 'Try to see if correct students\' contract tracing datas are received', () => {
-    return DAO.getContactsWithPositiveStudent( 269901, true ).then( result => {
+describe( "MANAGER contact tracing", () => {
+    test( 'Try to see if correct students\' contract tracing datas are received', () => {
+        return DAO.getContactsWithPositiveStudent( 269901, true ).then( result => {
 
-        expect( result.uniqTeachers[0].tID ).toBe( 239901 );
-        expect( result.uniqTeachers[0].name ).toBe( "Hyeronimus" );
-        expect( result.uniqTeachers[0].surname ).toBe( "Bosch" );
-        expect( result.uniqTeachers[0].ssn ).toBe( "HYRBCH80A01H501Y" );
+            expect( result.uniqTeachers[0].tID ).toBe( 239901 );
+            expect( result.uniqTeachers[0].name ).toBe( "Hyeronimus" );
+            expect( result.uniqTeachers[0].surname ).toBe( "Bosch" );
+            expect( result.uniqTeachers[0].ssn ).toBe( "HYRBCH80A01H501Y" );
 
-        expect( result.involvedStudents[0].sID ).toBe( 269902 );
-        expect( result.involvedStudents[0].name ).toBe( "Francesco" );
-        expect( result.involvedStudents[0].surname ).toBe( "Gallo" );
-        expect( result.involvedStudents[0].ssn ).toBe( "FRNGLL80A01H501H" );
-    } )
-} );
+            expect( result.involvedStudents[0].sID ).toBe( 269902 );
+            expect( result.involvedStudents[0].name ).toBe( "Francesco" );
+            expect( result.involvedStudents[0].surname ).toBe( "Gallo" );
+            expect( result.involvedStudents[0].ssn ).toBe( "FRNGLL80A01H501H" );
+        } )
+    } );
+
+    test( 'Try to see if correct teachers\' contract tracing datas are received', () => {
+        return DAO.getContactsWithPositiveTeacher( 239901, true ).then( result => {
+
+            expect( result[0].sID ).toBe( 269901 );
+            expect( result[0].name ).toBe( "Davide" );
+            expect( result[0].surname ).toBe( "Calarco" );
+            expect( result[0].ssn ).toBe( "CLRDVD80A01H501C" );
+
+        } )
+    } );
+});
 
 describe( 'CSV loading tests', () => {
     let data = {
@@ -748,3 +761,24 @@ test( 'Add a student to waiting list', () => {
         expect( result ).toBe( "successful insert" );
     } )
 } );
+
+// GET STUDENT / TEACHER STARTING FROM SSN
+describe( "Get student and teacher starting from ssn code", () => {
+    test( 'Get student starting from ssn code', () => {
+        return DAO.getStudentFromSSN("CLRDVD80A01H501C").then( student => {
+            expect( student[0].id ).toBe( 269901 );
+            expect( student[0].name ).toBe( "Davide" );
+            expect( student[0].surname ).toBe( "Calarco" );
+            expect( student[0].email ).toBe( "davide.calarco@gmail.com" );
+        } );
+    } );
+
+    test( 'Get teacher starting from ssn code', () => {
+        return DAO.getTeacherFromSSN("HYRBCH80A01H501Y").then( teacher => {
+            expect( teacher[0].id ).toBe( 239901 );
+            expect( teacher[0].name ).toBe( "Hyeronimus" );
+            expect( teacher[0].surname ).toBe( "Bosch" );
+            expect( teacher[0].email ).toBe( "hyeronimus.bosch@gmail.com" );
+        } );
+    } );
+})

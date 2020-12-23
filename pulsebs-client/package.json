@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/user-event": "^12.2.0",
     "bootstrap": "^4.4.1",
+    "bootstrap-switch-button-react": "^1.2.0",
     "formik": "^2.1.4",
     "install": "^0.13.0",
     "jspdf": "^2.2.0",

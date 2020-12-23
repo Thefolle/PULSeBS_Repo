@@ -294,6 +294,23 @@ app.get( '/api/teachers/:teacherId/statistics/courses/:courseId', ( req, res ) =
     } );
 } )
 
+app.get( '/api/teachers/getFromSSN/:ssn', (req, res) => {
+    const ssn = req.params.ssn;
+    if ( !ssn ) {
+        res.status( 401 ).end();
+    } else {
+        pulsebsDAO.getTeacherFromSSN(ssn)
+                  .then( ( teacher ) => {
+                      res.status( 200 ).json( teacher );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
+    }
+})
+
 /****** STUDENT ******/
 
 //GET /student/lectures
@@ -451,8 +468,6 @@ app.get( '/api/student/getFromSSN/:ssn', (req, res) => {
     } else {
         pulsebsDAO.getStudentFromSSN(ssn)
                   .then( ( student ) => {
-                      // console.log("server down:");
-                      // console.log(contacts);
                       res.status( 200 ).json( student );
                   } )
                   .catch( ( err ) => {
@@ -741,7 +756,7 @@ app.get( '/api/manager/getAllLectures', ( req, res ) => {
               } );
 } );
 
-app.get( '/api/manager/contactWith/:studentId', ( req, res ) => {
+app.get( '/api/manager/contactWithStudent/:studentId', ( req, res ) => {
     const studentId = req.params.studentId;
     // console.log("server up:");
     // console.log(studentId);
@@ -749,6 +764,27 @@ app.get( '/api/manager/contactWith/:studentId', ( req, res ) => {
         res.status( 401 ).end();
     } else {
         pulsebsDAO.getContactsWithPositiveStudent( studentId )
+                  .then( ( contacts ) => {
+                      // console.log("server down:");
+                      // console.log(contacts);
+                      res.status( 200 ).json( contacts );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
+    }
+} );
+
+app.get( '/api/manager/contactWithTeacher/:teacherId', ( req, res ) => {
+    const teacherId = req.params.teacherId;
+    // console.log("server up:");
+    // console.log(studentId);
+    if ( !teacherId ) {
+        res.status( 401 ).end();
+    } else {
+        pulsebsDAO.getContactsWithPositiveTeacher( teacherId )
                   .then( ( contacts ) => {
                       // console.log("server down:");
                       // console.log(contacts);
