@@ -175,7 +175,7 @@ class SupportOfficePage extends React.Component {
 
         let newLectures = [];
     
-       for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+       for ( var d = new Date(startDate.valueOf()); d <= endDate; d.setDate(d.getDate() + 1)) {
            let day = days[d.getDay()];
            let filteredLectures = schedule.filter((s) => s.day === day);
 
@@ -186,16 +186,70 @@ class SupportOfficePage extends React.Component {
             start.setHours(s.startTime.split(":")[0], s.startTime.split(":")[1], 0, 0);
             end.setHours(s.endTime.split(":")[0], s.endTime.split(":")[1], 0, 0);
 
-            let startUnix = moment(start).unix();
-            let endUnix = moment(end).unix();
+            let startUnix = moment(start).valueOf();
+            let endUnix = moment(end).valueOf();
 
-            let lecture = new scheduledLecture(s.course, s.class, startUnix, endUnix, s.presence, s.bookable, s.active);
+            let lecture = { course: s.course, ref_class: s.class, start_date: startUnix, end_date: endUnix, presence: s.presence, bookable: s.bookable, active: s.active };
             newLectures.push(lecture);
         }
     }
-       console.log(newLectures); 
+       
+       API.cancelLecturesByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
+        if (result.ok) {
+            //get the updated list of tasks from the server
+            API.importCSV([], [], [], [], [], newLectures).then((result) => {
+                if (result.ok) {
+                    //get the updated list of tasks from the server
+                    this.setState({
+                        failed: 0,
+                        schedulecsv: undefined,
+                        lecturesImported: newLectures,
+                        scheduleImported: schedule //do we need to import in the db the schedule too?
+                    });
+                } else {
+                    this.setState({
+                        failed: 1,
+                        schedulecsv: undefined,
+                        schedule: [],
+                        lecturesImported: [[]],
+                        scheduleImported: [[]],
+                    });
+                }
+            }) //if SUCCEDED return 1
+                .catch((errorObj) => {
+                    this.handleErrors(errorObj);
+                    this.setState({
+                        failed: 1,
+                        schedulecsv: undefined,
+                        schedule: [],
+                        lecturesImported: [[]],
+                        scheduleImported: [[]],
+                    });
+                });
+    
+        } else {
+            this.setState({
+                failed: 1,
+                schedulecsv: undefined,
+                schedule: [],
+                lecturesImported: [[]],
+                scheduleImported: [[]],
+            });
+        }
+    }) //if SUCCEDED return 1
+        .catch((errorObj) => {
+            this.handleErrors(errorObj);
+            this.setState({
+                failed: 1,
+                schedulecsv: undefined,
+                schedule: [],
+                lecturesImported: [[]],
+                scheduleImported: [[]],
+            });
+        });
+        
+}
 
-    }
 
     importCSV = (type) => {
         const { studentscsv, teacherscsv, coursescsv, enrollmentscsv, lecturescsv, classescsv, schedulecsv } = this.state;
@@ -743,6 +797,11 @@ class SupportOfficePage extends React.Component {
                                             tableHeader={["id", "name", "surname",
                                                 "email", "password"]}
                                             tableData={this.state.teachersImported} />
+                                        <CollapsibleTable tableName={"Schedule"}
+                                            tableHeader={["course", "class", "day",
+                                                "start_time", "end_time",
+                                                "presence", "bookable", "active"]}
+                                            tableData={this.state.scheduleImported} />
 
                                     </Col>
                                 </Row>
