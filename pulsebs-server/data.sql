@@ -5,19 +5,19 @@ INSERT INTO class (desc,seats) values  ('4S',40);
 INSERT INTO class (desc,seats) values  ('1B',2);
 INSERT INTO class (id,desc,seats) values  (0,'VIRTUAL CLASSROOM',9999);
 
-insert into student (id,email,password, name, surname) values (269901,'davide.calarco@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Davide', 'Calarco');
-insert into student (id,email,password, name, surname) values (269902,'francesco.gallo@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Francesco', 'Gallo');
-insert into student (id,email,password, name, surname) values (269903,'vincenzo.distasio@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Vincenzo', 'Di Stasio');
-insert into student (id,email,password, name, surname) values (269904,'feihong.shi@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Feihong', 'Shi');
-insert into student (id,email,password, name, surname) values (269905,'elisa.ratto@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Elisa', 'Ratto');
-insert into student (id,email,password, name, surname) values (269906,'michele.carbone@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Michele', 'Carbone');
+insert into student (id,email,password, name, surname, ssn) values (269901,'davide.calarco@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Davide', 'Calarco', 'CLRDVD80A01H501C');
+insert into student (id,email,password, name, surname, ssn) values (269902,'francesco.gallo@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Francesco', 'Gallo', 'FRNGLL80A01H501H');
+insert into student (id,email,password, name, surname, ssn) values (269903,'vincenzo.distasio@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Vincenzo', 'Di Stasio', 'VNCDTS80A01H501Z');
+insert into student (id,email,password, name, surname, ssn) values (269904,'feihong.shi@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Feihong', 'Shi', 'FHNSHI80A01H501T');
+insert into student (id,email,password, name, surname, ssn) values (269905,'elisa.ratto@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Elisa', 'Ratto', 'RTTLSE80A41H501I');
+insert into student (id,email,password, name, surname, ssn) values (269906,'michele.carbone@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Michele', 'Carbone', 'CRBMHL80A01H501Y');
 
-insert into teacher (id, email, password, name, surname) VALUES (239901,'hyeronimus.bosch@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Hyeronimus', 'Bosch');
-insert into teacher (id, email, password, name, surname) VALUES (239902,'dalmau.sala@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Dalmau', 'Sala');
-insert into teacher (id, email, password, name, surname) VALUES (239903,'kaitlin.whittier@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Kaitlin', 'Whittier');
-insert into teacher (id, email, password, name, surname) VALUES (239904,'montserrat.wilder@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Montserrat', 'Wilder');
-insert into teacher (id, email, password, name, surname) VALUES (239905,'jorge.calatrava@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Jorge', 'Calatrava');
-insert into teacher (id, email, password, name, surname) VALUES (239906,'john.smith@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'John', 'Smith');
+insert into teacher (id, email, password, name, surname, ssn) VALUES (239901,'hyeronimus.bosch@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Hyeronimus', 'Bosch', 'HYRBCH80A01H501Y');
+insert into teacher (id, email, password, name, surname, ssn) VALUES (239902,'dalmau.sala@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Dalmau', 'Sala', 'DLMSLA80A01H501U');
+insert into teacher (id, email, password, name, surname, ssn) VALUES (239903,'kaitlin.whittier@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Kaitlin', 'Whittier', 'KTLWTT80A01H501Q');
+insert into teacher (id, email, password, name, surname, ssn) VALUES (239904,'montserrat.wilder@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Montserrat', 'Wilder', 'MNTWDR80A01H501B');
+insert into teacher (id, email, password, name, surname, ssn) VALUES (239905,'jorge.calatrava@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'Jorge', 'Calatrava', 'JRGCTR80A01H501W');
+insert into teacher (id, email, password, name, surname, ssn) VALUES (239906,'john.smith@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG', 'John', 'Smith', 'JHNSTH80A01H501X');
 
 insert into staff (email, password, type, name, surname) VALUES ('harry.houdini@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG',0, 'Harry', 'Houdini'); /* 0 => Booking manager */
 insert into staff (email, password, type, name, surname) VALUES ('john.doe@gmail.com','$2b$10$3gyXhV21BfdHnQnTk1uBFeYI5Kexj1bkGlJarX8ZJkfqLbi2J1IfG',1, 'John', 'Doe'); /* 1 => Support officer */
@@ -99,7 +99,7 @@ insert into booking (ref_student, ref_lecture, date) values (269901,8,1605628800
 insert into booking (ref_student, ref_lecture, date) values (269903,8,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269904,8,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269905,8,1605628800000);
-insert into booking (ref_student, ref_lecture, date) values (269903,10,1605628800000);
+insert into booking (ref_student, ref_lecture, date, presence) values (269903,10,1605628800000, 0);
 insert into booking (ref_student, ref_lecture, date) values (269901,12,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269905,12,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269905,14,1605628800000);

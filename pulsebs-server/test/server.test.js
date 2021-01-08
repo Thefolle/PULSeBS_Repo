@@ -173,9 +173,9 @@ describe('API STUDENT', () => {
 
     /**
      * @Feihong
-     * Add a student to a waiting list 
-     * @Note 
-     * 
+     * Add a student to a waiting list
+     * @Note
+     *
      */
     describe( '/api/students/:studentId/lectures/:lectureId', () => {
         it( 'should return a 201 if add successful', async () => {
@@ -194,8 +194,8 @@ describe('API STUDENT', () => {
     /**
      * @Feihong
      * get waiting list of lecures of a student
-     * @Note 
-     * there should be at least a lecture for current student here 
+     * @Note
+     * there should be at least a lecture for current student here
      */
     describe( '/api/student/waitings', () => {
         it( 'should return a 200 if get waitings', async () => {
@@ -212,8 +212,8 @@ describe('API STUDENT', () => {
 
     /**
      * @Feihong
-     * According the free seats of a lecture, to Update the bookable attribute of table lecture 
-     * @Note 
+     * According the free seats of a lecture, to Update the bookable attribute of table lecture
+     * @Note
      * there are free seats of lecture 1's class room
      */
     describe( '/api/students/:studentId/lectures/checkSeats/:lectureId', () => {
@@ -231,8 +231,8 @@ describe('API STUDENT', () => {
 
     /**
      * @Feihong
-     * cancle a booking 
-     * @Note 
+     * cancle a booking
+     * @Note
      * there is a booing in booking table with id 1
      */
     describe( '/api/students/:studentId/bookings/:bookingId', () => {
@@ -251,8 +251,8 @@ describe('API STUDENT', () => {
 
     /**
      * @Feihong
-     * delete a waiting item from waiting table and add a new booking 
-     * @Note 
+     * delete a waiting item from waiting table and add a new booking
+     * @Note
      * for lecture 1, there sould be waiting item in wait table
      */
     describe( '/api/students/:studentId/lectures/:lectureId/waiting', () => {
@@ -269,10 +269,10 @@ describe('API STUDENT', () => {
     } );
 
     /**
-     * @Feihong 
-     * 
+     * @Feihong
+     *
      * @Note
-     * 
+     *
      */
     //  DELETE cancle the lecture that already booked
     describe( '/api/students/:studentId/bookings/:bookingId', () => {
@@ -288,6 +288,8 @@ describe('API STUDENT', () => {
                 } );
         } );
     } );
+
+
 
 
 //DELETE TEACHER'S LECTURE
@@ -383,8 +385,8 @@ describe('API TEACHER', () => {
             let teacherId = 239903;
             let courseId = 5;
             request(server)
-                .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId)
-                .query({ groupBy: 'lecture' })
+                .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId )
+                .query({ groupBy: 'lecture', presence: "0" })
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .end(function (error, response) {
@@ -393,6 +395,53 @@ describe('API TEACHER', () => {
                     done();
                 });
         });
+
+        test('Check returned status - Presence ON', function (done) {
+            let teacherId = 239903;
+            let courseId = 5;
+            request(server)
+                .get('/api/teachers/' + teacherId + '/statistics/courses/' + courseId )
+                .query({ groupBy: 'lecture', presence: "1" })
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .end(function (error, response) {
+                    if (error) return done(error);
+                    expect(response.status).toBe(200);
+                    done();
+                });
+        });
+
+    });
+
+    describe('Setting multiple student presences', () => {
+        test( 'Trying to set both presences and absences', async () => {
+            let studentIds = [
+                {
+                    id: 269901,
+                    presence: 1
+                },
+                {
+                    id: 269902,
+                    presence: 1
+                },
+                {
+                    id: 269903,
+                    presence: 1
+                },
+                {
+                    id: 269904,
+                    presence: 1
+                },
+
+            ]
+            const response = await request(server)
+                .put('/api/teacher/1/lecture/1/presence')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+                .send(studentIds)
+            expect(response.status).toBe(200);
+        } )
     });
 
     // logout and server shutdown
@@ -527,16 +576,29 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(28); //change this value
+            expect(response.body.length).toBe(27); //change this value
         });
     });
 
-    describe('get /api/manager/contactWith/:studentId', () => {
+    describe('get /api/manager/contactWithStudent/:studentId', () => {
         it('should return a 200 if succeed', async() => {
 
             let studentId = 269901;
             const response = await request(server)
-                .get('/api/manager/contactWith/' + studentId)
+                .get('/api/manager/contactWithStudent/' + studentId)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe('get /api/manager/contactWithTeacher/:teacherId', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let teacherId = 239901;
+            const response = await request(server)
+                .get('/api/manager/contactWithStudent/' + teacherId)
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
@@ -553,6 +615,33 @@ describe('API MANAGER', () => {
         // expect(response.status).toBe(200);
         handleToCloseServer.close();
     }, 10);
+});
+
+describe('Get student and teacher infos starting from their ssn code', () => {
+
+    describe('get /api/student/getFromSSN/:ssn', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let ssn = "CLRDVD80A01H501C";
+            const response = await request(server)
+                .get('/api/student/getFromSSN/' + ssn)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe('get /api/teachers/getFromSSN/:ssn', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let ssn = "HYRBCH80A01H501Y";
+            const response = await request(server)
+                .get('/api/teachers/getFromSSN/' + ssn)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+            expect(response.status).toBe(200);
+        });
+    });
 });
 
 describe('API Officer', () => {
@@ -583,7 +672,8 @@ describe('API Officer', () => {
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD1234"
                 }
             ],
             "students": [
@@ -592,7 +682,8 @@ describe('API Officer', () => {
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD1234"
                 }
             ],
             "courses": [
@@ -673,6 +764,8 @@ describe('API Officer', () => {
             expect(response.status).toBe(400);
         });
     });
+
+
 
     // logout and server shutdown
     afterAll(async () => {

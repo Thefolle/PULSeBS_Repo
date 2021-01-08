@@ -13,7 +13,7 @@ const bcrypt = require( 'bcrypt' );
 
 const schedule = require( 'node-schedule' );
 const nodemailer = require( 'nodemailer' );
-const { response } = require('express');
+const {response} = require( 'express' );
 
 
 // Authorization error
@@ -197,7 +197,7 @@ app.get( '/api/user', ( req, res ) => {
                                 type: user.type
                             } );
               } ).catch(
-        (  ) => {
+        () => {
             res.status( 404 ).json( authErrorObj );
         }
     );
@@ -239,7 +239,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                             " (" + studentAndLectureInfo.studentId + ")," +
                             " the lesson of the course " + studentAndLectureInfo.courseDescription + "," +
                             " planned to take place in class " + studentAndLectureInfo.lectureClass +
-                            " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" )  + "," +
+                            " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" ) + "," +
                             " has been just turnt to be online by the teacher." + "\n\n" +
                             "Have a good virtual lesson.\n\n - PULSeBS Team9."
                     };
@@ -279,18 +279,36 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
     }
 } );
 
-app.get('/api/teachers/:teacherId/statistics/courses/:courseId', (req, res) => {
+app.get( '/api/teachers/:teacherId/statistics/courses/:courseId', ( req, res ) => {
     //const user = req.user && req.user.user;
     const teacherId = req.params.teacherId;
     const courseId = req.params.courseId;
     const groupBy = req.query.groupBy;
+    const presence = req.query.presence;
 
-    pulsebsDAO.getTeacherBookingStatistics(teacherId, courseId, groupBy).then( statistics => {
-        res.status(200).json(statistics);
-    }).catch(error => {
-        console.log(error);
-        res.status(500).end();
-    });
+    pulsebsDAO.getTeacherBookingStatistics( teacherId, courseId, groupBy, presence ).then( statistics => {
+        res.status( 200 ).json( statistics );
+    } ).catch( error => {
+        console.log( error );
+        res.status( 500 ).end();
+    } );
+} )
+
+app.get( '/api/teachers/getFromSSN/:ssn', (req, res) => {
+    const ssn = req.params.ssn;
+    if ( !ssn ) {
+        res.status( 401 ).end();
+    } else {
+        pulsebsDAO.getTeacherFromSSN(ssn)
+                  .then( ( teacher ) => {
+                      res.status( 200 ).json( teacher );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
+    }
 })
 
 /****** STUDENT ******/
@@ -367,65 +385,64 @@ app.post( '/api/students/:studentId/booking', ( req, res ) => {
 } );
 
 /**
- * @Feihong 
+ * @Feihong
  * PUT /api/students/:studentId/lectures/:lectureId
  */
-// Add a student to a waiting list 
-app.put('/api/students/:studentId/lectures/:lectureId', (req, res) => {
+// Add a student to a waiting list
+app.put( '/api/students/:studentId/lectures/:lectureId', ( req, res ) => {
     const studentId = req.params.studentId;
     const lectureId = req.params.lectureId;
-    if (!lectureId) {
-        res.status(401).end();
+    if ( !lectureId ) {
+        res.status( 401 ).end();
     } else {
         const user = req.user && req.user.user
-        pulsebsDAO.addStudentToWaitingList(user, lectureId)
-        .then( (response) => { 
-            res.status( 201 ).json( {response} )
-        })
-        .catch ( (err) => {
-            res.status( 500 ).json({errors: [ {'param': 'Server', 'msg': err} ]  })
-        })
+        pulsebsDAO.addStudentToWaitingList( user, lectureId )
+                  .then( ( response ) => {
+                      res.status( 201 ).json( {response} )
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {errors: [ {'param': 'Server', 'msg': err} ]} )
+                  } )
     }
-})
+} )
 
 /**
- * @Feihong 
+ * @Feihong
  * GET /student/waitings
  */
-//  get waiting list of lecures of a student 
+//  get waiting list of lecures of a student
 
-app.get('/api/student/waitings', (req, res) => {
+app.get( '/api/student/waitings', ( req, res ) => {
     const studentId = req.user && req.user.user
-    pulsebsDAO.getWaitingList(studentId)
-                .then( (waitings) => {
-                    res.json( waitings )
-                })
-                .catch( (err) => {
-                    res.status(500).json({
-                        errors: [{'message': err}]
-                    })
-                } )
-})
+    pulsebsDAO.getWaitingList( studentId )
+              .then( ( waitings ) => {
+                  res.json( waitings )
+              } )
+              .catch( ( err ) => {
+                  res.status( 500 ).json( {
+                                              errors: [ {'message': err} ]
+                                          } )
+              } )
+} )
 
 /**
- * @Feihong 
+ * @Feihong
  * POST /students/studentId/lectures/lectureId
  */
-//According the free seats of a lecture, to Update the bookable attribute of table lecture 
-app.post('/api/students/:studentId/lectures/checkSeats/:lectureId', (req, res) => {
+//According the free seats of a lecture, to Update the bookable attribute of table lecture
+app.post( '/api/students/:studentId/lectures/checkSeats/:lectureId', ( req, res ) => {
     const studentId = req.user && req.user.user
     const lectureId = req.params.lectureId
-    if (!lectureId) {
-        res.status(400).end("Can not get lecture!");
+    if ( !lectureId ) {
+        res.status( 400 ).end( "Can not get lecture!" );
+    } else {
+        pulsebsDAO.checkSeatsOfLecture( lectureId )
+                  .then( ( lectureId ) => res.status( 200 ).json( {"lectureId": lectureId} ) )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {errors: [ {'param': 'Server-checkSeatsOfLecture', 'msg': err} ],} )
+                  } )
     }
-    else {
-        pulsebsDAO.checkSeatsOfLecture(lectureId)
-                    .then( (lectureId) => res.status(200).json({"lectureId": lectureId}))
-                    .catch( (err) =>{
-                        res.status(500).json({ errors: [{'param': 'Server-checkSeatsOfLecture', 'msg': err}], })
-                    })
-    }
-})
+} )
 
 
 //GET /student/bookings
@@ -444,12 +461,29 @@ app.get( '/api/student/bookings', ( req, res ) => {
               } );
 } )
 
+app.get( '/api/student/getFromSSN/:ssn', (req, res) => {
+    const ssn = req.params.ssn;
+    if ( !ssn ) {
+        res.status( 401 ).end();
+    } else {
+        pulsebsDAO.getStudentFromSSN(ssn)
+                  .then( ( student ) => {
+                      res.status( 200 ).json( student );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
+    }
+})
+
 /**
  * @Feihong
  * POST /student/bookings
  */
 //  FIXME: refactor
-app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
+app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
     const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
     if ( !bookingId ) {
@@ -467,77 +501,79 @@ app.delete('/api/students/:studentId/bookings/:bookingId', (req, res) => {
                                               } );
                   } );
     }
-});
+} );
 
 /**
  * @Feihong
  * DELETE /students/:studentId/lectures/:lectureId/waiting
- *  delete a waiting item from waiting table and add a new booking 
+ *  delete a waiting item from waiting table and add a new booking
  */
-app.delete('/api/students/:studentId/lectures/:lectureId/waiting', (req, res) => {
+app.delete( '/api/students/:studentId/lectures/:lectureId/waiting', ( req, res ) => {
     const studentId = req.params.studentId;
     const lectureId = req.params.lectureId;
-    if (!lectureId) {
-        res.status(401).end('can not find lecture');
+    if ( !lectureId ) {
+        res.status( 401 ).end( 'can not find lecture' );
     } else {
-        pulsebsDAO.deleteWaitingAddBooking(lectureId)
-            .then( (studentAndLectureInfo) => {
-                res.status(200).json( 
-                    {
-                    message: "The lecture was find in the waiting table,"+
-            "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: "+lectureId
-                    })
-                    if ( process.env.TEST && process.env.TEST === '0' ) {
-                        let mailOptions;
-                        mailOptions = {
-                            from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
-                            to: 'student.team9@yopmail.com', // replace this row with studentAndLectureInfo.studentEmail
-                            //to: 'shinylover520@gmail.com', // replace this row with studentAndLectureInfo.studentEmail
-                            // subject: 'Lecture of ' + studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
-                            subject: 'Your waiting lecture was picked from the waiting list',
-                            text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
-                                " (" + studentAndLectureInfo.studentId + ")," +
-                                " the lesson of the course " + studentAndLectureInfo.courseDescription + " that in your waiting list was picked, and it was " +
-                                " planned to take place in class " + studentAndLectureInfo.lectureClass +
-                                " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" )  + "."  + "\n\n" +
-                                "Have a good lesson.\n\n - PULSeBS Team9."
-                        };
-                        transporter.sendMail( mailOptions, function ( error, info ) {
-                            if ( error ) {
-                                console.log( "Some error occured in sending the email to shinylover520@gmail.com :"+ error );
-                            } else {
-                                console.log( 'Email sent to: ' + studentAndLectureInfo.studentId);
-                            }
-                        } );    
-                    }
-                
-            })
-            .catch( ( exitCode ) => {
-                if ( exitCode === 0 ) {
-                    res.status( 404 ).json( {message: "Find waiting err."} );
-                } else if ( exitCode === -1 ) {
-                    res.status( 404 ).json( {message: "There is no such a lecture in waiting list with id " + lectureId + " ."} );
-                } else if ( exitCode === -2 ) {
-                    res.status( 409 ).json( {message: "Delete waiting err."} );
-                } else if ( exitCode === -3 ) {
-                    res.status( 409 ).json( {
-                                                message: "Add new booking err."
-                                            } );
-                } else if ( exitCode === -4 ) {
-                    res.status( 409 ).json( {
-                                                message: "Find student informations err."
-                                            } );
-                } else if ( exitCode === -5 ) {
-                    res.status( 500 ).json(
-                        {
-                            message:
-                                "There is no such a student, so can not find informations of the student"
-                        }
-                    );
-                }
-            } );
+        pulsebsDAO.deleteWaitingAddBooking( lectureId )
+                  .then( ( studentAndLectureInfo ) => {
+                      res.status( 200 ).json(
+                          {
+                              message: "The lecture was find in the waiting table," +
+                                  "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: " + lectureId
+                          } )
+                      if ( process.env.TEST && process.env.TEST === '0' ) {
+                          let mailOptions;
+                          mailOptions = {
+                              from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                              to: 'student.team9@yopmail.com', // replace this row with
+                                                               // studentAndLectureInfo.studentEmail
+                              //to: 'shinylover520@gmail.com', // replace this row with
+                              // studentAndLectureInfo.studentEmail subject: 'Lecture of ' +
+                              // studentAndLectureInfo.courseDescription + ' has just been turnt to be online',
+                              subject: 'Your waiting lecture was picked from the waiting list',
+                              text: "Dear " + studentAndLectureInfo.studentSurname + " " + studentAndLectureInfo.studentName +
+                                  " (" + studentAndLectureInfo.studentId + ")," +
+                                  " the lesson of the course " + studentAndLectureInfo.courseDescription + " that in your waiting list was picked, and it was " +
+                                  " planned to take place in class " + studentAndLectureInfo.lectureClass +
+                                  " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" ) + "." + "\n\n" +
+                                  "Have a good lesson.\n\n - PULSeBS Team9."
+                          };
+                          transporter.sendMail( mailOptions, function ( error, info ) {
+                              if ( error ) {
+                                  console.log( "Some error occured in sending the email to shinylover520@gmail.com :" + error );
+                              } else {
+                                  console.log( 'Email sent to: ' + studentAndLectureInfo.studentId );
+                              }
+                          } );
+                      }
+
+                  } )
+                  .catch( ( exitCode ) => {
+                      if ( exitCode === 0 ) {
+                          res.status( 404 ).json( {message: "Find waiting err."} );
+                      } else if ( exitCode === -1 ) {
+                          res.status( 404 ).json( {message: "There is no such a lecture in waiting list with id " + lectureId + " ."} );
+                      } else if ( exitCode === -2 ) {
+                          res.status( 409 ).json( {message: "Delete waiting err."} );
+                      } else if ( exitCode === -3 ) {
+                          res.status( 409 ).json( {
+                                                      message: "Add new booking err."
+                                                  } );
+                      } else if ( exitCode === -4 ) {
+                          res.status( 409 ).json( {
+                                                      message: "Find student informations err."
+                                                  } );
+                      } else if ( exitCode === -5 ) {
+                          res.status( 500 ).json(
+                              {
+                                  message:
+                                      "There is no such a student, so can not find informations of the student"
+                              }
+                          );
+                      }
+                  } );
     }
-})
+} )
 
 // DELETE /student/bookings
 //FIXME: refactor
@@ -622,27 +658,27 @@ app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
 * Thi API parse a JSON object and execute statements on DB.
 * */
 app.put( '/api/sofficer/', ( req, res ) => {
-    console.log("qui");
+    console.log( "qui" );
     //Ligh validation body
-    if('classes' in req.body &&
+    if ( 'classes' in req.body &&
         'courses' in req.body &&
         'lectures' in req.body &&
         'students' in req.body &&
         'subscriptions' in req.body &&
         'teachers' in req.body
     ) pulsebsDAO.loadCsvData( req.body )
-              .then( () => res.status( 200 ).end() )
-              .catch( () => res.status( 400 ).json( databaseErrorObj ) )
+                .then( () => res.status( 200 ).end() )
+                .catch( () => res.status( 400 ).json( databaseErrorObj ) )
     else res.status( 400 ).json( dataErrorObj )
 
 } )
 
 //BOOKING MANAGER
 
-app.get('/api/manager/getAllBookings',(req,res)=>{
-    const course=req.query.course;
-    const lecture=req.query.lecture;
-    pulsebsDAO.getAllBookings(course,lecture)
+app.get( '/api/manager/getAllBookings', ( req, res ) => {
+    const course = req.query.course;
+    const lecture = req.query.lecture;
+    pulsebsDAO.getAllBookings( course, lecture )
               .then( ( bookings ) => {
                   res.json( bookings );
               } )
@@ -651,12 +687,12 @@ app.get('/api/manager/getAllBookings',(req,res)=>{
                                               errors: [ {'message': err} ],
                                           } );
               } );
-});
+} );
 
-app.get('/api/manager/getAllAttendances',(req,res)=>{
-    const course=req.query.course;
-    const lecture=req.query.lecture;
-    pulsebsDAO.getAllAttendances(course,lecture)
+app.get( '/api/manager/getAllAttendances', ( req, res ) => {
+    const course = req.query.course;
+    const lecture = req.query.lecture;
+    pulsebsDAO.getAllAttendances( course, lecture )
               .then( ( bookings ) => {
                   res.json( bookings );
               } )
@@ -665,13 +701,13 @@ app.get('/api/manager/getAllAttendances',(req,res)=>{
                                               errors: [ {'message': err} ],
                                           } );
               } );
-});
+} );
 
 
-app.get('/api/manager/getAllCancellationsLectures',(req,res)=>{
-    const course=req.query.course;
-    const lecture=req.query.lecture;
-    pulsebsDAO.getAllCancellationsLectures(course,lecture)
+app.get( '/api/manager/getAllCancellationsLectures', ( req, res ) => {
+    const course = req.query.course;
+    const lecture = req.query.lecture;
+    pulsebsDAO.getAllCancellationsLectures( course, lecture )
               .then( ( cancellations ) => {
                   res.json( cancellations );
               } )
@@ -680,12 +716,12 @@ app.get('/api/manager/getAllCancellationsLectures',(req,res)=>{
                                               errors: [ {'message': err} ],
                                           } );
               } );
-});
+} );
 
-app.get('/api/manager/getAllCancellationsBookings',(req,res)=>{
-    const course=req.query.course;
-    const lecture=req.query.lecture;
-    pulsebsDAO.getAllCancellationsBookings(course,lecture)
+app.get( '/api/manager/getAllCancellationsBookings', ( req, res ) => {
+    const course = req.query.course;
+    const lecture = req.query.lecture;
+    pulsebsDAO.getAllCancellationsBookings( course, lecture )
               .then( ( cancellations ) => {
                   res.json( cancellations );
               } )
@@ -694,9 +730,9 @@ app.get('/api/manager/getAllCancellationsBookings',(req,res)=>{
                                               errors: [ {'message': err} ],
                                           } );
               } );
-});
+} );
 
-app.get('/api/manager/getAllCourses',(req,res)=>{
+app.get( '/api/manager/getAllCourses', ( req, res ) => {
     pulsebsDAO.getAllCourses()
               .then( ( courses ) => {
                   res.json( courses );
@@ -706,9 +742,9 @@ app.get('/api/manager/getAllCourses',(req,res)=>{
                                               errors: [ {'message': err} ],
                                           } );
               } );
-});
+} );
 
-app.get('/api/manager/getAllLectures',(req,res)=>{
+app.get( '/api/manager/getAllLectures', ( req, res ) => {
     pulsebsDAO.getAllLectures()
               .then( ( lectures ) => {
                   res.json( lectures );
@@ -718,31 +754,68 @@ app.get('/api/manager/getAllLectures',(req,res)=>{
                                               errors: [ {'message': err} ],
                                           } );
               } );
-});
+} );
 
-app.get('/api/manager/contactWith/:studentId', (req, res) => {
+app.get( '/api/manager/contactWithStudent/:studentId', ( req, res ) => {
     const studentId = req.params.studentId;
     // console.log("server up:");
     // console.log(studentId);
-    if (!studentId) {
-        res.status(401).end();
+    if ( !studentId ) {
+        res.status( 401 ).end();
     } else {
-        pulsebsDAO.getContactsWithPositiveStudent(studentId)
-            .then( (contacts) => {
-                // console.log("server down:");
-                // console.log(contacts);
-                res.status(200).json(contacts);
-            })
-            .catch( (err) => {
-                res.status( 500 ).json( {
-                    errors: [ {'message': err} ],
-                } );
-            });
+        pulsebsDAO.getContactsWithPositiveStudent( studentId )
+                  .then( ( contacts ) => {
+                      // console.log("server down:");
+                      // console.log(contacts);
+                      res.status( 200 ).json( contacts );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
     }
-});
+} );
+
+app.get( '/api/manager/contactWithTeacher/:teacherId', ( req, res ) => {
+    const teacherId = req.params.teacherId;
+    // console.log("server up:");
+    // console.log(studentId);
+    if ( !teacherId ) {
+        res.status( 401 ).end();
+    } else {
+        pulsebsDAO.getContactsWithPositiveTeacher( teacherId )
+                  .then( ( contacts ) => {
+                      // console.log("server down:");
+                      // console.log(contacts);
+                      res.status( 200 ).json( contacts );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                                                  errors: [ {'message': err} ],
+                                              } );
+                  } );
+    }
+} );
+
+app.get( '/api/teacher/:courseId/lecture/:lectureId/presence', ( req, res ) => {
+    pulsebsDAO.getStudentsForLecture( req.params.lectureId )
+              .then( result => result ? res.status( 200 ).json( result ).end() : res.status( 200 ).json( [] ).end() )
+              .catch( err => res.status( 500 ).json( {
+                                                         errors: [ {'message': err} ],
+                                                     } ).end() );
+} );
+
+app.put( '/api/teacher/:courseId/lecture/:lectureId/presence', ( req, res ) => {
+    pulsebsDAO.setStudentPresencesForLecture( req.params.lectureId, req.body )
+              .then( result => res.status( 200 ).end() )
+              .catch( err => res.status( 500 ).json( {
+                                                         errors: [ {'message': err} ],
+                                                     } ).end() );
+} );
 
 
 // Exported for E2E testing
 exports.server = app;
-app.disable("x-powered-by");
+app.disable( "x-powered-by" );
 exports.handleToCloseServer = app.listen( port, () => console.log( `REST API server listening at http://localhost:${ port }` ) )
