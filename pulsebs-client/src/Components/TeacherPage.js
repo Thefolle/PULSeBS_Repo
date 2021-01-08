@@ -12,6 +12,8 @@ import TeacherStatistics from './TeacherStatistics';
 
 import { Row, Col, Container, ListGroup, Jumbotron } from "react-bootstrap";
 
+import Tutorial from './Tutorial';
+
 import '../App.css';
 import '../customStyle.css';
 import PresencePage                                  from "./PresencePage";
@@ -148,7 +150,9 @@ class TeacherPage extends React.Component {
                                             <h5>POLITECNICO DI TORINO</h5>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                            <Tutorial on={true} text='This is your identification number.' push={
+                                                context.authUser.id
+                                            } />
                                         </ListGroup>
                                     </Col>
                                     <Col sm={8}>

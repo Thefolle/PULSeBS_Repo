@@ -4,6 +4,8 @@ import WaitingItem from './Components/waitings/WaitingItem'
 import { Table }   from "react-bootstrap";
 import {AuthContext} from './auth/AuthContext';
 
+import Tutorial from './Components/Tutorial';
+
 const BookingsList = ( props ) => {
 
     let {deleteWaitingAddBooking, waitings, bookings, cancelBooking} = props; //add delete method
@@ -12,14 +14,17 @@ const BookingsList = ( props ) => {
       <AuthContext.Consumer>
             {()=>(
                 <>
-                <h2>Bookings</h2>
+                
+                <Tutorial on={true} text='Here immediately follows the list of bookings that were accepted; for each of them a seat is reserved for you.' push={
+                    <h2>Bookings</h2>
+                } />
                 <Table className="table">
                     
                     <thead>
                     <tr>
                         <th>Date</th>
                         <th>Course</th>
-                        <th>Class</th>
+                        <th>Classroom</th>
                         <th>Presence</th>
                         <th>Actions</th>
                     </tr>
@@ -30,13 +35,15 @@ const BookingsList = ( props ) => {
 
                     </tbody>
                 </Table>
-                <h2>Waitings</h2>
+                <Tutorial on={true} text={<p>Here immediately follows the list of bookings that will be accepted as soon as a seat becomes available.<br/>In that case, the system will automatically reserve a seat for you and the booking will so be moved into the bookings list.</p>} push={
+                    <h2>Waiting list</h2>
+                } />
                 <Table className="table">
                     <thead>
                     <tr>
                         <th>Date</th>
                         <th>Course</th>
-                        <th>Class</th>
+                        <th>Classroom</th>
                         <th>Presence</th>
                         <th>Add Date</th>
                     </tr>

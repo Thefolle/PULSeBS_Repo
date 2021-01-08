@@ -10,7 +10,7 @@ class Tutorial extends React.Component {
     render() {
         return this.props.on === true ?
         <OverlayTrigger
-            delay={1700}
+            delay={1100}
             overlay={
                 <Popover>
                     <Popover.Content>

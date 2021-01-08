@@ -3,6 +3,7 @@ import moment          from 'moment';
 import Image           from 'react-bootstrap/Image';
 // import context from 'react-bootstrap/esm/AccordionContext';
 import { AuthContext } from './auth/AuthContext';
+import Tutorial from './Components/Tutorial';
 
 const BookingItem = ( props ) => {
 
@@ -18,10 +19,16 @@ const BookingItem = ( props ) => {
               <td>{booking.class}</td>
               <td>{booking.presence === 1 ? "Presence" : "Remote"}</td>
               { booking.date>moment().valueOf()?
-                <td><Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>{/*cancelBooking(context.authUser.id, booking.id);*/ deleteWaitingAddBooking(context.authUser.id, booking.ref_lecture,booking.id)}}/></td>
+                <td>
+                  <Tutorial on={true} text={<p>Cancel the booking.<br/>It will be available again in the lectures tab.</p>} push={
+                    <Image width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt ="" onClick = {()=>{/*cancelBooking(context.authUser.id, booking.id);*/ deleteWaitingAddBooking(context.authUser.id, booking.ref_lecture,booking.id)}}/>
+                  } />
+                </td>
                 :<td>
-                        <Image width="30" height="30" className="img-button" type="button" src="/svg/forbid.svg" onClick= {() =>{ alert("This booking is passed") } }/>
-                 </td>  //or undefined
+                  <Tutorial on={true} text={<p>The lecture which this booking refers to was already given. You cannot therefore delete it anymore.</p>} push={
+                    <Image width="30" height="30" className="img-button" type="button" src="/svg/forbid.svg" onClick= {() =>{ alert("This booking is passed") } }/>
+                  } />
+                  </td>  //or undefined
               }
               
           </tr>

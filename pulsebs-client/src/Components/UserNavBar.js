@@ -6,7 +6,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import { Switch, Route, Link } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
 import {AiOutlineTable} from 'react-icons/ai';
-import { FaBookOpen, FaCalendarAlt, FaUserCircle} from "react-icons/fa";
+import { FaBookOpen, FaCalendarAlt, FaOldRepublic, FaUserCircle} from "react-icons/fa";
 import { IoIosStats } from 'react-icons/io';
 import { RiVirusFill } from 'react-icons/ri'
 
@@ -39,7 +39,7 @@ class UserNavBar extends React.Component {
                       <Tutorial on={true} text='Here you can find the bookings of the next days and the bookings in waiting list which will be accepted whenever a seat becomes available.' push={
                         <Nav.Link href='/student/bookings'> Bookings&Waitings <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
                       } />
-                      <Tutorial on={true} text='Here is the schedule of lectures in the next days.' push={
+                      <Tutorial on={true} text='Navigate the schedule of past, present and approaching lectures.' push={
                         <Nav.Link href='/student/calendar'> Calendar <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
                       } />
                     </Nav>
@@ -48,8 +48,12 @@ class UserNavBar extends React.Component {
                 <Route path='/teacher'>
                   <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                      <Nav.Link href='/teacher/courses'> Courses <FaBookOpen className={"ml-0.5"} /> </Nav.Link>
-                      <Nav.Link href={`/teacher/${this.props.userId}/statistics/courses`}> Statistics <IoIosStats className={"ml-0.5"} /></Nav.Link>
+                      <Tutorial on={true} text="Navigate here your courses, lectures and the associated student's bookings." push={
+                        <Nav.Link href='/teacher/courses'> Courses <FaBookOpen className={"ml-0.5"} /> </Nav.Link>
+                      } />
+                      <Tutorial on={true} text="Monitor the number of students attending your lectures." push={
+                        <Nav.Link href={`/teacher/${this.props.userId}/statistics/courses`}> Statistics <IoIosStats className={"ml-0.5"} /></Nav.Link>
+                      } />
                     </Nav>
                   </Navbar.Collapse>
                 </Route>
@@ -72,7 +76,11 @@ class UserNavBar extends React.Component {
                    </Navbar.Collapse>
                   </Route>
               </Switch>
-              <Navbar.Brand> <FaUserCircle className={"ml-1"} /> {this.props.userId} </Navbar.Brand>
+              <Navbar.Brand>
+                <Tutorial on={true} text={<p>This is your identification number.</p>} push={
+                  <><FaUserCircle className={"ml-1"} /> {this.props.userId}</>
+                } />
+              </Navbar.Brand>
               <div>
                 <LinkContainer to='/'>
                   <Tutorial on={true} text='Log out from the portal. See you soon!' push={
