@@ -3,6 +3,8 @@ import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
 import { AuthContext } from './auth/AuthContext';
 
+import Tutorial from './Components/Tutorial';
+
 const LecturesList = (props) => {
 
     let {waitings, lectures, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, deleteWaitingAddBooking, getBookingId } = props;
@@ -20,10 +22,12 @@ const LecturesList = (props) => {
                         <th>Time</th>
                         <th>Presence</th>
                         <th>Course</th>
-                        <th>Class</th>
+                        <th>Classroom</th>
                         <th>Teacher</th>
                         <th>Book</th>
-                        <th>Unbook</th>
+                        <th>
+                          <Tutorial on={true} text='Cancel the booking.' push={'Unbook'} />
+                        </th>
                     </tr>
                     </thead>
                     <tbody>

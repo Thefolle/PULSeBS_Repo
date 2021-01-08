@@ -3,12 +3,14 @@ import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
 import { LinkContainer } from "react-router-bootstrap";
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Link } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
 import {AiOutlineTable} from 'react-icons/ai';
 import { FaBookOpen, FaCalendarAlt, FaUserCircle} from "react-icons/fa";
 import { IoIosStats } from 'react-icons/io';
 import { RiVirusFill } from 'react-icons/ri'
+
+import Tutorial from './Tutorial';
 
 import '../App.css';
 import '../customStyle.css';
@@ -31,9 +33,15 @@ class UserNavBar extends React.Component {
                   <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                       {/*<Nav.Link href='/student'> Home <FaHome className={"ml-0.5"} /></Nav.Link>*/}
-                      <Nav.Link href='/student/lectures'> Lectures <FaBookOpen className={"ml-0.5"} /> </Nav.Link>
-                      <Nav.Link href='/student/bookings'> Bookings&Waitings <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
-                      <Nav.Link href='/student/calendar'> Calendar <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
+                      <Tutorial on={true} text='Here you can find the lectures available in the next days, grouped by course.' push={
+                        <Nav.Link href='/student/lectures'> Lectures <FaBookOpen className={"ml-0.5"} /></Nav.Link>
+                      } />
+                      <Tutorial on={true} text='Here you can find the bookings of the next days and the bookings in waiting list which will be accepted whenever a seat becomes available.' push={
+                        <Nav.Link href='/student/bookings'> Bookings&Waitings <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
+                      } />
+                      <Tutorial on={true} text='Here is the schedule of lectures in the next days.' push={
+                        <Nav.Link href='/student/calendar'> Calendar <FaCalendarAlt className={"ml-0.5"} /> </Nav.Link>
+                      } />
                     </Nav>
                   </Navbar.Collapse>
                 </Route>
@@ -67,7 +75,9 @@ class UserNavBar extends React.Component {
               <Navbar.Brand> <FaUserCircle className={"ml-1"} /> {this.props.userId} </Navbar.Brand>
               <div>
                 <LinkContainer to='/'>
-                  <Nav.Link id="logout-button" onClick={() => context.logoutUser()}>Log out</Nav.Link>
+                  <Tutorial on={true} text='Log out from the portal. See you soon!' push={
+                    <Nav.Link id="logout-button" onClick={() => context.logoutUser()}>Log out</Nav.Link>
+                  } />
                 </LinkContainer>
               </div>
             </Navbar>

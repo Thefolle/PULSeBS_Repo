@@ -5,6 +5,7 @@ import Image       from 'react-bootstrap/Image';
 import {AuthContext} from './auth/AuthContext';
 //import Lecture from './API/Lecture';
 
+import Tutorial from './Components/Tutorial';
 
 const LectureItem = ( props ) => {
 
@@ -42,13 +43,25 @@ const LectureItem = ( props ) => {
 
                     {alreadyWaited(lecture.id) === 0 && lecture.bookable === 1 && alreadyBooked(lecture.id) === 0 && lecture.date > moment().valueOf() ?
                     <td>
-                        <Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt="" onClick={ () => bookSeat(context.authUser.id, lecture.id ) }/>
+                        <Tutorial on={true} text='Book the lecture, if possible. The booking will be available in the bookings tab.' push={
+                            <Image width="30" height="30" className="img-button" type="button" src="/svg/calendar.svg" alt="" onClick={ () => bookSeat(context.authUser.id, lecture.id ) }/>
+                        } />
                     </td> : 
                     // TODO: Merge Waiting column to actions 
                     // TODO: check there is seats or not
                    alreadyWaited(lecture.id) === 1|| (alreadyBooked(lecture.id) === 1 && lecture.date > moment().valueOf()) || lecture.date < moment().valueOf() ?
                     <td>
-                        <Image width="30" height="30" className="img-button" type="button" src="/svg/forbid.svg" onClick= {() =>{ alert("You can not book this lecture!") } }/>
+                        <Tutorial on={true}
+                        text={<p>This lecture cannot be booked, typically for these reasons:
+                            <ul>
+                                <li>It is already booked: check the bookings tab;</li>
+                                <li>It is in the waiting list: check the waitings tab;</li>
+                                <li>It's a past lecture.</li>
+                            </ul>
+                        </p>}
+                        push={
+                            <Image width="30" height="30" className="img-button" type="button" src="/svg/forbid.svg" onClick= {() =>{ alert("You can not book this lecture!") } }/>
+                        } />
                     </td> :
                         /*do something if it fails*/
                     <td>
