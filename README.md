@@ -5,8 +5,6 @@ PULSeBS, a.k.a. Pandemic University Lecture Seat Booking System, is an applicati
 
 ## Installation
 
----
-
 - *Docker on your local machine*: clone the repository from the main branch in local, open a shell in the root folder of the project; the command to run the whole application is: ```docker-compose -f ./docker-compose.yml up```
 
 - *Docker on DockerHub*: coming soon!
@@ -19,13 +17,9 @@ PULSeBS, a.k.a. Pandemic University Lecture Seat Booking System, is an applicati
 
 ## Important documents
 
----
-
 - [Backlog with notes](<https://docs.google.com/document/d/1AifxbhVeeMtsyYsEbVNopr66S-grZAHy/edit>)
 - [Backlog with questions and answers](<https://docs.google.com/document/d/1ELJbPE27IaUL6TSb6JUdjA4l5-gVSvVsMUWpgQc8V7Q/edit#heading=h.wa25ir5z6t83>)
 
 ## License
-
----
 
 [MIT](<https://choosealicense.com/licenses/mit/>)
