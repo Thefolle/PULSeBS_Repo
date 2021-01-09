@@ -1,6 +1,5 @@
 import React from 'react';
-import { withRouter, Switch, Route } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
+
 import '../App.css';
 import '../customStyle.css';
 import { Popover, OverlayTrigger } from 'react-bootstrap';
