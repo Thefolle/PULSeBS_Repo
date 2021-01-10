@@ -633,6 +633,25 @@ describe( 'CSV loading tests', () => {
     } );
 } );
 
+describe( 'Schedule update', () => {
+
+    test( "Try to delete lectures by date", () => {
+        return DAO.cancelLecturesByDate( 1610236800000, 1611100800000 )
+                  .then( result => expect( result ).toBe( 1 ) );
+    } );
+
+    test( "Try to delete lectures by date without passing a parameter", () => {
+        return DAO.cancelLecturesByDate( 1610236800000 )
+        .catch( err => expect( err ) );
+    } );
+
+    test( "Try to delete lectures by date in a range of date in which there are no lessons in the db", () => {
+        return DAO.cancelLecturesByDate(  1510236800000, 1511100800000 )
+                  .then( result => expect( result ).toBe( 0 ) );
+    } );
+    
+
+});
 
 /**
  * @Feihong

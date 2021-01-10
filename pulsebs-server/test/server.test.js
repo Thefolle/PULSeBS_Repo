@@ -765,6 +765,35 @@ describe('API Officer', () => {
         });
     });
 
+    
+    describe('Try to cancel lectures by date to update the schedule', () => {
+        test('Try to cancel lectures correctly', async function () {
+            let startDate = 1610236800000;
+            let endDate = 1611100800000;
+            let response = await request(server)
+                .delete(`/api/supportOffice/lectures/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(200);
+        });
+        test('Try to cancel lectures wrongly - Wrong url', async function () {
+            let startDate = 1610236800000;
+            let endDate = 1611100800000;
+            let response = await request(server)
+                .delete(`/api/supportOffice/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(404);
+        });
+        /*test('Try to cancel lectures wrongly - Wrong params', async function () {
+            let startDate = 1610236800000;
+            let endDate;
+            let response = await request(server)
+                .delete(`/api/supportOffice/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(401);
+        });*/
+    });
+
+
 
 
     // logout and server shutdown
