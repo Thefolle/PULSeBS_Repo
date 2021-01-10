@@ -7,12 +7,10 @@ import Form from 'react-bootstrap/Form';
 import '../App.css';
 import API from '../API/API';
 import { AuthContext } from '../auth/AuthContext';
-import { Row, Col, Container, ListGroup, Button, FormGroup, FormLabel, Accordion, Card } from "react-bootstrap";
+import { Row, Col, Container, ListGroup, Button, FormGroup, FormLabel} from "react-bootstrap";
 import CollapsibleTable from "./CollapsibleTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Lecture from '../API/Lecture';
-import scheduledLecture from '../API/scheduledLecture'
 
 let buttonsStyle = {
     background: "blue",
@@ -707,34 +705,32 @@ class SupportOfficePage extends React.Component {
                                         <br />
                                         <br />
 
-                                        <h4>Schedule</h4>
+                                        <h4>Schedule Update</h4>
                                         <br />
                                         <Row>
-                                            <Col sm={4}>
-                                                <Row>
+                                            <Col sm={5}>
                                                     <FormGroup>
-                                                        <FormLabel>from:</FormLabel>
-                                                        <DatePicker
+                                                       <Row>
+                                                        <Col sm={2}><FormLabel>from:</FormLabel></Col>
+                                                        <Col sm={2}><DatePicker
                                                             id="datepicker-start"
                                                             name="startDate"
                                                             value={this.state.shortStartDate}
                                                             onChange={this.handleStartDate}
-                                                        />
+                                                        /></Col></Row>
                                                     </FormGroup>
-                                                </Row>
-                                                <Row>
                                                     <FormGroup>
-                                                        <FormLabel>to:</FormLabel>
-                                                        <DatePicker
+                                                      <Row>
+                                                        <Col sm={2}><FormLabel>to:</FormLabel></Col>
+                                                        <Col sm={2}><DatePicker
                                                             id="datepicker-end"
                                                             name="endDate"
                                                             value={this.state.shortEndDate}
                                                             onChange={this.handleEndDate}
-                                                        />
+                                                        /></Col></Row>
                                                     </FormGroup>
-                                                </Row>
                                             </Col>
-                                            <Col sm={5}>
+                                            <Col sm={4}>
 
                                                 <Form.File.Input
                                                     className="csv-input"
@@ -764,7 +760,7 @@ class SupportOfficePage extends React.Component {
                                             <button onClick={(e) => {
                                                 e.stopPropagation();
                                                 this.sendNewSchedule()
-                                            }}> Upload now!
+                                            }}> Update now!
                                             </button>
                                             </Col>
                                         </Row>
