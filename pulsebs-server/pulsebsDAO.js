@@ -1098,6 +1098,8 @@ function getInvolvedLecturesAndTeacher( studentId, test ) {
                                         WHERE   B.ref_lecture = L.id AND
                                                 B.ref_student = ${ studentId } AND
                                                 B.presence = 1 AND
+                                                B.active = 1 AND
+                                                L.active = 1 AND
                                                 L.date < ${ test ? 1607960293000 : now } AND
                                                 L.date > ${ test ? 1606837080000 : twoWeeksAgo } );`
         db.all( query, [], ( err, rows ) => {

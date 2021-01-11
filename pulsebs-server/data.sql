@@ -69,13 +69,13 @@ insert into lecture (ref_course, ref_class, date, endTime) VALUES (4,3,160777440
 insert into lecture (ref_course, ref_class, date, endTime) VALUES (4,2,1610879400000,1610890200000);
 insert into lecture (ref_course, ref_class, date, endTime) VALUES (5,1,1607774400000,1607785200000);
 insert into lecture (ref_course, ref_class, date, endTime) VALUES (5,3,1610874000000,1610879400000);
-insert into lecture (ref_course, ref_class, date, endTime) VALUES (6,4,1607774400000,1607785200000);
+insert into lecture (ref_course, ref_class, date, endTime) VALUES (6,4,1609840800000,1609851600000);
 insert into lecture (ref_course, ref_class, date, endTime) VALUES (6,2,1610890200000,1610895600000);
-insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (1,2,1605684600000,1605690000000,1,0,0);
-insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (2,1,1607088600000,1607094000000,1,0,0);
-insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (3,3,1605684600000,1605690000000,1,0,0);
-insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (4,4,1605684600000,1605690000000,1,0,0);
-insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (5,0,1605684600000,1605690000000,1,0,0);
+insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (1,2,1610186400000,1610197200000,1,0,0);
+insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (2,1,1610186400000,1610197200000,1,0,1);
+insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (3,3,1610186400000,1610197200000,1,0,0);
+insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (4,4,1610186400000,1610197200000,1,0,1);
+insert into lecture (ref_course, ref_class, date, endTime, presence, bookable, active) VALUES (5,0,1610186400000,1610197200000,1,0,0);
 insert into lecture (ref_course, ref_class, date, endTime) VALUES (1,5,1611046800000,1611057600000);
 
 insert into booking (ref_student, ref_lecture, date) values (269901,1,1605625200000);
@@ -106,6 +106,13 @@ insert into booking (ref_student, ref_lecture, date) values (269905,14,160562880
 insert into booking (ref_student, ref_lecture, date) values (269901,23,1605628800000);
 insert into booking (ref_student, ref_lecture, date) values (269902,23,1605628800000);
 insert into booking (ref_student, ref_lecture, date,active,presence) values(269901,6,1607774400000,0,1);
+insert into booking (ref_student, ref_lecture, date) values (269901,21,1609581600000);
+insert into booking (ref_student, ref_lecture, date) values (269902,21,1609581600000);
+insert into booking (ref_student, ref_lecture, date) values (269904,21,1609581600000);
+insert into booking (ref_student, ref_lecture, date) values (269905,21,1609581600000);
+insert into booking (ref_student, ref_lecture, date) values (269903,19,1609581600000);
+insert into booking (ref_student, ref_lecture, date) values (269905,19,1609581600000);
+
 
 insert into waiting(ref_student,ref_lecture,date,active) values (269903,23,1605628800000,1);
 insert into waiting(ref_student,ref_lecture,date,active) values (269904,23,1605628800000,1);
