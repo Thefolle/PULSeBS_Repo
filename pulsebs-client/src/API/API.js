@@ -390,6 +390,31 @@ async function importCSV( students, teachers, courses, enrollments, classes, lec
     } );
 }
 
+async function cancelBookingsByDate( startDate, endDate ) {
+    let url = `/supportOffice/bookings/delete?from=${ startDate }&to=${ endDate }`;
+    return new Promise( ( resolve, reject ) => {
+        fetch( baseURL + url, {
+            method: 'DELETE',
+        } ).then( ( response ) => {
+            console.log( response );
+            if ( response.ok ) {
+                resolve( response );
+            } else {
+                // analyze the cause of error
+                response.json()
+                        .then( ( obj ) => {
+                            reject( obj );
+                        } )
+                        .catch( () => {
+                            reject( {errors: [ {param: "Application", msg: "Cannot parse server response"} ]} )
+                        } ); //something else
+            }
+        } ).catch( () => {
+            reject( {errors: [ {param: "Server", msg: "Cannot communicate"} ]} )
+        } ); // connection errors
+    } )
+}
+
 async function cancelLecturesByDate( startDate, endDate ) {
     let url = `/supportOffice/lectures/delete?from=${ startDate }&to=${ endDate }`;
     return new Promise( ( resolve, reject ) => {
@@ -644,6 +669,7 @@ const API = {
     setStudentPresencesForLecture,
     getStudentFromSSN,
     getTeacherFromSSN,
+    cancelBookingsByDate,
     cancelLecturesByDate
 };
 export default API;

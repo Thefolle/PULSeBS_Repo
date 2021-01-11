@@ -191,51 +191,75 @@ class SupportOfficePage extends React.Component {
             newLectures.push(lecture);
         }
     }
-       
-       API.cancelLecturesByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
-        if (result.ok) {
-            //get the updated list of tasks from the server
-            API.importCSV([], [], [], [], [], newLectures).then((result) => {
-                if (result.ok) {
-                    //get the updated list of tasks from the server
-                    this.setState({
-                        failed: 0,
-                        schedulecsv: undefined,
-                        lecturesImported: newLectures,
-                        scheduleImported: schedule //do we need to import in the db the schedule too?
+
+        API.cancelBookingsByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
+            if (result.ok) {
+                console.log("bookings ok");
+                API.cancelLecturesByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
+                    if (result.ok) {
+                        console.log("lectures ok");
+                        //get the updated list of tasks from the server
+                        API.importCSV([], [], [], [], [], newLectures).then((result) => {
+                            if (result.ok) {
+                                //get the updated list of tasks from the server
+                                this.setState({
+                                    failed: 0,
+                                    schedulecsv: undefined,
+                                    lecturesImported: newLectures,
+                                    scheduleImported: schedule //do we need to import in the db the schedule too?
+                                });
+                            } else {
+                                this.setState({
+                                    failed: 1,
+                                    schedulecsv: undefined,
+                                    schedule: [],
+                                    lecturesImported: [[]],
+                                    scheduleImported: [[]],
+                                });
+                            }
+                        }) //if SUCCEDED return 1
+                            .catch((errorObj) => {
+                                this.handleErrors(errorObj);
+                                this.setState({
+                                    failed: 1,
+                                    schedulecsv: undefined,
+                                    schedule: [],
+                                    lecturesImported: [[]],
+                                    scheduleImported: [[]],
+                                });
+                            });
+
+                    } else {
+                        this.setState({
+                            failed: 1,
+                            schedulecsv: undefined,
+                            schedule: [],
+                            lecturesImported: [[]],
+                            scheduleImported: [[]],
+                        });
+                    }
+                }) //if SUCCEDED return 1
+                    .catch((errorObj) => {
+                        this.handleErrors(errorObj);
+                        this.setState({
+                            failed: 1,
+                            schedulecsv: undefined,
+                            schedule: [],
+                            lecturesImported: [[]],
+                            scheduleImported: [[]],
+                        });
                     });
-                } else {
-                    this.setState({
-                        failed: 1,
-                        schedulecsv: undefined,
-                        schedule: [],
-                        lecturesImported: [[]],
-                        scheduleImported: [[]],
-                    });
-                }
-            }) //if SUCCEDED return 1
-                .catch((errorObj) => {
-                    this.handleErrors(errorObj);
-                    this.setState({
-                        failed: 1,
-                        schedulecsv: undefined,
-                        schedule: [],
-                        lecturesImported: [[]],
-                        scheduleImported: [[]],
-                    });
+
+            } else {
+                this.setState({
+                    failed: 1,
+                    schedulecsv: undefined,
+                    schedule: [],
+                    lecturesImported: [[]],
+                    scheduleImported: [[]],
                 });
-    
-        } else {
-            this.setState({
-                failed: 1,
-                schedulecsv: undefined,
-                schedule: [],
-                lecturesImported: [[]],
-                scheduleImported: [[]],
-            });
-        }
-    }) //if SUCCEDED return 1
-        .catch((errorObj) => {
+            }
+        }).catch((errorObj) => {
             this.handleErrors(errorObj);
             this.setState({
                 failed: 1,
@@ -245,8 +269,9 @@ class SupportOfficePage extends React.Component {
                 scheduleImported: [[]],
             });
         });
-        
-}
+
+
+    }
 
 
     importCSV = (type) => {
@@ -717,6 +742,7 @@ class SupportOfficePage extends React.Component {
                                                             name="startDate"
                                                             value={this.state.shortStartDate}
                                                             onChange={this.handleStartDate}
+                                                            minDate={new Date()}
                                                         /></Col></Row>
                                                     </FormGroup>
                                                     <FormGroup>
@@ -725,8 +751,9 @@ class SupportOfficePage extends React.Component {
                                                         <Col sm={2}><DatePicker
                                                             id="datepicker-end"
                                                             name="endDate"
-                                                            value={this.state.shortEndDate}
+                                                            value={this.state.endDate >= this.state.startDate ? this.state.shortEndDate : this.state.shortStartDate}
                                                             onChange={this.handleEndDate}
+                                                            minDate={this.state.startDate}
                                                         /></Col></Row>
                                                     </FormGroup>
                                             </Col>

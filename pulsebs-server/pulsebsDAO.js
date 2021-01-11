@@ -1376,9 +1376,21 @@ exports.loadCsvData = ( data ) => {
     } );
 }
 
+
 exports.cancelLecturesByDate = (startDate, endDate) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE lecture SET active = 0, bookable = 0 WHERE date >= ${ startDate } AND date <= ${ endDate };`
+        db.run( query, [], function ( err ) {
+            if ( err ) reject( err );
+            if ( this.changes ) resolve( 1 );
+            else resolve( 0 );
+        } );
+    } ) );
+}
+
+exports.cancelBookingsByDate = (startDate, endDate) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let query = `UPDATE booking SET active = 0 WHERE ref_lecture IN (SELECT id FROM lecture WHERE date >= ${ startDate } AND date <= ${ endDate });`
         db.run( query, [], function ( err ) {
             if ( err ) reject( err );
             if ( this.changes ) resolve( 1 );
