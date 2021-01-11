@@ -775,7 +775,7 @@ describe('API Officer', () => {
                 .set('Cookie', `token=${token}`)
             expect(response.status).toBe(200);
         });
-        test('Try to cancel lectures wrongly - Wrong url', async function () {
+        test('Try to cancel lectures/bookings wrongly - Wrong url', async function () {
             let startDate = 1610236800000;
             let endDate = 1611100800000;
             let response = await request(server)
@@ -791,6 +791,14 @@ describe('API Officer', () => {
                 .set('Cookie', `token=${token}`)
             expect(response.status).toBe(401);
         });*/
+        test('Try to cancel bookings correctly', async function () {
+            let startDate = 1610236800000;
+            let endDate = 1611100800000;
+            let response = await request(server)
+                .delete(`/api/supportOffice/bookings/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(200);
+        });
     });
 
 

@@ -649,6 +649,21 @@ describe( 'Schedule update', () => {
         return DAO.cancelLecturesByDate(  1510236800000, 1511100800000 )
                   .then( result => expect( result ).toBe( 0 ) );
     } );
+
+    test( "Try to delete bookings by date", () => {
+        return DAO.cancelBookingsByDate( 1610236800000, 1611100800000 )
+                  .then( result => expect( result ).toBe( 1 ) );
+    } );
+
+    test( "Try to delete bookings by date without passing a parameter", () => {
+        return DAO.cancelBookingsByDate( 1610236800000 )
+        .catch( err => expect( err ) );
+    } );
+
+    test( "Try to delete bookings by date in a range of date in which there are no lessons in the db", () => {
+        return DAO.cancelBookingsByDate(  1510236800000, 1511100800000 )
+                  .then( result => expect( result ).toBe( 0 ) );
+    } );
     
 
 });
