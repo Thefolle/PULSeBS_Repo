@@ -82,11 +82,11 @@ class UserNavBar extends React.Component {
                 } />
               </Navbar.Brand>
               <div>
-                <LinkContainer to='/'>
+                <Link to='/' onClick={() => context.logoutUser()}>
                   <Tutorial on={true} text='Log out from the portal. See you soon!' push={
-                    <Nav.Link id="logout-button" onClick={() => context.logoutUser()}>Log out</Nav.Link>
+                    'Log out'
                   } />
-                </LinkContainer>
+                </Link>
               </div>
             </Navbar>
           </>
