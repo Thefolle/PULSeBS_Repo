@@ -3,10 +3,10 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
-import User        from './User';
-import LoginPage   from './LoginPage';
+import User from './User';
+import LoginPage from './LoginPage';
 import StudentPage from './studentPage';
-import TeacherPage   from './Components/TeacherPage';
+import TeacherPage from './Components/TeacherPage';
 import SupportOfficePage from './Components/SupportOfficePage'
 import { AuthContext } from './auth/AuthContext';
 import Header from './Components/Header';
@@ -19,51 +19,54 @@ function App() {
     return (
         <div className="App">
             <Router>
-                <PULSeBSApp/>
+                <PULSeBSApp />
             </Router>
         </div>
     )
 }
 
 class PULSeBSApp extends React.Component {
-    constructor( props ) {
-        super( props );
+    constructor(props) {
+        super(props);
         this.state = {};
 
+
+        this.login = this.login.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     componentDidMount() {
         API.isAuthenticated().then(
             (user) => {
-                this.setState({authUser: user});
+                this.setState({ authUser: user });
             }
         ).catch((err) => {
-            this.setState({authErr: err});
+            this.setState({ authErr: err });
         });
 
 
     }
 
     logout = () => {
-    API.logout().then(() => {
-      this.setState({authUser: null,authErr: null});
-      //this.props.history.push("/");
-    });
-  }
-
-   login=(email,password)=> {
-
-      API.login(email,password).then((user) => {
-        //this.setFullName(user.id, user.name, user.surname, user.type);
-        this.setState({
-            authUser: new User(user.id, user.name, user.surname, user.type),
-            authErr:null 
+        API.logout().then(() => {
+            this.setState({ authUser: null, authErr: null });
+            //this.props.history.push("/");
         });
+    }
 
-      }).catch((err) => {
-        console.log(err);
-        this.setState({ authErr:err});
-      });
+    login = (email, password) => {
+
+        API.login(email, password).then((user) => {
+            //this.setFullName(user.id, user.name, user.surname, user.type);
+            this.setState({
+                authUser: new User(user.id, user.name, user.surname, user.type),
+                authErr: null
+            });
+
+        }).catch((err) => {
+            console.log(err);
+            this.setState({ authErr: err });
+        });
 
     }
 
@@ -71,15 +74,15 @@ class PULSeBSApp extends React.Component {
 
     render() {
         return <>
-        <AuthContext.Provider value={{authUser: this.state.authUser, authErr: this.state.authErr,loginUser: this.login,logoutUser: this.logout}}>
-           <Header/>
-            <Router>
-                <Switch>
+            <AuthContext.Provider value={{ authUser: this.state.authUser, authErr: this.state.authErr, loginUser: this.login, logoutUser: this.logout }}>
+                <Header />
+                <Router>
+                    <Switch>
                         <Route exact path='/Login'>
                             <LoginPage />
                         </Route>
                         <Route path='/student'>
-                         <StudentPage />
+                            <StudentPage />
                         </Route>
                         <Route path='/teacher'>
                             <TeacherPage />
@@ -91,11 +94,11 @@ class PULSeBSApp extends React.Component {
                             <SupportOfficePage />
                         </Route>
                         <Route exact path='/'>
-                            <Redirect to='Login'/>
+                            <Redirect to='Login' />
                         </Route>
-                </Switch>
-            </Router>
-          </AuthContext.Provider>
+                    </Switch>
+                </Router>
+            </AuthContext.Provider>
         </>;
     }
 }

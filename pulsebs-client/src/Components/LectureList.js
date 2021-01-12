@@ -7,6 +7,8 @@ import Image                from 'react-bootstrap/Image';
 import { MdDeleteForever }  from "react-icons/md"
 import { FaBackward }       from "react-icons/fa";
 
+import Tutorial from './Tutorial';
+
 import '../customStyle.css';
 import { BsFillPeopleFill } from "react-icons/bs";
 import { ImCross }          from "react-icons/im";
@@ -31,8 +33,18 @@ const LectureList = ( props ) => {
                             <th>Start Time</th>
                             <th>End Time</th>
                             <th>Presence</th>
-                            <th>Class</th>
-                            <th>Change to online</th>
+                            <th>Classroom</th>
+                            <th>
+                            <Tutorial on={true} text={<p>If no action appears for a lecture, it cannot be given in virtual classroom.<br/> These are the typical reasons:
+                                <ul>
+                                    <li>The lecture is not active yet;</li>
+                                    <li>The lecture is starting within 30 minutes;</li>
+                                    <li>The lecture was already given.</li>
+                                </ul>
+                            </p>} push={
+                                'Change to online'
+                            } />
+                            </th>
                             <th>Delete</th>
                             { <th>Take presence</th> }
                         </tr>
@@ -79,30 +91,48 @@ const LectureItem = ( props ) => {
                         <td>{ lecture.classC }</td>
                         <td>
                             { lecture.presence === 1 && lecture.active === 1 && moment( lecture.date ).isAfter( moment().add( 30, 'minute' ) ) ?
-                                <Image width="50" height="50" className="img-button" type="button"
+                                <Tutorial on={true} text={<p>Click here if this lecture has to be given in virtual classroom. Students will be automatically notified through an email.<br/>Beware that the lecture <i>cannot be turned back</i> into a presence one.</p>} push={
+                                    <Image width="50" height="50" className="img-button" type="button"
                                        src="/svg/changeToVirtual.svg" alt=""
                                        onClick={ ( event ) => {
                                            event.stopPropagation();
                                            turnLectureIntoOnline( index, context.authUser.id );
-                                       } }/>
-                                : undefined }
+                                       }
+                                    }/>
+                                } />
+                            : null }
                         </td>
                         { moment( lecture.date ).isAfter( moment().add( 1, 'hours' ) ) === true && lecture.active === 1 ?
-                            <td><Image
-                                width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt=""
-                                onClick={ ( event ) => {
-                                    event.stopPropagation();
-                                    cancelLecture( context.authUser.id, lecture.lecId )
-                                }
-                                }/>
-                            </td> : <td><MdDeleteForever size={ 25 }/></td>
+                            <td>
+                                <Tutorial on={true} text={<p>Delete this lecture <i>permanently</i>.</p>}
+                                push={
+                                    <Image
+                                        width="25" height="25" className="img-button" type="button" src="/svg/delete.svg" alt=""
+                                        onClick={ ( event ) => {
+                                            event.stopPropagation();
+                                            cancelLecture( context.authUser.id, lecture.lecId )
+                                        }
+                                    }/>
+                                } />
+                            </td> :
+                            <td>
+                                <Tutorial on={true} text={<p>The lecture cannot be deleted anymore.</p>}
+                                push={
+                                    <MdDeleteForever size={ 25 }/>
+                                } />
+                            </td>
                         }
                         <td>
                             { moment().isAfter( moment( lecture.date ) ) && moment().isBefore( moment( lecture.endTime ) ) ?
                                 <Link to={`/teacher/${idc}/lecture/${lecture.lecId}/presence`}>
-                                    <BsFillPeopleFill color={ "green" } size={ "1.5em" }/>
+                                    <Tutorial on={true} text={<p>Take note of the students who attended this lecture in presence.</p>} push={
+                                        <BsFillPeopleFill color={ "green" } size={ "1.5em" }/>
+                                    } />
                                 </Link> :
-                                <ImCross/> }
+                                <Tutorial on={true} text='It is not possible to take note of the students who attended this lecture anymore, since it terminated.' push={
+                                    <ImCross/>
+                                } />
+                            }
                         </td>
                     </tr>
                 </>

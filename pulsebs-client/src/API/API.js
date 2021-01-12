@@ -397,7 +397,6 @@ async function updateBookableAttributForLecture(lectureId, num){
 }
 
 async function importCSV( students, teachers, courses, enrollments, classes, lectures ) {
-    console.log( students );
     return new Promise( ( resolve, reject ) => {
         fetch( baseURL + "/sofficer/", {
             method: 'PUT',
@@ -411,12 +410,9 @@ async function importCSV( students, teachers, courses, enrollments, classes, lec
                                       subscriptions: enrollments.map( ( e ) => new Enrollment( e.cid, e.sid ) ),
                                       classes: classes.map( ( c ) => new Class( c.id, c.desc, c.seats ) ),
                                       lectures: lectures.map( ( l ) => new scheduledLecture( l.course, l.ref_class, l.start_date, l.end_date, l.presence, l.bookable, l.active ) )
-                                      // schedule: schedules.map((s) => new Schedule(s.id, s.room, s.date, s.seats,
-                                      // s.time))
                                   } ),
         } ).then( ( response ) => {
             if ( response.ok ) {
-                console.log( "ok" );
                 resolve( response );
             } else {
                 // analyze the cause of error
@@ -435,6 +431,55 @@ async function importCSV( students, teachers, courses, enrollments, classes, lec
     } );
 }
 
+async function cancelBookingsByDate( startDate, endDate ) {
+    let url = `/supportOffice/bookings/delete?from=${ startDate }&to=${ endDate }`;
+    return new Promise( ( resolve, reject ) => {
+        fetch( baseURL + url, {
+            method: 'DELETE',
+        } ).then( ( response ) => {
+            console.log( response );
+            if ( response.ok ) {
+                resolve( response );
+            } else {
+                // analyze the cause of error
+                response.json()
+                        .then( ( obj ) => {
+                            reject( obj );
+                        } )
+                        .catch( () => {
+                            reject( {errors: [ {param: "Application", msg: "Cannot parse server response"} ]} )
+                        } ); //something else
+            }
+        } ).catch( () => {
+            reject( {errors: [ {param: "Server", msg: "Cannot communicate"} ]} )
+        } ); // connection errors
+    } )
+}
+
+async function cancelLecturesByDate( startDate, endDate ) {
+    let url = `/supportOffice/lectures/delete?from=${ startDate }&to=${ endDate }`;
+    return new Promise( ( resolve, reject ) => {
+        fetch( baseURL + url, {
+            method: 'DELETE',
+        } ).then( ( response ) => {
+            console.log( response );
+            if ( response.ok ) {
+                resolve( response );
+            } else {
+                // analyze the cause of error
+                response.json()
+                        .then( ( obj ) => {
+                            reject( obj );
+                        } )
+                        .catch( () => {
+                            reject( {errors: [ {param: "Application", msg: "Cannot parse server response"} ]} )
+                        } ); //something else
+            }
+        } ).catch( () => {
+            reject( {errors: [ {param: "Server", msg: "Cannot communicate"} ]} )
+        } ); // connection errors
+    } )
+}
 
 async function isAuthenticated() {
     let url = "/user";
@@ -666,6 +711,8 @@ const API = {
     getStudentForLecture,
     setStudentPresencesForLecture,
     getStudentFromSSN,
-    getTeacherFromSSN
+    getTeacherFromSSN,
+    cancelBookingsByDate,
+    cancelLecturesByDate
 };
 export default API;

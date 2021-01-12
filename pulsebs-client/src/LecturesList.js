@@ -1,7 +1,10 @@
 import React from 'react';
+import moment      from 'moment';
 import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
 import { AuthContext } from './auth/AuthContext';
+
+import Tutorial from './Components/Tutorial';
 
 const LecturesList = (props) => {
 
@@ -11,7 +14,9 @@ const LecturesList = (props) => {
       <AuthContext.Consumer>
             {(context)=>(
               <>
-              <h2>Lectures</h2>
+              <Tutorial on={true} text='Here immediately follows the list of lectures in next days. You can also perform some actions on them.' push={
+                    <h2>Lectures</h2>
+              } />
                 { lectures.length !== 0 &&
                 <Table className="table" id="lectures-table">
                     <thead>
@@ -20,7 +25,7 @@ const LecturesList = (props) => {
                         <th>Time</th>
                         <th>Presence</th>
                         <th>Course</th>
-                        <th>Class</th>
+                        <th>Classroom</th>
                         <th>Teacher</th>
                         <th>Book</th>
                         <th>Unbook</th>
@@ -28,7 +33,9 @@ const LecturesList = (props) => {
                     </thead>
                     <tbody>
                       {/* TODO: map waitings */}
-                    { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } deleteWaitingAddBooking={ deleteWaitingAddBooking } getBookingId={getBookingId} /> ) }
+                    { lectures
+                        .filter((l) => !(moment(l.date).isBefore(new Date())))
+                        .map( ( l ) => <LectureItem key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } deleteWaitingAddBooking={ deleteWaitingAddBooking } getBookingId={getBookingId} /> ) }
                     </tbody>
                 </Table>
                 }

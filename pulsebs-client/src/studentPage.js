@@ -14,6 +14,8 @@ import StudentCalendar from "./Components/StudentCalendar";
 import './App.css';
 import API from './API/API';
 
+import Tutorial from './Components/Tutorial';
+
 
 
 class StudentPage extends React.Component {
@@ -231,7 +233,11 @@ class StudentPage extends React.Component {
                             <h5>POLITECNICO DI TORINO</h5>
                                 <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
                                 <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                <ListGroup.Item className="listGroup-Item">
+                                <Tutorial on={true} text='This is your identification number.' push={
+                                    context.authUser.id
+                                } />
+                                </ListGroup.Item>
                             </ListGroup>
                         </Col>
 

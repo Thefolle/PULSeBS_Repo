@@ -59,7 +59,7 @@ test( 'Try to get a teacher\'s lectures', () => {
 //GET STUDENTS BOOKED FOR LECTURE ID
 test( 'Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2( '239901' ).then( result => {
-        expect( result.length ).toBe( 23 ); //old value 3
+        expect( result.length ).toBe( 25 ); //old value 3
     } );
 } );
 
@@ -91,7 +91,7 @@ test( 'Try to get students booked for lecture 4', () => {
 //GET ALL STUDENT'S BOOKINGS
 test( 'Try to get all student\'s bookings', () => {
     return DAO.getStudentBookings( '269901' ).then( result => {
-        expect( result.length ).toEqual( 6 ); //old value 3
+        expect( result.length ).toEqual( 7 ); //old value 3
     } )
 } );
 
@@ -318,7 +318,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 
     test( 'per week', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'week' ).then( statistics => {
-            expect( statistics.length ).toEqual(2
+            expect( statistics.length ).toEqual(3
                                                 /*  [
                                                       {
                                                           "bookingNumber": 2,
@@ -335,13 +335,13 @@ describe( '[PUL 10] Get teacher statistics', () => {
 
     test( 'per month', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'month' ).then( statistics => {
-            expect( statistics ).toEqual(
-                [
-                    {
-                        "bookingNumber": 3,
-                        "month": 1606777200000
-                    }
-                ]
+            expect( statistics.length ).toEqual( 2
+                // [
+                //     {
+                //         "bookingNumber": 3,
+                //         "month": 1606777200000
+                //     }
+                // ]
             );
         } );
     } );
@@ -354,7 +354,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 
     test( 'per week - Presence ON', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'week',"1" ).then( statistics => {
-            expect( statistics.length ).toEqual(2
+            expect( statistics.length ).toEqual(3
                                                 /*  [
                                                       {
                                                           "bookingNumber": 2,
@@ -371,13 +371,13 @@ describe( '[PUL 10] Get teacher statistics', () => {
 
     test( 'per month - Presence ON', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'month', "1" ).then( statistics => {
-            expect( statistics ).toEqual(
-                [
-                    {
-                        "bookingNumber": 3,
-                        "month": 1606777200000
-                    }
-                ]
+            expect( statistics.length ).toEqual( 2
+                // [
+                //     {
+                //         "bookingNumber": 3,
+                //         "month": 1606777200000
+                //     }
+                // ]
             );
         } );
     } );
@@ -386,7 +386,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 describe( "[PUL-11] Get statistics for manager", () => {
     test( 'get All Bookings 1', () => {
         return DAO.getAllBookings().then( b => {
-            expect( b.length ).toBe( 26 );
+            expect( b.length ).toBe( 32 );
         } )
     } );
 
@@ -408,7 +408,7 @@ describe( "[PUL-11] Get statistics for manager", () => {
 
     test( 'get All Attendances 1', () => {
         return DAO.getAllAttendances().then( b => {
-            expect( b.length ).toBe( 22 );
+            expect( b.length ).toBe( 28 );
         } )
     } );
 
@@ -430,7 +430,7 @@ describe( "[PUL-11] Get statistics for manager", () => {
 
     test( 'get All cancelled Lectures 1', () => {
         return DAO.getAllCancellationsLectures().then( c => {
-            expect( c.length ).toBe( 6 );
+            expect( c.length ).toBe( 4 );
         } );
     } );
 
@@ -633,6 +633,40 @@ describe( 'CSV loading tests', () => {
     } );
 } );
 
+describe( 'Schedule update', () => {
+
+    test( "Try to delete lectures by date", () => {
+        return DAO.cancelLecturesByDate( 1610236800000, 1611100800000 )
+                  .then( result => expect( result ).toBe( 1 ) );
+    } );
+
+    test( "Try to delete lectures by date without passing a parameter", () => {
+        return DAO.cancelLecturesByDate( 1610236800000 )
+        .catch( err => expect( err ) );
+    } );
+
+    test( "Try to delete lectures by date in a range of date in which there are no lessons in the db", () => {
+        return DAO.cancelLecturesByDate(  1510236800000, 1511100800000 )
+                  .then( result => expect( result ).toBe( 0 ) );
+    } );
+
+    test( "Try to delete bookings by date", () => {
+        return DAO.cancelBookingsByDate( 1610236800000, 1611100800000 )
+                  .then( result => expect( result ).toBe( 1 ) );
+    } );
+
+    test( "Try to delete bookings by date without passing a parameter", () => {
+        return DAO.cancelBookingsByDate( 1610236800000 )
+        .catch( err => expect( err ) );
+    } );
+
+    test( "Try to delete bookings by date in a range of date in which there are no lessons in the db", () => {
+        return DAO.cancelBookingsByDate(  1510236800000, 1511100800000 )
+                  .then( result => expect( result ).toBe( 0 ) );
+    } );
+    
+
+});
 
 /**
  * @Feihong

@@ -5,6 +5,8 @@ import { AuthContext } from '../auth/AuthContext';
 
 import { FaBackward } from "react-icons/fa";
 
+import Tutorial from './Tutorial';
+
 const StudentList = (props) => {
     let { students, idl, idc } = props;
 
@@ -13,7 +15,7 @@ const StudentList = (props) => {
         <AuthContext.Consumer>
             {() => (
                 <>
-                 <Link id="goback" to={`/teacher/${idc}/lectures`}> <FaBackward /> </Link>
+                    <Link id="goback" to={`/teacher/${idc}/lectures`}> <FaBackward /> </Link>
                     { students.filter(e => e.lId === parseInt(idl)).length === 0 &&
                         <h5>no students booked for this lecture.</h5>
                     }
@@ -46,7 +48,11 @@ const StudentItem = (props) => {
 
     return (
         <tr>
-            <td>{student.studentId}</td>
+            <td>
+                <Tutorial on={true} text='This student is currently booked for the lecture.' push={
+                    student.studentId
+                } />
+            </td>
         </tr>
     );
 }
