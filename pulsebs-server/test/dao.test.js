@@ -804,10 +804,10 @@ describe("Get all lectures", ()=>{
  */
 describe("update the bookable attribute on lecture table by given lectureId and updating number", ()=>{
     test('should get a successful notification, if this lecture exist', () => {
-        return DAO.updateBookableAttributForLecture( 1, 1 ).then( result => {
+        return DAO.updateBookableAttributForLecture( 1, 0 ).then( result => {
             console.log('-------------');
             expect(result).toBe(1);
-        })
+        }).catch(err => console.log(err+'--------------'))
     })
     
 })

@@ -675,6 +675,7 @@ app.put( '/api/sofficer/', ( req, res ) => {
 
 /**
  * @Feihong
+ * @Story17
  * Get all the Lectures for SupportOffice page
  * GET: /api/supportOffice/lectures
  */
@@ -694,6 +695,7 @@ app.get('/api/supportOffice/lectures', (req, res) =>{
 
 /**
  * @Feihong
+ * @Story17
  * Update the bookable attribute for the lecture that was clicked by support officer
  * POST: /api/supportOffice/lecture/:lectureId/:num
  */
