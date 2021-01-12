@@ -2,6 +2,7 @@ const sqlite3 = require( 'sqlite3' ).verbose();
 const fs = require( 'fs' );
 const moment = require( 'moment' );
 const {resolve} = require( 'path' );
+const { setUncaughtExceptionCaptureCallback } = require('process');
 moment.locale( 'it' );
 
 const User = require( './User' );
@@ -414,6 +415,59 @@ exports.deleteWaitingAddBooking = ( lectureId ) => {
     } )
 }
 
+
+/**
+ * @Feihong
+ * @Srory17
+ * Get all lectures that is used by a support officer, which is used to update the bookalble attribute
+ */
+exports.getAllLecturesForSupportOffice = ()=>{
+    return new Promise((resolve, reject)=>{
+        let query = `SELECT L.id,
+                            L.date,
+                            L.presence,
+                            L.bookable,
+                            L.active,
+                            CO.desc as courseDesc,
+                            T.name,
+                            T.surname,
+                            CL.desc as classDesc
+                    FROM    lecture L,
+                            class   CL,
+                            course  CO,
+                            teacher T
+                    WHERE   L.ref_class = CL.id AND
+                            L.ref_course = CO.id AND
+                            T.id = CO.ref_teacher`      
+        db.all( query, [], (err, rows) => {
+            if (err) reject("Query problem");
+            if (rows) resolve( rows);
+            else reject("nothing find");
+        })
+    })
+} 
+/**
+ * @Feihong
+ * @Story17
+ * update the bookable attribute of specific lecture
+ * 
+ */
+exports.updateBookableAttributForLecture = (lectureId, num)=>{
+    console.log("----------------------------" + num+ "-------" + lectureId)
+    return new Promise( (resolve, reject) => {
+        if (num ==1){
+            num = 0
+        } else {
+            num = 1
+        }
+        let query = `UPDATE lecture SET bookable = ${num} WHERE id = ${lectureId}`
+        db.run(query, [], (err) => {
+            if(err) reject("Query problem")
+            if (this.changes) resolve(1)
+            else reject(0)
+        })
+    })
+}
 
 /*
 * Get lecture statistics

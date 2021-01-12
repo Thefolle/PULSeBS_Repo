@@ -673,6 +673,44 @@ app.put( '/api/sofficer/', ( req, res ) => {
 
 } )
 
+/**
+ * @Feihong
+ * Get all the Lectures for SupportOffice page
+ * GET: /api/supportOffice/lectures
+ */
+app.get('/api/supportOffice/lectures', (req, res) =>{
+    pulsebsDAO.getAllLecturesForSupportOffice()
+        .then((lectures) => {
+            
+            res.json(lectures);
+            
+        }).catch((err) => {
+            res.status(500).json({
+                errors: [ {'message': err} ],
+                location: [{'function-location': '/api/supportOffice/lectures'}]
+            })
+        })
+})
+
+/**
+ * @Feihong
+ * Update the bookable attribute for the lecture that was clicked by support officer
+ * POST: /api/supportOffice/lecture/:lectureId/:num
+ */
+app.post('/api/supportOffice/lecture/:lectureId/:num', (req, res) => {
+    const lectureId = req.params.lectureId
+    const num = req.params.num
+    pulsebsDAO.updateBookableAttributForLecture(lectureId, num)
+        .then((message) => {
+            res.json(
+                message
+            )
+        }).catch( ( err) => {
+            res.status(500).json(err)
+        })
+})
+
+
 //BOOKING MANAGER
 
 app.get( '/api/manager/getAllBookings', ( req, res ) => {

@@ -355,6 +355,47 @@ async function getTeacherFromSSN(ssn) {
 
 /**** SUPPORT OFFICE ****/
 
+/**
+ * @Feihong
+ * @Story17
+ * Get all the lectures for the support office page
+ * GET: /api/supportOffice/lectures
+ */
+async function getAllLecturesForSupportOffice(){
+    
+    const response = await fetch(baseURL + "/supportOffice/lectures")
+    const lecturesJson = await response.json()
+    if (response.ok) {
+        return lecturesJson.map( (l) => new Lecture(l.id, l.date, l.presence, l.bookable, l.active,
+                                                l.courseDesc, l.name, l.surname, l.classDesc) )
+    } else {
+        throw ("nothing find, there is no lecture!")
+    }
+}
+
+
+/**
+ * @Feihong
+ * @Story17
+ * Update the bookable attribute of a specific lecture
+ * POST: /api/supportOffice/lecture/:lectureId/:num
+ */
+async function updateBookableAttributForLecture(lectureId, num){
+    return new Promise( (resolve, reject) =>{
+        fetch( baseURL + '/supportOffice/lecture/' + lectureId + '/' + num, {
+            method: 'POST'
+        }).then( (response) => {
+            if (response.ok){
+                resolve(null)
+            }else{
+                reject(response.json())    
+            }
+        }).catch(() => {
+            reject( {errors: [ {param: "Server", msg: "Cannot communicate"} ]} )
+        })
+    } )
+}
+
 async function importCSV( students, teachers, courses, enrollments, classes, lectures ) {
     console.log( students );
     return new Promise( ( resolve, reject ) => {
@@ -619,6 +660,8 @@ const API = {
     getAllAttendances,
     getContactsWithPositiveStudent,
     getContactsWithPositiveTeacher,
+    getAllLecturesForSupportOffice,
+    updateBookableAttributForLecture,
     importCSV,
     getStudentForLecture,
     setStudentPresencesForLecture,

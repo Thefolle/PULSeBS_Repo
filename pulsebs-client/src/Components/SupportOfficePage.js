@@ -1,13 +1,17 @@
 import React                                                       from 'react';
-import { withRouter }                                              from 'react-router-dom';
+import { withRouter, Switch, Route }                                              from 'react-router-dom';
 import UserNavBar                                                  from '../Components/UserNavBar';
 import Form                                                        from 'react-bootstrap/Form'
+import { Row, Col, Container, ListGroup, Button, Dropdown,Accordion, Card } from "react-bootstrap";
+
 
 import '../App.css';
 import API                                                         from '../API/API';
 import { AuthContext }                                             from '../auth/AuthContext';
-import { Row, Col, Container, ListGroup, Button, Accordion, Card } from "react-bootstrap";
 import CollapsibleTable                                            from "./CollapsibleTable";
+import ManageLectures from './supportOfficer/ManageLectures'
+import DropDownSupportOffice from '../Components/supportOfficer/DropDownSupportOffice'
+
 
 let buttonsStyle = {
     background: "blue",
@@ -47,7 +51,9 @@ class SupportOfficePage extends React.Component {
             lecturesImported: [[]],
             classesImported: [[]],
             scheduleImported: [[]],
-            failed: ''
+            failed: '',
+            lecForSupport: [], // for Manage lectures page
+            lecForFilter: [0]
         };
         this.updateStudentsData = this.updateStudentsData.bind( this );
         this.updateTeachersData = this.updateTeachersData.bind( this );
@@ -57,6 +63,10 @@ class SupportOfficePage extends React.Component {
         this.updateClassesData = this.updateClassesData.bind( this );
         this.updateScheduleData = this.updateScheduleData.bind( this );
         this.sendData = this.sendData.bind( this );
+        this.getAllLecturesForSupportOffice = this.getAllLecturesForSupportOffice.bind(this);
+        this.updateBookableAttributForLecture = this.updateBookableAttributForLecture.bind(this);
+
+        
     }
 
     handleChange = event => {
@@ -355,6 +365,94 @@ class SupportOfficePage extends React.Component {
                        } );
     }
 
+    /**
+     * @Feihong
+     * @Story17
+     * get all lectures
+     */
+    getAllLecturesForSupportOffice = () =>{
+        API.getAllLecturesForSupportOffice().then( (lectures) => {
+            this.setState({lecForSupport: lectures.sort(function(a, b){
+                return b.date -a.date
+            })})
+            
+            if(this.state.lecForFilter[0]===0){
+                this.setState({lecForFilter: lectures.sort(function(a, b){
+                    return b.date -a.date
+                })})
+            }
+            // TODO: sort the lectures
+        } ).catch( (err) => {
+            this.handleErrors(err)
+        })
+        
+    }
+
+    /**
+     * @Feihong
+     * @Story17
+     * update bookable attribut of a specificlecture
+     */
+    updateBookableAttributForLecture = (lectureId, num)=>{
+        API.updateBookableAttributForLecture(lectureId, num)
+            .then((result) => {
+                console.log(result)
+            })
+            .catch( (err) => {
+                this.handleErrors(err)
+            })
+        if(num ==1)num=0
+        else num = 1
+        for(let l of this.state.lecForFilter){
+            if(l.id == lectureId){
+                l.bookable = num
+            }
+        }
+        this.componentDidMount()
+    }
+
+/**
+ * @Feihong
+ * @Story17
+ * update lectures 
+ */
+updateLecForSup = (courseName) =>{
+    if(courseName==="All"){
+        API.getAllLecturesForSupportOffice().then( (lectures) => {
+            this.setState({lecForFilter: lectures.sort(function(a, b){
+                return b.date -a.date
+            })})
+            // TODO: sort the lectures
+        } ).catch( (err) => {
+            this.handleErrors(err)
+        })
+    }else
+    {
+        var lectures = new Array();
+        for(let lecture of this.state.lecForSupport){
+            if (lecture.courseDesc == courseName){
+                
+                lectures.push(lecture)
+            }
+        }
+        this.setState({lecForFilter: lectures.sort(function(a, b){
+            return b.date -a.date
+        })})
+    }
+}
+
+/**
+ * @Feihong
+ * @Story17
+ * live cycle
+ */
+componentDidMount(){
+    this.getAllLecturesForSupportOffice()
+    // this.updateLecForSup()
+}
+
+
+
 
     render() {
 
@@ -370,294 +468,321 @@ class SupportOfficePage extends React.Component {
                                         <ListGroup className="sidebar" variant="flush">
                                             <h5>POLITECNICO DI TORINO</h5>
                                             <h3>SUPPORT OFFICE</h3>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
                                         </ListGroup>
                                     </Col>
-
-                                    <Col sm={ 8 } hidden={ this.state.failed === 0 }>
-                                        <br/>
-                                        <h4>Import CSV files to set up the system:</h4>
-                                        <br/>
-                                        { this.state.failed === 1 &&
-                                        <p>Something went wrong. Please, select and import again your files.</p>
-                                        }
-                                        { this.state.failed === 0 &&
-                                        <p>Upload completed.</p>
-                                        }
-                                        { this.state.failed === '' &&
-                                        <p>Please, SELECT and IMPORT your files and then UPLOAD them.</p>
-                                        }
-                                        <ListGroup variant="flush">
-                                            <ListGroup.Item>
-                                                <Form.File as={ Row }>
-                                                    <Col sm="4">
-                                                        <Form.File.Label>STUDENTS:</Form.File.Label>
+                                    <Col sm={8}>
+                                        <Switch>
+                                            <Route exact path = {"/supportOffice/manageLectures"}>
+                                            <h2>Operate The Bookable Of A Lecture</h2>
+                                                <Row>
+                                                    <Col>
+                                                    <label>Course:</label>
+                                                        <DropDownSupportOffice options={["All",...new Set(this.state.lecForSupport.map(l => l.courseDesc))]} 
+                                                        update={this.updateLecForSup} />
                                                     </Col>
-                                                    <Col sm="6">
-                                                        <Form.File.Input
-                                                            className="csv-input"
-                                                            type="file"
-                                                            ref={ input => {
-                                                                this.filesInput = input;
-                                                            } }
-                                                            name="students"
-                                                            placeholder={ null }
-                                                            onChange={ this.handleChange }
-                                                            onClick={ ( e ) => e.target.value = null }
-                                                        />
-                                                    </Col>
-                                                    <Col sm="2">
-                                                        { this.state.students.length === 0 ?
-                                                            <Button variant="secondary" active="false" size="sm"
-                                                                    style={ buttonsStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "students" )
-                                                            } }>import</Button>
-                                                            : <Button variant="secondary" active="false" size="sm"
-                                                                      style={ selectedButtonStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "students" )
-                                                            } }>import</Button>
-                                                        }
-                                                    </Col>
-                                                </Form.File>
-                                            </ListGroup.Item>
-                                            <ListGroup.Item>
-                                                <Form.File as={ Row }>
-                                                    <Col sm="4">
-                                                        <Form.File.Label>TEACHERS:</Form.File.Label>
-                                                    </Col>
-                                                    <Col sm="6">
-                                                        <Form.File.Input
-                                                            className="csv-input"
-                                                            type="file"
-                                                            ref={ input => {
-                                                                this.filesInput = input;
-                                                            } }
-                                                            name="teachers"
-                                                            placeholder={ null }
-                                                            onChange={ this.handleChange }
-                                                            onClick={ ( e ) => e.target.value = null }
-                                                        />
-                                                    </Col>
-                                                    <Col sm="2">
-                                                        { this.state.teachers.length === 0 ?
-                                                            <Button variant="secondary" active="false" size="sm"
-                                                                    style={ buttonsStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "teachers" )
-                                                            } }>import</Button>
-                                                            : <Button variant="secondary" active="false" size="sm"
-                                                                      style={ selectedButtonStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "teachers" )
-                                                            } }>import</Button>
-                                                        }
-                                                    </Col>
-                                                </Form.File>
-                                            </ListGroup.Item>
-                                            <ListGroup.Item>
-                                                <Form.File as={ Row }>
-                                                    <Col sm="4">
-                                                        <Form.File.Label>COURSES:</Form.File.Label>
-                                                    </Col>
-                                                    <Col sm="6">
-                                                        <Form.File.Input
-                                                            className="csv-input"
-                                                            type="file"
-                                                            ref={ input => {
-                                                                this.filesInput = input;
-                                                            } }
-                                                            name="courses"
-                                                            placeholder={ null }
-                                                            onChange={ this.handleChange }
-                                                            onClick={ ( e ) => e.target.value = null }
-                                                        />
-                                                    </Col>
-                                                    <Col sm="2"> { this.state.courses.length === 0 ?
-                                                        <Button variant="secondary" active="false" size="sm"
-                                                                style={ buttonsStyle } onClick={ ( e ) => {
-                                                            e.stopPropagation();
-                                                            this.importCSV( "courses" )
-                                                        } }>import</Button>
-                                                        : <Button variant="secondary" active="false" size="sm"
-                                                                  style={ selectedButtonStyle } onClick={ ( e ) => {
-                                                            e.stopPropagation();
-                                                            this.importCSV( "courses" )
-                                                        } }>import</Button>
+                                                </Row>
+                                                
+                                                <ManageLectures onLoad={this.FirstLoadDataToFiler} lecForFilter = {this.state.lecForFilter}
+                                                updateBookableAttributForLecture = {this.updateBookableAttributForLecture}
+                                                />
+                                                
+                                                
+                                            </Route>
+                                            <Route exact path = {"/supportOffice/uploadFile"}>
+                                                <Col sm={ 8 } hidden={ this.state.failed === 0 }>
+                                                    <br/>
+                                                    <h4>Import CSV files to set up the system:</h4>
+                                                    <br/>
+                                                    { this.state.failed === 1 &&
+                                                    <p>Something went wrong. Please, select and import again your files.</p>
                                                     }
-                                                    </Col>
-                                                </Form.File>
-                                            </ListGroup.Item>
-                                            <ListGroup.Item>
-                                                <Form.File as={ Row }>
-                                                    <Col sm="4">
-                                                        <Form.File.Label>CLASSES:</Form.File.Label>
-                                                    </Col>
-                                                    <Col sm="6">
-                                                        <Form.File.Input
-                                                            className="csv-input"
-                                                            type="file"
-                                                            ref={ input => {
-                                                                this.filesInput = input;
-                                                            } }
-                                                            name="classes"
-                                                            placeholder={ null }
-                                                            onChange={ this.handleChange }
-                                                            onClick={ ( e ) => e.target.value = null }
-                                                        />
-                                                    </Col>
-                                                    <Col sm="2">
-                                                        { this.state.classes.length === 0 ?
-                                                            <Button variant="secondary" active="false" size="sm"
-                                                                    style={ buttonsStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "classes" )
-                                                            } }>import</Button>
-                                                            : <Button variant="secondary" active="false" size="sm"
-                                                                      style={ selectedButtonStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "classes" )
-                                                            } }>import</Button>
-                                                        }
-                                                    </Col>
-                                                </Form.File>
-                                            </ListGroup.Item>
-                                            <ListGroup.Item>
-                                                <Form.File as={ Row }>
-                                                    <Col sm="4">
-                                                        <Form.File.Label>ENROLLMENTS:</Form.File.Label>
-                                                    </Col>
-                                                    <Col sm="6">
-                                                        <Form.File.Input
-                                                            className="csv-input"
-                                                            type="file"
-                                                            ref={ input => {
-                                                                this.filesInput = input;
-                                                            } }
-                                                            name="enrollments"
-                                                            placeholder={ null }
-                                                            onChange={ this.handleChange }
-                                                            onClick={ ( e ) => e.target.value = null }
-                                                        />
-                                                    </Col>
-                                                    <Col sm="2">
-                                                        { this.state.enrollments.length === 0 ?
-                                                            <Button variant="secondary" active="false" size="sm"
-                                                                    style={ buttonsStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "enrollments" )
-                                                            } }>import</Button>
-                                                            : <Button variant="secondary" active="false" size="sm"
-                                                                      style={ selectedButtonStyle } onClick={ ( e ) => {
-                                                                e.stopPropagation();
-                                                                this.importCSV( "enrollments" )
-                                                            } }>import</Button>
-                                                        }
-                                                    </Col>
-                                                </Form.File>
-                                            </ListGroup.Item>
-                                            <ListGroup.Item>
-                                                <Form.File as={ Row }>
-                                                    <Col sm="4">
-                                                        <Form.File.Label>LECTURES:</Form.File.Label>
-                                                    </Col>
-                                                    <Col sm="6">
-                                                        <Form.File.Input
-                                                            className="csv-input"
-                                                            type="file"
-                                                            ref={ input => {
-                                                                this.filesInput = input;
-                                                            } }
-                                                            name="lectures"
-                                                            placeholder={ null }
-                                                            onChange={ this.handleChange }
-                                                            onClick={ ( e ) => e.target.value = null }
-                                                        />
-                                                    </Col>
-                                                    <Col sm="2"> { this.state.lectures.length === 0 ?
-                                                        <Button variant="secondary" active="false" size="sm"
-                                                                style={ buttonsStyle } onClick={ ( e ) => {
-                                                            e.stopPropagation();
-                                                            this.importCSV( "lectures" )
-                                                        } }>import</Button>
-                                                        : <Button variant="secondary" active="false" size="sm"
-                                                                  style={ selectedButtonStyle } onClick={ ( e ) => {
-                                                            e.stopPropagation();
-                                                            this.importCSV( "lectures" )
-                                                        } }>import</Button>
+                                                    { this.state.failed === 0 &&
+                                                    <p>Upload completed.</p>
                                                     }
-                                                    </Col>
-                                                </Form.File>
-                                            </ListGroup.Item>
-                                            {/*
-                                            <ListGroup.Item>
-                                                    <Form.File as={Row} >
-                                                        <Col sm="4">
-                                                            <Form.File.Label>SCHEDULE:</Form.File.Label>
-                                                        </Col>
-                                                        <Col sm="6">
-                                                            <Form.File.Input
-                                                                className="csv-input"
-                                                                type="file"
-                                                                ref={input => {
-                                                                    this.filesInput = input;
-                                                                }}
-                                                                name="schedule"
-                                                                placeholder={null}
-                                                                onChange={this.handleChange}
-                                                                onClick={(e) => e.target.value = null }
-                                                            />
-                                                        </Col>
-                                                        <Col sm="2">
-                                                            {this.state.schedule.length === 0 ?
-                                                              <Button variant="secondary" active="false" size="sm" style={buttonsStyle} onClick={(e) => { e.stopPropagation(); this.importCSV("schedule") }}>import</Button>
-                                                                : <Button variant="secondary" active="false" size="sm" style={selectedButtonStyle} onClick={(e) => { e.stopPropagation(); this.importCSV("schedule") }}>import</Button>
-                                                            }
-                                                         </Col>
-                                                    </Form.File>
-                                            </ListGroup.Item>
-                                             */ }
+                                                    { this.state.failed === '' &&
+                                                    <p>Please, SELECT and IMPORT your files and then UPLOAD them.</p>
+                                                    }
+                                                    <ListGroup variant="flush">
+                                                        <ListGroup.Item>
+                                                            <Form.File as={ Row }>
+                                                                <Col sm="4">
+                                                                    <Form.File.Label>STUDENTS:</Form.File.Label>
+                                                                </Col>
+                                                                <Col sm="6">
+                                                                    <Form.File.Input
+                                                                        className="csv-input"
+                                                                        type="file"
+                                                                        ref={ input => {
+                                                                            this.filesInput = input;
+                                                                        } }
+                                                                        name="students"
+                                                                        placeholder={ null }
+                                                                        onChange={ this.handleChange }
+                                                                        onClick={ ( e ) => e.target.value = null }
+                                                                    />
+                                                                </Col>
+                                                                <Col sm="2">
+                                                                    { this.state.students.length === 0 ?
+                                                                        <Button variant="secondary" active="false" size="sm"
+                                                                                style={ buttonsStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "students" )
+                                                                        } }>import</Button>
+                                                                        : <Button variant="secondary" active="false" size="sm"
+                                                                                style={ selectedButtonStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "students" )
+                                                                        } }>import</Button>
+                                                                    }
+                                                                </Col>
+                                                            </Form.File>
+                                                        </ListGroup.Item>
+                                                        <ListGroup.Item>
+                                                            <Form.File as={ Row }>
+                                                                <Col sm="4">
+                                                                    <Form.File.Label>TEACHERS:</Form.File.Label>
+                                                                </Col>
+                                                                <Col sm="6">
+                                                                    <Form.File.Input
+                                                                        className="csv-input"
+                                                                        type="file"
+                                                                        ref={ input => {
+                                                                            this.filesInput = input;
+                                                                        } }
+                                                                        name="teachers"
+                                                                        placeholder={ null }
+                                                                        onChange={ this.handleChange }
+                                                                        onClick={ ( e ) => e.target.value = null }
+                                                                    />
+                                                                </Col>
+                                                                <Col sm="2">
+                                                                    { this.state.teachers.length === 0 ?
+                                                                        <Button variant="secondary" active="false" size="sm"
+                                                                                style={ buttonsStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "teachers" )
+                                                                        } }>import</Button>
+                                                                        : <Button variant="secondary" active="false" size="sm"
+                                                                                style={ selectedButtonStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "teachers" )
+                                                                        } }>import</Button>
+                                                                    }
+                                                                </Col>
+                                                            </Form.File>
+                                                        </ListGroup.Item>
+                                                        <ListGroup.Item>
+                                                            <Form.File as={ Row }>
+                                                                <Col sm="4">
+                                                                    <Form.File.Label>COURSES:</Form.File.Label>
+                                                                </Col>
+                                                                <Col sm="6">
+                                                                    <Form.File.Input
+                                                                        className="csv-input"
+                                                                        type="file"
+                                                                        ref={ input => {
+                                                                            this.filesInput = input;
+                                                                        } }
+                                                                        name="courses"
+                                                                        placeholder={ null }
+                                                                        onChange={ this.handleChange }
+                                                                        onClick={ ( e ) => e.target.value = null }
+                                                                    />
+                                                                </Col>
+                                                                <Col sm="2"> { this.state.courses.length === 0 ?
+                                                                    <Button variant="secondary" active="false" size="sm"
+                                                                            style={ buttonsStyle } onClick={ ( e ) => {
+                                                                        e.stopPropagation();
+                                                                        this.importCSV( "courses" )
+                                                                    } }>import</Button>
+                                                                    : <Button variant="secondary" active="false" size="sm"
+                                                                            style={ selectedButtonStyle } onClick={ ( e ) => {
+                                                                        e.stopPropagation();
+                                                                        this.importCSV( "courses" )
+                                                                    } }>import</Button>
+                                                                }
+                                                                </Col>
+                                                            </Form.File>
+                                                        </ListGroup.Item>
+                                                        <ListGroup.Item>
+                                                            <Form.File as={ Row }>
+                                                                <Col sm="4">
+                                                                    <Form.File.Label>CLASSES:</Form.File.Label>
+                                                                </Col>
+                                                                <Col sm="6">
+                                                                    <Form.File.Input
+                                                                        className="csv-input"
+                                                                        type="file"
+                                                                        ref={ input => {
+                                                                            this.filesInput = input;
+                                                                        } }
+                                                                        name="classes"
+                                                                        placeholder={ null }
+                                                                        onChange={ this.handleChange }
+                                                                        onClick={ ( e ) => e.target.value = null }
+                                                                    />
+                                                                </Col>
+                                                                <Col sm="2">
+                                                                    { this.state.classes.length === 0 ?
+                                                                        <Button variant="secondary" active="false" size="sm"
+                                                                                style={ buttonsStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "classes" )
+                                                                        } }>import</Button>
+                                                                        : <Button variant="secondary" active="false" size="sm"
+                                                                                style={ selectedButtonStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "classes" )
+                                                                        } }>import</Button>
+                                                                    }
+                                                                </Col>
+                                                            </Form.File>
+                                                        </ListGroup.Item>
+                                                        <ListGroup.Item>
+                                                            <Form.File as={ Row }>
+                                                                <Col sm="4">
+                                                                    <Form.File.Label>ENROLLMENTS:</Form.File.Label>
+                                                                </Col>
+                                                                <Col sm="6">
+                                                                    <Form.File.Input
+                                                                        className="csv-input"
+                                                                        type="file"
+                                                                        ref={ input => {
+                                                                            this.filesInput = input;
+                                                                        } }
+                                                                        name="enrollments"
+                                                                        placeholder={ null }
+                                                                        onChange={ this.handleChange }
+                                                                        onClick={ ( e ) => e.target.value = null }
+                                                                    />
+                                                                </Col>
+                                                                <Col sm="2">
+                                                                    { this.state.enrollments.length === 0 ?
+                                                                        <Button variant="secondary" active="false" size="sm"
+                                                                                style={ buttonsStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "enrollments" )
+                                                                        } }>import</Button>
+                                                                        : <Button variant="secondary" active="false" size="sm"
+                                                                                style={ selectedButtonStyle } onClick={ ( e ) => {
+                                                                            e.stopPropagation();
+                                                                            this.importCSV( "enrollments" )
+                                                                        } }>import</Button>
+                                                                    }
+                                                                </Col>
+                                                            </Form.File>
+                                                        </ListGroup.Item>
+                                                        <ListGroup.Item>
+                                                            <Form.File as={ Row }>
+                                                                <Col sm="4">
+                                                                    <Form.File.Label>LECTURES:</Form.File.Label>
+                                                                </Col>
+                                                                <Col sm="6">
+                                                                    <Form.File.Input
+                                                                        className="csv-input"
+                                                                        type="file"
+                                                                        ref={ input => {
+                                                                            this.filesInput = input;
+                                                                        } }
+                                                                        name="lectures"
+                                                                        placeholder={ null }
+                                                                        onChange={ this.handleChange }
+                                                                        onClick={ ( e ) => e.target.value = null }
+                                                                    />
+                                                                </Col>
+                                                                <Col sm="2"> { this.state.lectures.length === 0 ?
+                                                                    <Button variant="secondary" active="false" size="sm"
+                                                                            style={ buttonsStyle } onClick={ ( e ) => {
+                                                                        e.stopPropagation();
+                                                                        this.importCSV( "lectures" )
+                                                                    } }>import</Button>
+                                                                    : <Button variant="secondary" active="false" size="sm"
+                                                                            style={ selectedButtonStyle } onClick={ ( e ) => {
+                                                                        e.stopPropagation();
+                                                                        this.importCSV( "lectures" )
+                                                                    } }>import</Button>
+                                                                }
+                                                                </Col>
+                                                            </Form.File>
+                                                        </ListGroup.Item>
+                                                        {/*
+                                                        <ListGroup.Item>
+                                                                <Form.File as={Row} >
+                                                                    <Col sm="4">
+                                                                        <Form.File.Label>SCHEDULE:</Form.File.Label>
+                                                                    </Col>
+                                                                    <Col sm="6">
+                                                                        <Form.File.Input
+                                                                            className="csv-input"
+                                                                            type="file"
+                                                                            ref={input => {
+                                                                                this.filesInput = input;
+                                                                            }}
+                                                                            name="schedule"
+                                                                            placeholder={null}
+                                                                            onChange={this.handleChange}
+                                                                            onClick={(e) => e.target.value = null }
+                                                                        />
+                                                                    </Col>
+                                                                    <Col sm="2">
+                                                                        {this.state.schedule.length === 0 ?
+                                                                        <Button variant="secondary" active="false" size="sm" style={buttonsStyle} onClick={(e) => { e.stopPropagation(); this.importCSV("schedule") }}>import</Button>
+                                                                            : <Button variant="secondary" active="false" size="sm" style={selectedButtonStyle} onClick={(e) => { e.stopPropagation(); this.importCSV("schedule") }}>import</Button>
+                                                                        }
+                                                                    </Col>
+                                                                </Form.File>
+                                                        </ListGroup.Item>
+                                                        */ }
 
-                                        </ListGroup>
-                                        <p/>
-                                        <button onClick={ ( e ) => {
-                                            e.stopPropagation();
-                                            this.sendData()
-                                        } }> Upload now!
-                                        </button>
+                                                    </ListGroup>
+                                                    <p/>
+                                                    <button onClick={ ( e ) => {
+                                                        e.stopPropagation();
+                                                        this.sendData()
+                                                    } }> Upload now!
+                                                    </button>
 
 
-                                    </Col>
-                                    <Col sm={ 8 } hidden={ this.state.failed || this.state.failed === '' }>
-                                        <br/>
-                                        <h4>Here is what you uploaded!</h4>
-                                        <Button as={"Link"} onClick={() => this.restoreFunction()}>Click here to go back!</Button>
-                                        <br/>
-                                        <CollapsibleTable tableName={ "Lectures" }
-                                                          tableHeader={ [ "ref_course", "ref_class", "start_date",
-                                                              "end_date", "presence", "bookable", "active" ] }
-                                                          tableData={ this.state.lecturesImported }/>
-                                        <CollapsibleTable tableName={ "Student" }
-                                                          tableHeader={ [ "id", "name", "surname",
-                                                              "city", "email", "birthday", "SSN", "password" ] }
-                                                          tableData={ this.state.studentsImported }/>
-                                        <CollapsibleTable tableName={ "Classes" }
-                                                          tableHeader={ [ "id", "desc", "seats" ] }
-                                                          tableData={ this.state.classesImported }/>
-                                        <CollapsibleTable tableName={ "Enrollment" }
-                                                          tableHeader={ [ "code", "student" ] }
-                                                          tableData={ this.state.enrollmentsImported }/>
-                                        <CollapsibleTable tableName={ "Courses" }
-                                                          tableHeader={ [ "id", "year", "semester",
-                                                              "desc", "teacher" ] }
-                                                          tableData={ this.state.coursesImported }/>
-                                        <CollapsibleTable tableName={ "Teachers" }
-                                                          tableHeader={ [ "id", "name", "surname",
-                                                              "email", "password" ] }
-                                                          tableData={ this.state.teachersImported }/>
+                                                </Col>
+                                                <Col sm={ 8 } hidden={ this.state.failed || this.state.failed === '' }>
+                                                    <br/>
+                                                    <h4>Here is what you uploaded!</h4>
+                                                    <Button as={"Link"} onClick={() => this.restoreFunction()}>Click here to go back!</Button>
+                                                    <br/>
+                                                    <CollapsibleTable tableName={ "Lectures" }
+                                                                    tableHeader={ [ "ref_course", "ref_class", "start_date",
+                                                                        "end_date", "presence", "bookable", "active" ] }
+                                                                    tableData={ this.state.lecturesImported }/>
+                                                    <CollapsibleTable tableName={ "Student" }
+                                                                    tableHeader={ [ "id", "name", "surname",
+                                                                        "city", "email", "birthday", "SSN", "password" ] }
+                                                                    tableData={ this.state.studentsImported }/>
+                                                    <CollapsibleTable tableName={ "Classes" }
+                                                                    tableHeader={ [ "id", "desc", "seats" ] }
+                                                                    tableData={ this.state.classesImported }/>
+                                                    <CollapsibleTable tableName={ "Enrollment" }
+                                                                    tableHeader={ [ "code", "student" ] }
+                                                                    tableData={ this.state.enrollmentsImported }/>
+                                                    <CollapsibleTable tableName={ "Courses" }
+                                                                    tableHeader={ [ "id", "year", "semester",
+                                                                        "desc", "teacher" ] }
+                                                                    tableData={ this.state.coursesImported }/>
+                                                    <CollapsibleTable tableName={ "Teachers" }
+                                                                    tableHeader={ [ "id", "name", "surname",
+                                                                        "email", "password" ] }
+                                                                    tableData={ this.state.teachersImported }/>
 
+                                                </Col>
+                                            
+                                            </Route>
+                                        </Switch>
                                     </Col>
                                 </Row>
+
+                                    
                             </Container>
                         </>
                         }

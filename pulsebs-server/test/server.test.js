@@ -764,8 +764,39 @@ describe('API Officer', () => {
             expect(response.status).toBe(400);
         });
     });
-
-
+/**
+     * @Feihong
+     * @story17
+     * Get all the Lectures for SupportOffice page
+     * GET: /api/supportOffice/lectures
+     */
+    describe('/api/supportOffice/lectures', ()=> {
+        it('should return a 200 if get lectures', async () =>{
+            await request( server )
+                .get( '/api/supportOffice/lectures' )
+                .set( 'Cookie', `token=${ token }` )
+                .set( 'Content-Type', 'application/json' )
+                .then( ( res ) => {
+                    expect( res.status ).toBe( 200 );})
+    })
+})
+    /**
+     * @Feihong
+     * @Story17
+     * Update the bookable attribute for the lecture that was clicked by support officer
+     * POST: /api/supportOffice/lecture/:lectureId/:num
+     */
+    describe('/api/supportOffice/lecture/:lectureId/:num', ()=>{
+        it('should return a 200 if there is a lecture id is 1 ', async()=>{
+            await request( server )
+                .post( '/api/supportOffice/lecture/1/0'  )
+                .set( 'Cookie', `token=${ token }` )
+                .set( 'Content-Type', 'application/json' )
+                .then( ( res ) => {
+                    expect( res.status ).toBe( 200 );
+        })
+    });
+})
 
     // logout and server shutdown
     afterAll(async () => {
@@ -777,4 +808,3 @@ describe('API Officer', () => {
         handleToCloseServer.close();
     }, 10);
 });
-

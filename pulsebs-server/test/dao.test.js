@@ -782,3 +782,32 @@ describe( "Get student and teacher starting from ssn code", () => {
         } );
     } );
 })
+
+/**
+ * @Feihong
+ * @Story17
+ * Get all lectures that is used by a support officer, which is used to update the bookalble attribute
+ */
+describe("Get all lectures", ()=>{
+    test('should get some lectures, if the lecture table is not empty', () => {
+        return DAO.getAllLecturesForSupportOffice().then( result => {
+            expect( result[0].id).toBe(1);
+            expect( result[0].courseDesc).toBe('Analisi 1');
+        })
+    });
+})
+
+/**
+ * @Feihong
+ * @Story17
+ * update the bookable attribute of specific lecture
+ */
+describe("update the bookable attribute on lecture table by given lectureId and updating number", ()=>{
+    test('should get a successful notification, if this lecture exist', () => {
+        return DAO.updateBookableAttributForLecture( 1, 1 ).then( result => {
+            console.log('-------------');
+            expect(result).toBe(1);
+        })
+    })
+    
+})
