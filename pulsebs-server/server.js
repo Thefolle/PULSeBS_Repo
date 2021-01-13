@@ -653,7 +653,7 @@ app.delete( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
 * Thi API parse a JSON object and execute statements on DB.
 * */
 app.put( '/api/sofficer/', ( req, res ) => {
-    console.log( "qui" );
+    console.log( req.body );
     //Ligh validation body
     if ( 'classes' in req.body &&
         'courses' in req.body &&
@@ -667,6 +667,85 @@ app.put( '/api/sofficer/', ( req, res ) => {
     else res.status( 400 ).json( dataErrorObj )
 
 } )
+
+/**
+ * @Feihong
+ * @Story17
+ * Get all the Lectures for SupportOffice page
+ * GET: /api/supportOffice/lectures
+ */
+app.get('/api/supportOffice/lectures', (req, res) =>{
+    pulsebsDAO.getAllLecturesForSupportOffice()
+        .then((lectures) => {
+            
+            res.json(lectures);
+            
+        }).catch((err) => {
+            res.status(500).json({
+                errors: [ {'message': err} ],
+                location: [{'function-location': '/api/supportOffice/lectures'}]
+            })
+        })
+})
+
+/**
+ * @Feihong
+ * @Story17
+ * Update the bookable attribute for the lecture that was clicked by support officer
+ * POST: /api/supportOffice/lecture/:lectureId/:num
+ */
+app.post('/api/supportOffice/lecture/:lectureId/:num', (req, res) => {
+    const lectureId = req.params.lectureId
+    const num = req.params.num
+    pulsebsDAO.updateBookableAttributForLecture(lectureId, num)
+        .then((message) => {
+            res.json(
+                message
+            )
+        }).catch( ( err) => {
+            res.status(500).json(err)
+        })
+})
+
+// api/supportOffice/lectures/delete?from=${ startDate }&to=${ endDate } -DELETE
+// Called from client when a support officer wants to update the schedule (delete + insert)
+app.delete( '/api/supportOffice/bookings/delete', ( req, res ) => {
+    const startDate = req.query.from;
+    const endDate = req.query.to;
+    if ( !startDate || !endDate ) {
+        res.status( 401 ).end();
+    } else {
+        const user = req.user && req.user.user;
+        pulsebsDAO.cancelBookingsByDate( startDate, endDate )
+                  .then( ( response ) => {
+                      res.status( 200 ).json( {response} );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                          errors: [ {'param': 'Server', 'msg': err} ],
+                    } );
+                  } );
+    }
+} );
+
+app.delete( '/api/supportOffice/lectures/delete', ( req, res ) => {
+    const startDate = req.query.from;
+    const endDate = req.query.to;
+    if ( !startDate || !endDate ) {
+        res.status( 401 ).end();
+    } else {
+        const user = req.user && req.user.user;
+        pulsebsDAO.cancelLecturesByDate( startDate, endDate )
+                  .then( ( response ) => {
+                      res.status( 200 ).json( {response} );
+                  } )
+                  .catch( ( err ) => {
+                      res.status( 500 ).json( {
+                          errors: [ {'param': 'Server', 'msg': err} ],
+                    } );
+                  } );
+    }
+} );
 
 //BOOKING MANAGER
 

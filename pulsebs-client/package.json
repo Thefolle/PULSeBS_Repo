@@ -21,6 +21,8 @@
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-bootstrap": "^1.0.1",
+    "react-bootstrap-date-picker": "^5.1.0",
+    "react-datepicker": "^3.3.0",
     "react-dom": "^17.0.1",
     "react-icons": "^3.10.0",
     "react-papaparse": "^3.11.0",

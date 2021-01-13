@@ -1,4 +1,5 @@
 import React from 'react';
+import moment      from 'moment';
 import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
 import { AuthContext } from './auth/AuthContext';
@@ -32,7 +33,9 @@ const LecturesList = (props) => {
                     </thead>
                     <tbody>
                       {/* TODO: map waitings */}
-                    { lectures.map( ( l ) => <LectureItem key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } deleteWaitingAddBooking={ deleteWaitingAddBooking } getBookingId={getBookingId} /> ) }
+                    { lectures
+                        .filter((l) => !(moment(l.date).isBefore(new Date())))
+                        .map( ( l ) => <LectureItem key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } deleteWaitingAddBooking={ deleteWaitingAddBooking } getBookingId={getBookingId} /> ) }
                     </tbody>
                 </Table>
                 }
