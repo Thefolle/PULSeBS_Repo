@@ -10,7 +10,7 @@ import SupportOfficerPage from './components/supportOfficer/SupportOfficerPage';
 import TeacherPage from './components/teacher/TeacherPage';
 import User from './entities/User';
 import './style/App.css';
-
+ 
 
 function App() {
     return (
