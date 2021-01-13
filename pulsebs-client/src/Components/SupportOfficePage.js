@@ -446,7 +446,7 @@ class SupportOfficePage extends React.Component {
     }
 
     updateScheduleData(result) {
-        var data = result.data.map(e => ({ course: e.course, class: e.class, day: e.day, startTime: e.startTime, endTime: e.endTime, presence: e.presence, bookable: e.bookable, active: e.active,, dateScheduled:e.dateScheduled }));
+        var data = result.data.map(e => ({ course: e.course, class: e.class, day: e.day, startTime: e.startTime, endTime: e.endTime, presence: e.presence, bookable: e.bookable, active: e.active, dateScheduled:e.dateScheduled }));
         this.setState({ schedule: data });
     }
 
