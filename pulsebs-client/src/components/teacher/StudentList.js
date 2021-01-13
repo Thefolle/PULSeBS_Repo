@@ -1,11 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Table } from "react-bootstrap";
-import { AuthContext } from '../../auth/AuthContext';
-
 import { FaBackward } from "react-icons/fa";
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../auth/AuthContext';
+import StudentItem from './StudentItem';
 
-import Tutorial from '../Tutorial';
 
 const StudentList = (props) => {
     let { students, idl, idc } = props;
@@ -41,20 +40,6 @@ const StudentList = (props) => {
         </AuthContext.Consumer>
     );
 
-}
-
-const StudentItem = (props) => {
-    let { student } = props;
-
-    return (
-        <tr>
-            <td>
-                <Tutorial on={true} text='This student is currently booked for the lecture.' push={
-                    student.studentId
-                } />
-            </td>
-        </tr>
-    );
 }
 
 export default StudentList;

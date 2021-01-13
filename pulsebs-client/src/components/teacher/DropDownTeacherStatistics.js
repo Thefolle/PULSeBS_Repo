@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Dropdown} from 'react-bootstrap';
-import '../../style/DropDown.css';
+import '../../style/dropDown.css';
 
 let DropDown = function (props) {
     let { options, defaultOption, variant, extraPadding, setSelectedOption } = props;

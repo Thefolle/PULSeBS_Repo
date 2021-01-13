@@ -1,19 +1,18 @@
 import React from 'react';
-
+import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav'
-import { LinkContainer } from "react-router-bootstrap";
-import { Switch, Route, Link } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
-import {AiOutlineTable} from 'react-icons/ai';
-import { FaBookOpen, FaCalendarAlt, FaOldRepublic, FaUserCircle} from "react-icons/fa";
+import { AiOutlineTable } from 'react-icons/ai';
+import { FaBookOpen, FaCalendarAlt, FaUserCircle } from "react-icons/fa";
 import { IoIosStats } from 'react-icons/io';
-import { RiVirusFill } from 'react-icons/ri'
-
-import Tutorial from './Tutorial';
-
+import { RiVirusFill } from 'react-icons/ri';
+import { Link, Route, Switch } from 'react-router-dom';
+import { AuthContext } from '../auth/AuthContext';
 import '../style/App.css';
 import '../style/customStyle.css';
+import Tutorial from './Tutorial';
+
+
+
 
 class UserNavBar extends React.Component {
 
