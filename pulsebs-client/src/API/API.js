@@ -363,7 +363,7 @@ async function getTeacherFromSSN(ssn) {
  * GET: /api/supportOffice/lectures
  */
 async function getAllLecturesForSupportOffice(){
-    
+
     const response = await fetch(baseURL + "/supportOffice/lectures")
     const lecturesJson = await response.json()
     if (response.ok) {
@@ -389,7 +389,7 @@ async function updateBookableAttributForLecture(lectureId, num){
             if (response.ok){
                 resolve(null)
             }else{
-                reject(response.json())    
+                reject(response.json())
             }
         }).catch(() => {
             reject( {errors: [ {param: "Server", msg: "Cannot communicate"} ]} )
@@ -411,6 +411,38 @@ async function importCSV( students, teachers, courses, enrollments, classes, lec
                                       subscriptions: enrollments.map( ( e ) => new Enrollment( e.cid, e.sid ) ),
                                       classes: classes.map( ( c ) => new Class( c.id, c.desc, c.seats ) ),
                                       lectures: lectures.map( ( l ) => new scheduledLecture( l.course, l.ref_class, l.start_date, l.end_date, l.presence, l.bookable, l.active ) )
+                                  } ),
+        } ).then( ( response ) => {
+            if ( response.ok ) {
+                resolve( response );
+            } else {
+                // analyze the cause of error
+                console.log( "errore msg" );
+                response.json()
+                        .then( ( obj ) => {
+                            reject( obj );
+                        } ) // error msg in the response body
+                        .catch( ( err ) => {
+                            reject( {errors: [ {param: "Application", msg: "Cannot parse server response"} ]} )
+                        } ); // something else
+            }
+        } ).catch( ( err ) => {
+            reject( {errors: [ {param: "Server", msg: "Cannot communicate"} ]} )
+        } ); // connection errors
+    } );
+}
+
+async function updateScheduleLectues( lectures, startDate, endDate ) {
+    return new Promise( ( resolve, reject ) => {
+        fetch( baseURL + "/sofficer/updateLecture/", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify( {   startDate:startDate,
+                                      endDate: endDate,
+                                      //modified
+                                      lectures: lectures.map( ( l ) => new scheduledLecture( l.course, l.ref_class, l.start_date, l.end_date, l.presence, l.bookable, l.active, l.dateScheduled ) )
                                   } ),
         } ).then( ( response ) => {
             if ( response.ok ) {
@@ -714,6 +746,7 @@ const API = {
     getStudentFromSSN,
     getTeacherFromSSN,
     cancelBookingsByDate,
-    cancelLecturesByDate
+    cancelLecturesByDate,
+    updateScheduleLectues
 };
 export default API;

@@ -516,6 +516,7 @@ app.delete( '/api/students/:studentId/lectures/:lectureId/waiting', ( req, res )
                               message: "The lecture was find in the waiting table," +
                                   "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: " + lectureId
                           } )
+                    if(studentAndLectureInfo!==0){
                       if ( process.env.TEST && process.env.TEST === '0' ) {
                           let mailOptions2;
                           mailOptions2 = {
@@ -541,6 +542,7 @@ app.delete( '/api/students/:studentId/lectures/:lectureId/waiting', ( req, res )
                               }
                           } );
                       }
+                    }
 
                   } )
                   .catch( ( exitCode ) => {
@@ -668,6 +670,90 @@ app.put( '/api/sofficer/', ( req, res ) => {
 
 } )
 
+app.put('/api/sofficer/updateLecture/',(req,res)=>{
+    console.log( req.body );
+    if ( 'startDate' in req.body &&
+        'endDate' in req.body &&
+        'lectures' in req.body
+        ){let lecturesPrint=[...new Set(req.body.lectures.map(i=>i.ref_course))];
+            pulsebsDAO.updateLectureScheduled(req.body)
+                .then(()=>{
+                    if (process.env.TEST && process.env.TEST === '0' ) {
+                        /*for(let j in lecturesPrint){
+                            pulsebsDAO.getStudentByCourse( lecturesPrint[j] )
+                                    .then( ( students ) => {
+                                        if ( students.length !== 0 ) {
+                                            students.forEach(s=>{
+                                                //var email = s.studentEmail;
+                                                let name = s.studentName;
+                                                let surname = s.studentSurname;
+                                                let user = s.studentId;
+                                                let courseName=s.courseName;
+                                                mailOptions = {
+                                                    from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                                    //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS
+                                                    // TO RANDOM PEOPLE IN THE WORLD.
+                                                    to: 'student.team9@yopmail.com',
+                                                    subject: 'Update Lecture (' + courseName + ')',
+                                                    text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that some lessons of " + courseName + " are changed on schedule.\n\n"
+                                                        + "Have a good day.\n\n - PULSeBS Team9."
+                                                };
+                                                transporter.sendMail( mailOptions, function ( error, info ) {
+                                                    if ( error ) {
+                                                        console.log( error );
+                                                    } else {
+                                                        console.log( 'Email sent to: ' + user + ", info: " + info.response );
+                                                        transporter.close();
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    } ).catch( ( err ) => {
+                            console.log( err );
+                            } );
+                        };*/
+                        pulsebsDAO.getAllBookings().then(students=>{
+                            if(students.length!==0){
+                               console.log(students.filter(s=>s.dataStart>=req.body.startDate));
+                               students.filter(s=>s.dataStart>=req.body.startDate)
+                                .forEach(s=>{
+                                    //var email = s.studentEmail;
+                                    let name = s.userName;
+                                    let surname = s.userSurname;
+                                    let user = s.userId;
+                                    let courseName=s.course;
+                                    let dataStart=s.dataStart;
+                                    let dataFinish=s.dataFinish;
+                                    mailOptions = {
+                                        from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
+                                        //to: email, // COMMENTED IN ORDER NOT TO SEND EMAILS
+                                        // TO RANDOM PEOPLE IN THE WORLD.
+                                        to: 'student.team9@yopmail.com',
+                                        subject: 'Update Lecture (' + courseName + ')',
+                                        text: "Dear " + name + " " + surname + " (" + user + "), this email is to confirm that the lesson of " + courseName + " is scheduled on "+moment(dataStart).format("YYYY-MM-DD HH:mm")+":"+moment(dataFinish).format("HH:mm")+" .\n\n"
+                                            + "Have a good day.\n\n - PULSeBS Team9."
+                                    };
+                                    transporter.sendMail( mailOptions, function ( error, info ) {
+                                        if ( error ) {
+                                            console.log( error );
+                                        } else {
+                                            console.log( 'Email sent to: ' + user + ", info: " + info.response );
+                                            transporter.close();
+                                        }
+                                    });
+                                });
+                            }
+                        });
+
+                    }
+                    res.status(200).end();
+                }).catch(()=>{
+                     res.status( 400 ).json( databaseErrorObj )
+                });
+
+        }else res.status( 400 ).json( dataErrorObj );
+});
+
 /**
  * @Feihong
  * @Story17
@@ -677,9 +763,9 @@ app.put( '/api/sofficer/', ( req, res ) => {
 app.get('/api/supportOffice/lectures', (req, res) =>{
     pulsebsDAO.getAllLecturesForSupportOffice()
         .then((lectures) => {
-            
+
             res.json(lectures);
-            
+
         }).catch((err) => {
             res.status(500).json({
                 errors: [ {'message': err} ],

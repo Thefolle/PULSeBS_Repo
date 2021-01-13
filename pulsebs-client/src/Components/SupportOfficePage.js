@@ -74,12 +74,12 @@ class SupportOfficePage extends React.Component {
         this.sendData = this.sendData.bind( this );
         this.getAllLecturesForSupportOffice = this.getAllLecturesForSupportOffice.bind(this);
         this.updateBookableAttributForLecture = this.updateBookableAttributForLecture.bind(this);
-        
+
         this.handleStartDate = this.handleStartDate.bind(this);
         this.handleEndDate = this.handleEndDate.bind(this);
         this.sendNewSchedule = this.sendNewSchedule.bind(this);
 
-        
+
     }
 
     handleChange = event => {
@@ -185,7 +185,7 @@ class SupportOfficePage extends React.Component {
         var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
         let newLectures = [];
-    
+
        for ( var d = new Date(startDate.valueOf()); d <= endDate; d.setDate(d.getDate() + 1)) {
            let day = days[d.getDay()];
            let filteredLectures = schedule.filter((s) => s.day === day);
@@ -200,12 +200,34 @@ class SupportOfficePage extends React.Component {
             let startUnix = moment(start).valueOf();
             let endUnix = moment(end).valueOf();
 
-            let lecture = { course: s.course, ref_class: s.class, start_date: startUnix, end_date: endUnix, presence: s.presence, bookable: s.bookable, active: s.active };
+            let lecture = { course: s.course, ref_class: s.class, start_date: startUnix, end_date: endUnix, presence: s.presence, bookable: s.bookable, active: s.active, dateScheduled:s.dateScheduled };
             newLectures.push(lecture);
         }
     }
 
-        API.cancelBookingsByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
+    //MY IMPLEMENTATION - Vincenzo
+        API.updateScheduleLectues(newLectures,moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then(()=>{
+        //API.importCSV([], [], [], [], [], newLectures).then((result) => {
+                //get the updated list of tasks from the server
+                this.setState({
+                    failed: 0,
+                    schedulecsv: undefined,
+                    //lecturesImported: newLectures,
+                    scheduleImported: schedule //do we need to import in the db the schedule too?
+                });
+        }) //if SUCCEDED return 1
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+                this.setState({
+                    failed: 1,
+                    schedulecsv: undefined,
+                    schedule: [],
+                    lecturesImported: [[]],
+                    scheduleImported: [[]],
+                });
+            });
+
+        /*API.cancelBookingsByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
             if (result.ok) {
                 console.log("bookings ok");
                 API.cancelLecturesByDate(moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then((result) => {
@@ -281,7 +303,7 @@ class SupportOfficePage extends React.Component {
                 lecturesImported: [[]],
                 scheduleImported: [[]],
             });
-        });
+        });*/
 
 
     }
@@ -424,7 +446,7 @@ class SupportOfficePage extends React.Component {
     }
 
     updateScheduleData(result) {
-        var data = result.data.map(e => ({ course: e.course, class: e.class, day: e.day, startTime: e.startTime, endTime: e.endTime, presence: e.presence, bookable: e.bookable, active: e.active }));
+        var data = result.data.map(e => ({ course: e.course, class: e.class, day: e.day, startTime: e.startTime, endTime: e.endTime, presence: e.presence, bookable: e.bookable, active: e.active,, dateScheduled:e.dateScheduled }));
         this.setState({ schedule: data });
     }
 
@@ -508,7 +530,7 @@ class SupportOfficePage extends React.Component {
             this.setState({lecForSupport: lectures.sort(function(a, b){
                 return b.date -a.date
             })})
-            
+
             if(this.state.lecForFilter[0]===0){
                 this.setState({lecForFilter: lectures.sort(function(a, b){
                     return b.date -a.date
@@ -518,7 +540,7 @@ class SupportOfficePage extends React.Component {
         } ).catch( (err) => {
             this.handleErrors(err)
         })
-        
+
     }
 
     /**
@@ -547,7 +569,7 @@ class SupportOfficePage extends React.Component {
 /**
  * @Feihong
  * @Story17
- * update lectures 
+ * update lectures
  */
 updateLecForSup = (courseName) =>{
     if(courseName==="All"){
@@ -564,7 +586,7 @@ updateLecForSup = (courseName) =>{
         var lectures = new Array();
         for(let lecture of this.state.lecForSupport){
             if (lecture.courseDesc == courseName){
-                
+
                 lectures.push(lecture)
             }
         }
@@ -613,16 +635,16 @@ componentDidMount(){
                                                 <Row>
                                                     <Col>
                                                     <label>Course:</label>
-                                                        <DropDownSupportOffice options={["All",...new Set(this.state.lecForSupport.map(l => l.courseDesc))]} 
+                                                        <DropDownSupportOffice options={["All",...new Set(this.state.lecForSupport.map(l => l.courseDesc))]}
                                                         update={this.updateLecForSup} />
                                                     </Col>
                                                 </Row>
-                                                
+
                                                 <ManageLectures onLoad={this.FirstLoadDataToFiler} lecForFilter = {this.state.lecForFilter}
                                                 updateBookableAttributForLecture = {this.updateBookableAttributForLecture}
                                                 />
-                                                
-                                                
+
+
                                             </Route>
                                             <Route exact path = {"/supportOffice/uploadFile"}>
                                                 <Col sm={8} hidden={this.state.failed === 0}>
@@ -903,7 +925,7 @@ componentDidMount(){
 
                                                         </Col>
                                                     </Row>
-                                                
+
                                                     <Row>
                                                         <Col sm={4}></Col>
                                                         <Col sm={4}>
@@ -914,7 +936,7 @@ componentDidMount(){
                                                             </button>
                                                         </Col>
                                                     </Row>
-                                            
+
                                                 </Col>
 
                                                 <Col sm={8} hidden={this.state.failed || this.state.failed === ''}>
@@ -947,17 +969,17 @@ componentDidMount(){
                                                     <CollapsibleTable tableName={"Schedule"}
                                                         tableHeader={["course", "class", "day",
                                                             "start_time", "end_time",
-                                                            "presence", "bookable", "active"]}
+                                                            "presence", "bookable", "active","old_day"]}
                                                         tableData={this.state.scheduleImported} />
 
                                                 </Col>
-                                                        
+
                                             </Route>
                                         </Switch>
                                     </Col>
                                 </Row>
 
-                                    
+
                             </Container>
                         </>
                         }

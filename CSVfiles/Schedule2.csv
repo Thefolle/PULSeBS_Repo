@@ -1,0 +1,11 @@
+course,class,day,startTime,endTime,presence,bookable,active,dateScheduled
+1,1,Monday,11:30,13:00,1,1,1,Tuesday
+1,1,Wednesday,11:30,14:30,1,1,1,Thursday
+2,2,Tuesday,10:00,11:30,1,1,1,Friday
+2,2,Friday,16:00,19:00,1,1,1,Tuesday
+4,2,Tuesday,16:00,17:30,1,1,1,Monday
+4,3,Thursday,13:00,16:00,1,1,1,Wednesday
+5,3,Monday,10:00,11:30,1,1,1,Tuesday
+5,4,Friday,10:00,13:00,1,1,1,Thursday
+6,5,Monday,16:00,17:30,1,1,1,Thursday
+6,5,Wednesday,14:30,17:30,1,1,1,Friday
