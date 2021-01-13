@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table } from "react-bootstrap";
-import { AuthContext } from '../auth/AuthContext';
-import moment from 'moment';
+import { AuthContext } from '../../auth/AuthContext';
+import BookingsStatsItem from './BookingsStatsItem';
 
 /*
 Type 0: attendances
@@ -61,24 +61,6 @@ const BookingsStats = (props) => {
         </AuthContext.Consumer>
     );
 
-}
-
-const BookingsStatsItem = (props) => {
-    let { booking } = props;
-
-    return (
-        <tr>
-            <td>{booking.userId}</td>
-            <td>{booking.userName}</td>
-            <td>{booking.userSurname}</td>
-            <td>{booking.course}</td>
-            <td>{booking.lecId}</td>
-            <td>{moment(new Date(booking.dataStart)).format("YYYY-MM-DD")}</td>
-            <td>{moment(new Date(booking.dataStart)).format("HH:mm")}</td>
-            <td>{moment(new Date(booking.dataFinish)).format("HH:mm")}</td>
-            <td>{booking.classC}</td>
-        </tr>
-    );
 }
 
 export default BookingsStats;

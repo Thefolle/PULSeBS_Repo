@@ -6,12 +6,12 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 
-import Tutorial from './components/Tutorial';
+import Tutorial from './Tutorial';
 
-import { AuthContext } from './auth/AuthContext';
+import { AuthContext } from '../auth/AuthContext';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './customStyle.css';
+import '../style/customStyle.css';
 
 class LoginPage extends React.Component {
   constructor(props) {

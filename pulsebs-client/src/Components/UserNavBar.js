@@ -12,8 +12,8 @@ import { RiVirusFill } from 'react-icons/ri'
 
 import Tutorial from './Tutorial';
 
-import '../App.css';
-import '../customStyle.css';
+import '../style/App.css';
+import '../style/customStyle.css';
 
 class UserNavBar extends React.Component {
 

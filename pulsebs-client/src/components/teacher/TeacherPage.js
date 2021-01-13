@@ -1,22 +1,23 @@
 import React from 'react';
 import { withRouter, Switch, Route } from 'react-router-dom';
 
-import API from '../API/API';
+import API from '../../API/API';
 import CourseList from './CourseList';
 import LectureList from './LectureList';
 import StudentList from './StudentList';
-import UserNavBar  from './UserNavBar';
-import { AuthContext } from '../auth/AuthContext';
+import UserNavBar  from '../UserNavBar';
+import { AuthContext } from '../../auth/AuthContext';
 import TeacherStatistics from './TeacherStatistics';
+import PresencePage from "./PresencePage";
 
 
 import { Row, Col, Container, ListGroup, Jumbotron } from "react-bootstrap";
 
-import Tutorial from './Tutorial';
+import Tutorial from '../Tutorial';
 
-import '../App.css';
-import '../customStyle.css';
-import PresencePage                                  from "./PresencePage";
+import '../../style/App.css';
+import '../../style/customStyle.css';
+
 
 class TeacherPage extends React.Component {
     constructor(props) {

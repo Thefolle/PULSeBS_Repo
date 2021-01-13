@@ -2,13 +2,13 @@ import React from 'react';
 import Plotly from 'plotly.js';
 import moment from 'moment';
 
-import API from '../API/API';
+import API from '../../API/API';
 
 import { Row, Col, Form, Container } from 'react-bootstrap';
 
-import DropDown from './DropDown';
+import DropDown from './DropDownTeacherStatistics';
 
-import Tutorial from './Tutorial';
+import Tutorial from '../Tutorial';
 
 
 moment.locale('it');

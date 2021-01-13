@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Form, Row, Button, Col } from "react-bootstrap";
-import API from "../API/API.js";
+import API from "../../API/API.js";
 import moment from "moment";
 import { withRouter } from "react-router-dom"
 
-import Tutorial from './Tutorial';
+import Tutorial from '../Tutorial';
 
 
 class PresencePage extends React.Component {

@@ -1,10 +1,10 @@
 import React from 'react';
-import API from '../API/API';
+import API from '../../API/API';
 import { withRouter, Switch, Route } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
-import UserNavBar from './UserNavBar';
-import '../App.css';
-import '../customStyle.css';
+import { AuthContext } from '../../auth/AuthContext';
+import UserNavBar from '../UserNavBar';
+import '../../style/App.css';
+import '../../style/customStyle.css';
 import Container from 'react-bootstrap/Container';
 import BookingsStats from './BookingsStats';
 import ContactTracing from './ContactTracing';

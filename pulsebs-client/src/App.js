@@ -3,17 +3,18 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
-import User from './User';
-import LoginPage from './LoginPage';
-import StudentPage from './studentPage';
-import TeacherPage from './components/TeacherPage';
-import SupportOfficePage from './components/SupportOfficePage'
+import User from './entities/User';
+import LoginPage from './components/LoginPage';
+import StudentPage from './components/student/StudentPage';
+import TeacherPage from './components/teacher/TeacherPage';
+import SupportOfficePage from './components/supportOfficer/SupportOfficePage'
 import { AuthContext } from './auth/AuthContext';
 import Header from './components/Header';
+import BookingManager from './components/bookingManager/BookingManager';
 
-import './App.css';
+import './style/App.css';
 import API from './API/API.js';
-import BookingManager from './components/BookingManager';
+
 
 function App() {
     return (

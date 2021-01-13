@@ -2,9 +2,9 @@ import React from 'react';
 import moment      from 'moment';
 import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
-import { AuthContext } from './auth/AuthContext';
+import { AuthContext } from '../../auth/AuthContext';
 
-import Tutorial from './components/Tutorial';
+import Tutorial from '../Tutorial';
 
 const LecturesList = (props) => {
 

@@ -3,8 +3,8 @@ import moment        from 'moment';
 import { Container } from "react-bootstrap";
 import FullCalendar  from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/timegrid';
-import {AuthContext} from '../auth/AuthContext';
-import '../style/studentCalendar.css';
+import {AuthContext} from '../../auth/AuthContext';
+import '../../style/studentCalendar.css';
 
 class StudentCalendar extends React.Component {
     render() {

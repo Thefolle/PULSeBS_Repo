@@ -1,18 +1,18 @@
 import React                                                       from 'react';
 import { withRouter, Switch, Route }                               from 'react-router-dom';
 import moment                                                      from 'moment';
-import UserNavBar                                                  from '../components/UserNavBar';
+import UserNavBar                                                  from '../UserNavBar';
 import Form                                                        from 'react-bootstrap/Form'
 import { Row, Col, Container, ListGroup, Button,  FormGroup, FormLabel} from "react-bootstrap";
 import DatePicker from "react-datepicker";
 
 
-import '../App.css';
-import API                                                         from '../API/API';
-import { AuthContext }                                             from '../auth/AuthContext';
+import '../../style/App.css';
+import API                                                         from '../../API/API';
+import { AuthContext }                                             from '../../auth/AuthContext';
 import CollapsibleTable                                            from "./CollapsibleTable";
-import ManageLectures from './supportOfficer/ManageLectures'
-import DropDownSupportOffice from '../components/supportOfficer/DropDownSupportOffice'
+import ManageLectures from './ManageLectures'
+import DropDownSupportOffice from './DropDownSupportOffice'
 import "react-datepicker/dist/react-datepicker.css";
 
 

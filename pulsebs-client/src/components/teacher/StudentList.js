@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Table } from "react-bootstrap";
-import { AuthContext } from '../auth/AuthContext';
+import { AuthContext } from '../../auth/AuthContext';
 
 import { FaBackward } from "react-icons/fa";
 
-import Tutorial from './Tutorial';
+import Tutorial from '../Tutorial';
 
 const StudentList = (props) => {
     let { students, idl, idc } = props;

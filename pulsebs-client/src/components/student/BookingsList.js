@@ -1,10 +1,10 @@
 import React       from 'react';
 import BookingItem from './BookingItem';
-import WaitingItem from './components/waitings/WaitingItem'
+import WaitingItem from './WaitingItem'
 import { Table }   from "react-bootstrap";
-import {AuthContext} from './auth/AuthContext';
+import {AuthContext} from '../../auth/AuthContext';
 
-import Tutorial from './components/Tutorial';
+import Tutorial from '../Tutorial';
 
 const BookingsList = ( props ) => {
 

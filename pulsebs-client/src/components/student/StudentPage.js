@@ -2,19 +2,19 @@ import React from 'react';
 import {Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import {Switch} from 'react-router-dom';
-import {AuthContext} from './auth/AuthContext';
+import {AuthContext} from '../../auth/AuthContext';
 import { Row, Col, Container, ListGroup} from "react-bootstrap";
 
 
 import LecturesList from './LecturesList';
 import BookingsList from './BookingsList';
-import WaitingList from './components/waitings/WaitingList';
-import UserNavBar from './components/UserNavBar';
-import StudentCalendar from "./components/StudentCalendar";
-import './App.css';
-import API from './API/API';
+import WaitingList from './WaitingList';
+import UserNavBar from '../UserNavBar';
+import StudentCalendar from "./StudentCalendar";
+import '../../style/App.css';
+import API from '../../API/API';
 
-import Tutorial from './components/Tutorial';
+import Tutorial from '../Tutorial';
 
 
 
