@@ -4,7 +4,7 @@ import Image from 'react-bootstrap/Image';
 import { AuthContext } from '../../auth/AuthContext';
 import Tutorial from '../Tutorial';
 
-const BookingItem = ( props ) => {
+const Booking = ( props ) => {
 
   let {booking, cancelBooking, deleteWaitingAddBooking} = props;
 
@@ -37,4 +37,4 @@ const BookingItem = ( props ) => {
   );
 }
 
-export default BookingItem;
+export default Booking;

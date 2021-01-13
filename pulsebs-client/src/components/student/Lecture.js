@@ -5,7 +5,7 @@ import { AuthContext } from '../../auth/AuthContext';
 import Tutorial from '../Tutorial';
 
 
-const LectureItem = ( props ) => {
+const Lecture = ( props ) => {
 
     let {lecture, waitings, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, alreadyWaited, deleteWaitingAddBooking, getBookingId} = props;
 
@@ -85,4 +85,4 @@ const LectureItem = ( props ) => {
     );
 }
 
-export default LectureItem;
+export default Lecture;

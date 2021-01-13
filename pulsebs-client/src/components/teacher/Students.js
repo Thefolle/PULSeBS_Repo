@@ -6,7 +6,7 @@ import { AuthContext } from '../../auth/AuthContext';
 import Student from './Student';
 
 
-const StudentList = (props) => {
+const Students = (props) => {
     let { students, idl, idc } = props;
 
     //let student = students.filter( e => e.lId === parseInt( idl ) );
@@ -42,4 +42,4 @@ const StudentList = (props) => {
 
 }
 
-export default StudentList;
+export default Students;

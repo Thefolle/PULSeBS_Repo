@@ -12,7 +12,7 @@ import '../style/customStyle.css';
 import Tutorial from './Tutorial';
 
 
-class UserNavBar extends React.Component {
+class NavigationBar extends React.Component {
 
   constructor(props) {
     super(props);
@@ -95,4 +95,4 @@ class UserNavBar extends React.Component {
   }
 }
 
-export default UserNavBar;
+export default NavigationBar;

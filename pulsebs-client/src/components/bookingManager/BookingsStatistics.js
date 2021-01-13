@@ -10,7 +10,7 @@ Type 2: cancelled lectures
 Type 3: cancelled bookings
  */
 
-const BookingsStats = (props) => {
+const BookingsStatistics = (props) => {
     let { bookings,type } = props;
     return (
         <AuthContext.Consumer>
@@ -63,4 +63,4 @@ const BookingsStats = (props) => {
 
 }
 
-export default BookingsStats;
+export default BookingsStatistics;

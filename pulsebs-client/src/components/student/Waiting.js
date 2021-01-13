@@ -6,7 +6,7 @@ import React from 'react';
 import moment from 'moment';
 import {AuthContext} from '../../auth/AuthContext';
 
-const WaitingItem = (props) => {
+const Waiting = (props) => {
 
   let {waiting } = props;
 
@@ -28,4 +28,4 @@ const WaitingItem = (props) => {
   );
 }
 
-export default WaitingItem;
+export default Waiting;

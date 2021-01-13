@@ -3,7 +3,7 @@ import '../../style/dropDown.css';
 import { Form } from "react-bootstrap";
 
 
-const DropDownBookingManager = function (props) {
+const DropDown = function (props) {
     let {options,update}=props;
 
     const setOptionandValue=(event)=>{
@@ -22,4 +22,4 @@ const DropDownBookingManager = function (props) {
 }
 
 
-export default DropDownBookingManager;
+export default DropDown;

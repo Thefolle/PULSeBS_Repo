@@ -10,7 +10,7 @@ import '../../style/customStyle.css';
 import Tutorial from '../Tutorial';
 
 
-const LectureItem = ( props ) => {
+const Lecture = ( props ) => {
     let {lecture, turnLectureIntoOnline, idc, index, cancelLecture} = props;
     let [ redirect, setRedirect ] = useState( '' );
 
@@ -85,4 +85,4 @@ const LectureItem = ( props ) => {
     );
 }
 
-export default LectureItem;
+export default Lecture;

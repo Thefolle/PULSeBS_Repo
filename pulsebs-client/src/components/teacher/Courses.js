@@ -4,7 +4,7 @@ import { AuthContext } from '../../auth/AuthContext';
 import Course from './Course';
 
 
-const CourseList = (props) => {
+const Courses = (props) => {
 
     let { courses } = props;
 
@@ -28,4 +28,4 @@ const CourseList = (props) => {
     );
 }
 
-export default CourseList;
+export default Courses;

@@ -13,7 +13,7 @@ import BookingsStatistics from './BookingsStatistics';
 import ContactTracing from './ContactTracing';
 import DropDown from './DropDown';
 
-class BookingManager extends React.Component {
+class BookingManagerPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -262,4 +262,4 @@ class BookingManager extends React.Component {
     }
 }
 
-export default withRouter(BookingManager);
+export default withRouter(BookingManagerPage);

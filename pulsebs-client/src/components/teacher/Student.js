@@ -2,7 +2,7 @@ import React from 'react';
 import Tutorial from '../Tutorial';
 
 
-const StudentItem = (props) => {
+const Student = (props) => {
     let { student } = props;
 
     return (
@@ -16,4 +16,4 @@ const StudentItem = (props) => {
     );
 }
 
-export default StudentItem;
+export default Student;

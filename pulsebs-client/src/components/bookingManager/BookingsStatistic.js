@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-const BookingsStatsItem = (props) => {
+const BookingsStatistic = (props) => {
     let { booking } = props;
 
     return (
@@ -19,4 +19,4 @@ const BookingsStatsItem = (props) => {
     );
 }
 
-export default BookingsStatsItem;
+export default BookingsStatistic;

@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import Tutorial from '../Tutorial';
 
-const CourseItem = (props) => {
+const Course = (props) => {
     let { course, index } = props;
     let [redirect, setRedirect] = useState('');
 
@@ -23,4 +23,4 @@ const CourseItem = (props) => {
     );
 }
 
-export default CourseItem;
+export default Course;

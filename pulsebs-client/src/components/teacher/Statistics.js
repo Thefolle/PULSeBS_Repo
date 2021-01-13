@@ -8,7 +8,7 @@ import DropDown from './DropDown';
 
 moment.locale('it');
 
-class TeacherStatistics extends React.Component {
+class Statistics extends React.Component {
 
     constructor(props) {
         super(props);
@@ -342,4 +342,4 @@ class TeacherStatistics extends React.Component {
     }
 }
 
-export default TeacherStatistics;
+export default Statistics;

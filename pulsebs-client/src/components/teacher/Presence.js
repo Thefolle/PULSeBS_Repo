@@ -7,7 +7,7 @@ import API from "../../API/API.js";
 import Tutorial from '../Tutorial';
 
 
-class PresencePage extends React.Component {
+class Presence extends React.Component {
 
     constructor(props) {
         super(props);
@@ -133,10 +133,10 @@ class PresencePage extends React.Component {
 
 }
 
-PresencePage
+Presence
     .propTypes = {
     lecture: PropTypes.object.isRequired,
     course: PropTypes.object.isRequired
 }
 
-export default withRouter(PresencePage);
+export default withRouter(Presence);

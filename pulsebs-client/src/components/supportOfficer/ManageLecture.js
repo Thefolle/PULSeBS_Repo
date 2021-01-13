@@ -8,7 +8,7 @@ import {AuthContext} from '../../auth/AuthContext';
 import Button from 'react-bootstrap/Button'
 
 
-const ManageLecturesItem = (props) => {
+const ManageLecture = (props) => {
 
   let {lecture, updateBookableAttributForLecture } = props;
 
@@ -44,4 +44,4 @@ const ManageLecturesItem = (props) => {
   );
 }
 
-export default ManageLecturesItem;
+export default ManageLecture;
