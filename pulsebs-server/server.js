@@ -411,7 +411,7 @@ app.put( '/api/students/:studentId/lectures/:lectureId', ( req, res ) => {
 //  get waiting list of lecures of a student
 
 app.get( '/api/student/waitings', ( req, res ) => {
-    const studentId = req.user && req.user.user
+    const studentId = Number.parseFloat(req.user && req.user.user);
     pulsebsDAO.getWaitingList( studentId )
               .then( ( waitings ) => {
                   res.json( waitings )

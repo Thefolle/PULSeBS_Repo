@@ -319,13 +319,14 @@ exports.getWaitingList = ( studentId ) => {
                             lecture L,
                             course CO,
                             class  CL
-                        WHERE W.ref_student = ${ studentId } AND
+                        WHERE W.ref_student = ? AND
                             W.ref_lecture = L.id AND
                             L.ref_course = CO.id AND
                             L.ref_class  = CL.id`
-        db.all( query, [], ( err, rows ) => {
-          if ( err ) reject( 'can not get waiting list' )
-          if ( rows && rows.length ) resolve( rows )
+        db.all( query, [studentId], ( err, rows ) => {
+          if ( err ) {
+              reject( err );
+          } else if ( rows && rows.length ) resolve( rows )
           else resolve( [] )
         } )
     } )

@@ -144,9 +144,9 @@ async function getWaitingList() {
     if ( response.ok ) {
         return waitingsJson.map( ( w ) => new Waiting( w.id, w.ref_student, w.ref_lecture, w.date, w.active, w.desc, w.cldesc, w.presence, w.lecdate ) )
     } else {
-        // let err = {status: response.status, errObj: waitingsJson};
-        // throw err;
-        return [];
+        let err = {status: response.status, errObj: waitingsJson};
+        throw err;
+        // return [];
     }
 }
 
