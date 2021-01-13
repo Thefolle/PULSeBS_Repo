@@ -24,7 +24,8 @@ create table student
     email    TEXT not null unique,
     password TEXT not null,
     name     TEXT default ' ' not null,
-    surname  TEXT default ' ' not null
+    surname  TEXT default ' ' not null,
+    ssn      TEXT not null unique
 );
 
 create table teacher
@@ -33,7 +34,8 @@ create table teacher
     email    TEXT not null unique,
     password TEXT not null,
     name     TEXT default ' ' not null,
-    surname  TEXT default ' ' not null
+    surname  TEXT default ' ' not null,
+    ssn      TEXT not null unique
 );
 
 create table course

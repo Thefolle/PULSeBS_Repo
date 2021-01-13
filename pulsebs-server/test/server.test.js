@@ -35,6 +35,18 @@ describe('API STUDENT', () => {
 
     });
 
+    describe('post /api/students/:studentId/booking error', () => {
+        it('error 401', async () => {
+
+            const res = await request(server)
+                .post('/api/students/269901/booking')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json');
+            expect(res.status).toBe(401);
+        });
+
+    });
+
 
     //GET STUDENT LECTURES
 
@@ -47,7 +59,7 @@ describe('API STUDENT', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(15);
+            expect(response.body.length).toEqual(12);
         });
 
     });
@@ -179,9 +191,10 @@ describe('API STUDENT', () => {
      */
     describe( '/api/students/:studentId/lectures/:lectureId', () => {
         it( 'should return a 201 if add successful', async () => {
-
+            let studentId = 269905;
+            let lectureId = 23;
             await request( server )
-                .put( '/api/students/269905/lectures/23' )
+                .put('/api/students/' + studentId + '/lectures/' + lectureId)
                 .set( 'Cookie', `token=${ token }` )
                 .set( 'Content-Type', 'application/json' )
                 .then( ( res ) => {
@@ -266,6 +279,17 @@ describe('API STUDENT', () => {
                     expect( res.status ).toBe( 200 );
                 } );
         } );
+
+        it('should return a 404 if wrong err', async()=>{
+            let studentId=269902;
+            let luctureId=undefined;
+            const response=await request( server)
+                .delete('/api/students/'+studentId+'/lectures/'+undefined+'/waiting')
+                 .set( 'Cookie', `token=${ token }` )
+                .set( 'Content-Type', 'application/json' );
+            expect(response.status).toBe(404);
+                
+        });
     } );
 
     /**
@@ -290,6 +314,8 @@ describe('API STUDENT', () => {
     } );
 
 
+
+
 //DELETE TEACHER'S LECTURE
 // FIXME:
 describe('delete /api/teachers/:teacherId/lectures/:lectureId', () => {
@@ -303,7 +329,29 @@ describe('delete /api/teachers/:teacherId/lectures/:lectureId', () => {
         expect(response.status).toBe(200);
         expect(response.body.response).toEqual(1);
     } );
+
+    it('should return a 500 if gave errors', async () => {
+
+        const response = await request(server)
+            .delete('/api/teachers/239901/lectures/'+undefined)
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`)
+        expect(response.status).toBe(500);
+    } );
+
 } );
+
+describe('get /api/student/bookings',()=>{
+    it('should return a 201 if exists',async()=>{
+    const response = await request(server)
+        .get('/api/student/bookings')
+        .set('Cookie', `token=${token}`)
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
+    expect(response.status).toBe(200);
+    });
+});
 
 
 
@@ -358,7 +406,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(12);
+            expect(response.body.length).toEqual(8);
         });
 
     });
@@ -440,7 +488,62 @@ describe('API TEACHER', () => {
                 .send(studentIds)
             expect(response.status).toBe(200);
         } )
+
+        test( 'Trying to get both presences and absences', async () => {
+        const response = await request(server)
+                .put('/api/teacher/1/lecture/1/presence')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(500);
+    } )
+     test( 'Trying to get both presences and absences', async () => {
+            const response = await request(server)
+                .get('/api/teacher/1/lecture/1/presence')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+        } )
+
+        test( 'Trying to get both presences and absences null', async () => {
+            const response = await request(server)
+                .get('/api/teacher/1/lecture/4/presence')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+        } )
     });
+
+    describe('Turn lecture into online errors',()=>{
+      it('presence===1',async ()=>{
+          let teacherId=239901;
+          let lectureId=9;
+
+          let response=await request(server)
+            .put('/api/teachers/'+teacherId+'/lectures/'+lectureId)
+            .send({presence:1})
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`);
+         expect(response.status).toBe(409);
+      })
+
+      it('presence==0',async ()=>{
+          let teacherId=239901;
+          let lectureId=9;
+
+          let response=await request(server)
+            .put('/api/teachers/'+teacherId+'/lectures/'+lectureId)
+            .send({presence:3})
+            .set('Cookie', `token=${token}`)
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`);
+         expect(response.status).toBe(422);
+      }) 
+    
+    })
 
     // logout and server shutdown
     afterAll(async () => {
@@ -578,12 +681,36 @@ describe('API MANAGER', () => {
         });
     });
 
-    describe('get /api/manager/contactWith/:studentId', () => {
+    describe('get /api/manager/contactWithStudent/:studentId', () => {
         it('should return a 200 if succeed', async() => {
 
             let studentId = 269901;
             const response = await request(server)
-                .get('/api/manager/contactWith/' + studentId)
+                .get('/api/manager/contactWithStudent/' + studentId)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(200);
+        });
+
+        it('should return a 500 if succeed', async() => {
+
+            let studentId = 269901;
+            const response = await request(server)
+                .get('/api/manager/contactWithStudent/' + undefined)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', `Bearer ${token}`)
+            expect(response.status).toBe(500);
+        });
+    });
+
+    describe('get /api/manager/contactWithTeacher/:teacherId', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let teacherId = 239901;
+            const response = await request(server)
+                .get('/api/manager/contactWithStudent/' + teacherId)
                 .set('Cookie', `token=${token}`)
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
@@ -600,6 +727,33 @@ describe('API MANAGER', () => {
         // expect(response.status).toBe(200);
         handleToCloseServer.close();
     }, 10);
+});
+
+describe('Get student and teacher infos starting from their ssn code', () => {
+
+    describe('get /api/student/getFromSSN/:ssn', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let ssn = "CLRDVD80A01H501C";
+            const response = await request(server)
+                .get('/api/student/getFromSSN/' + ssn)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe('get /api/teachers/getFromSSN/:ssn', () => {
+        it('should return a 200 if succeed', async() => {
+
+            let ssn = "HYRBCH80A01H501Y";
+            const response = await request(server)
+                .get('/api/teachers/getFromSSN/' + ssn)
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+            expect(response.status).toBe(200);
+        });
+    });
 });
 
 describe('API Officer', () => {
@@ -630,7 +784,8 @@ describe('API Officer', () => {
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD1234"
                 }
             ],
             "students": [
@@ -639,7 +794,8 @@ describe('API Officer', () => {
                     "email": "abc@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD1234"
                 }
             ],
             "courses": [
@@ -721,6 +877,70 @@ describe('API Officer', () => {
         });
     });
 
+    
+    describe('Try to cancel lectures by date to update the schedule', () => {
+        test('Try to cancel lectures correctly', async function () {
+            let startDate = 1610236800000;
+            let endDate = 1611100800000;
+            let response = await request(server)
+                .delete(`/api/supportOffice/lectures/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(200);
+        });
+        test('Try to cancel lectures/bookings wrongly - Wrong url', async function () {
+            let startDate = 1610236800000;
+            let endDate = 1611100800000;
+            let response = await request(server)
+                .delete(`/api/supportOffice/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(404);
+        });
+        /*test('Try to cancel lectures wrongly - Wrong params', async function () {
+            let startDate = 1610236800000;
+            let endDate;
+            let response = await request(server)
+                .delete(`/api/supportOffice/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(401);
+        });*/
+        test('Try to cancel bookings correctly', async function () {
+            let startDate = 1610236800000;
+            let endDate = 1611100800000;
+            let response = await request(server)
+                .delete(`/api/supportOffice/bookings/delete?from=${ startDate }&to=${ endDate }`)
+                .set('Cookie', `token=${token}`)
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe('Try to change lectures to update the schedule',()=>{
+        test('Try to update the schedule',async ()=>{
+            let startDate=1610751600000;
+            let endDate=1611529200000;
+            let lectures=[{ref_course:6,ref_class:2,date:1610890200000,endTime:1610895600000,presence:1,bookable:1,active:1}];
+            let val={startDate,endDate,lectures};
+            let response = await request(server)
+                .put('/api/sofficer/updateLecture/')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .send(val);
+            expect(response.status).toBe(200);
+        });
+
+        test('Try to update the schedule error 1',async ()=>{
+            //let startDate=1610751600000;
+            let endDate=1611529200000;
+            let lectures=[{ref_course:6,ref_class:2,date:1610890200000,endTime:1610895600000,presence:1,bookable:1,active:1}];
+            let val={endDate,lectures};
+            let response = await request(server)
+                .put('/api/sofficer/updateLecture/')
+                .set('Cookie', `token=${token}`)
+                .set('Content-Type', 'application/json')
+                .send(val);
+            expect(response.status).toBe(400);
+        });
+    });
+
 
 
     // logout and server shutdown
@@ -733,4 +953,26 @@ describe('API Officer', () => {
         handleToCloseServer.close();
     }, 10);
 });
+
+describe("API 2",()=>{
+    it('should return a 401 if succeed', async () => {
+        const response = await request(server)
+            .post('/api/login')
+            .send({email: 'davide.calarco@gmail.com',password: 'password1'})
+        expect(response.status).toBe(401);
+    });
+
+    it('should return a 401 if succeed', async () => {
+        const response = await request(server)
+            .post('/api/login')
+        expect(response.status).toBe(401);
+    });
+
+    it('should return a 401 if succeed', async () => {
+        const response = await request(server)
+            .get( '/api/teacher/lectures')
+        expect(response.status).toBe(401);
+    });
+
+})
 

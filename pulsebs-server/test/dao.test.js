@@ -42,17 +42,29 @@ test( 'Try to book a new seat', () => {
     } );
 } );
 
+test('Book a lecture 2', () => {
+    return DAO.bookSeat(15, 269905).then(result => {
+        expect(result).toBe(1);
+    });
+});
+
+test('Book a lecture 3', () => {
+    return DAO.bookSeat(15, 269901).then(result => {
+        expect(result).toEqual( [] );
+    });
+});
+
 //GET STUDENT LECTURES
 test( 'Try to get a student\'s lectures', () => {
     return DAO.getStudentLectures( '269901' ).then( result => {
-        expect( result.length ).toEqual( 15 ); //old value 7
+        expect( result.length ).toEqual( 12 ); //old value 7
     } )
 } );
 
 //GET TEACHER LECTURES
 test( 'Try to get a teacher\'s lectures', () => {
     return DAO.getTeacherLectures( '239901' ).then( result => {
-        expect( result.length ).toBe( 12 ); //old value 11
+        expect( result.length ).toBe( 10 ); //old value 11
     } );
 } );
 
@@ -98,7 +110,13 @@ test( 'Try to get all student\'s bookings', () => {
 //GET TOMORROW LESSONS STATS
 test( 'Try to get all students booked for tomorrow lectures', () => {
     return DAO.getTomorrowLessonsStats( true ).then( result => {
-        expect( result.length ).toEqual( 0 ); //old value 1
+        expect( result ).toEqual( [] ); //old value 1
+    } );
+} );
+
+test( 'Try to get all students booked for tomorrow lectures 2', () => {
+    return DAO.getTomorrowLessonsStats().then( result => {
+        expect( result ).toEqual( [] ); //old value 1
     } );
 } );
 
@@ -386,7 +404,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 describe( "[PUL-11] Get statistics for manager", () => {
     test( 'get All Bookings 1', () => {
         return DAO.getAllBookings().then( b => {
-            expect( b.length ).toBe( 26 );
+            expect( b.length ).toBe( 27 );
         } )
     } );
 
@@ -408,7 +426,7 @@ describe( "[PUL-11] Get statistics for manager", () => {
 
     test( 'get All Attendances 1', () => {
         return DAO.getAllAttendances().then( b => {
-            expect( b.length ).toBe( 22 );
+            expect( b.length ).toBe( 23 );
         } )
     } );
 
@@ -487,12 +505,33 @@ describe( "[PUL-11] Get statistics for manager", () => {
 } );
 
 // MANAGER contact tracing
-test( 'Try to see if correct students\' contract tracing datas are received', () => {
-    return DAO.getContactsWithPositiveStudent( 269901, true ).then( result => {
-        expect( result.uniqTeachers[0] ).toBe( 239901 );
-        expect( result.involvedStudents[0] ).toBe( 269902 );
-    } )
-} );
+describe( "MANAGER contact tracing", () => {
+    test( 'Try to see if correct students\' contract tracing datas are received', () => {
+        return DAO.getContactsWithPositiveStudent( 269901, true ).then( result => {
+
+            expect( result.uniqTeachers[0].tID ).toBe( 239901 );
+            expect( result.uniqTeachers[0].name ).toBe( "Hyeronimus" );
+            expect( result.uniqTeachers[0].surname ).toBe( "Bosch" );
+            expect( result.uniqTeachers[0].ssn ).toBe( "HYRBCH80A01H501Y" );
+
+            expect( result.involvedStudents[0].sID ).toBe( 269902 );
+            expect( result.involvedStudents[0].name ).toBe( "Francesco" );
+            expect( result.involvedStudents[0].surname ).toBe( "Gallo" );
+            expect( result.involvedStudents[0].ssn ).toBe( "FRNGLL80A01H501H" );
+        } )
+    } );
+
+    test( 'Try to see if correct teachers\' contract tracing datas are received', () => {
+        return DAO.getContactsWithPositiveTeacher( 239901, true ).then( result => {
+
+            expect( result[0].sID ).toBe( 269901 );
+            expect( result[0].name ).toBe( "Davide" );
+            expect( result[0].surname ).toBe( "Calarco" );
+            expect( result[0].ssn ).toBe( "CLRDVD80A01H501C" );
+
+        } )
+    } );
+});
 
 describe( 'CSV loading tests', () => {
     let data = {
@@ -509,16 +548,18 @@ describe( 'CSV loading tests', () => {
                 "email": "abc@gmail.com",
                 "password": "hash123",
                 "name": "nome",
-                "surname": "cognome"
+                "surname": "cognome",
+                "ssn": "ABCD1234ABCD1111"
             }
         ],
         "students": [
             {
                 "id": "269910",
-                "email": "abc@gmail.com",
+                "email": "def@gmail.com",
                 "password": "hash123",
                 "name": "nome",
-                "surname": "cognome"
+                "surname": "cognome",
+                "ssn": "ABCD1234ABCD2222"
             }
         ],
         "courses": [
@@ -555,27 +596,29 @@ describe( 'CSV loading tests', () => {
         data = {
             "classes": [
                 {
-                    "id": "15",
-                    "desc": "12A",
+                    "id": "16",
+                    "desc": "12B",
                     "seats": "72"
                 }
             ],
             "teachers": [
                 {
-                    "id": "239901",
-                    "email": "abc@gmail.com",
+                    "id": "239911",
+                    "email": "ghi@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD3333"
                 }
             ],
             "students": [
                 {
-                    "id": "269901",
-                    "email": "abc@gmail.com",
+                    "id": "269911",
+                    "email": "lmn@gmail.com",
                     "password": "hash123",
                     "name": "nome",
-                    "surname": "cognome"
+                    "surname": "cognome",
+                    "ssn": "ABCD1234ABCD4444"
                 }
             ],
             "courses": [
@@ -608,6 +651,40 @@ describe( 'CSV loading tests', () => {
     } );
 } );
 
+describe( 'Schedule update', () => {
+
+    test( "Try to delete lectures by date", () => {
+        return DAO.cancelLecturesByDate( 1610236800000, 1611100800000 )
+                  .then( result => expect( result ).toBe( 1 ) );
+    } );
+
+    test( "Try to delete lectures by date without passing a parameter", () => {
+        return DAO.cancelLecturesByDate( 1610236800000 )
+        .catch( err => expect( err ) );
+    } );
+
+    test( "Try to delete lectures by date in a range of date in which there are no lessons in the db", () => {
+        return DAO.cancelLecturesByDate(  1510236800000, 1511100800000 )
+                  .then( result => expect( result ).toBe( 0 ) );
+    } );
+
+    test( "Try to delete bookings by date", () => {
+        return DAO.cancelBookingsByDate( 1610236800000, 1611100800000 )
+                  .then( result => expect( result ).toBe( 1 ) );
+    } );
+
+    test( "Try to delete bookings by date without passing a parameter", () => {
+        return DAO.cancelBookingsByDate( 1610236800000 )
+        .catch( err => expect( err ) );
+    } );
+
+    test( "Try to delete bookings by date in a range of date in which there are no lessons in the db", () => {
+        return DAO.cancelBookingsByDate(  1510236800000, 1511100800000 )
+                  .then( result => expect( result ).toBe( 0 ) );
+    } );
+    
+
+});
 
 /**
  * @Feihong
@@ -721,11 +798,11 @@ describe( 'Cancel/edit operations', () => {
  * @Note
  * student 269901 and lecture 1 should in the waiting table
  */
-test( 'To check if the student in the waiting list or not', () => {
+/*test( 'To check if the student in the waiting list or not', () => {
     return DAO.checkStudentInWaitingList( 269904, 23 ).then( result => {
         expect( result ).toBe( "You already in the Waiting List" );
     } )
-} );
+} );*/
 
 /**
  * @Feihong
@@ -736,3 +813,216 @@ test( 'Add a student to waiting list', () => {
         expect( result ).toBe( "successful insert" );
     } )
 } );
+
+// GET STUDENT / TEACHER STARTING FROM SSN
+describe( "Get student and teacher starting from ssn code", () => {
+    test( 'Get student starting from ssn code', () => {
+        return DAO.getStudentFromSSN("CLRDVD80A01H501C").then( student => {
+            expect( student[0].id ).toBe( 269901 );
+            expect( student[0].name ).toBe( "Davide" );
+            expect( student[0].surname ).toBe( "Calarco" );
+            expect( student[0].email ).toBe( "davide.calarco@gmail.com" );
+        } );
+    } );
+
+    test( 'Get teacher starting from ssn code', () => {
+        return DAO.getTeacherFromSSN("HYRBCH80A01H501Y").then( teacher => {
+            expect( teacher[0].id ).toBe( 239901 );
+            expect( teacher[0].name ).toBe( "Hyeronimus" );
+            expect( teacher[0].surname ).toBe( "Bosch" );
+            expect( teacher[0].email ).toBe( "hyeronimus.bosch@gmail.com" );
+        } );
+    } );
+})
+
+test('Update scheduled lectures',()=>{
+    let startDate=1610751600000;
+    let endDate=1611529200000;
+    let lectures=[{ref_course:6,ref_class:2,date:1610890200000,endTime:1610895600000,presence:1,bookable:1,active:1}];
+    let val={startDate,endDate,lectures};
+    return DAO.updateLectureScheduled(val).then((result)=>{
+        expect(result).toBeNull();
+    });
+});
+
+test('Get students by Course',()=>{
+    return DAO.getStudentByCourse(1).then((result)=>{
+        expect(result.length).toBe(6);
+    });
+});
+
+
+test('Try to login with wrong credentials', () => {
+    return expect(DAO.getUserByEmail('davide.calarc@gmail.com')).rejects.toBeUndefined();
+});
+
+test('Try to see if student infos are correct 2', () => {
+    return DAO.getInfoByStudentId(269900).then(result => {
+        expect(result).toEqual( [] );
+    })
+});
+
+test('Try to test user in staff Table', () => {
+    return DAO.getUserById('1').then(result => {
+        expect(result.name).toBe("Harry");
+    });
+})
+
+
+
+/*test('Check seats in a lecture 2',()=>{
+    return DAO.checkSeatsOfLecture(23).then(result=>{
+        expect(result).toBe(0);
+    });
+});*/
+
+test('Waiting list empty 2',()=>{
+    return DAO.getWaitingList(269902).then(result=>{
+        expect(result).toEqual( [] );
+    });
+})
+
+test('get lecture stats 2',()=>{
+    return DAO.getLectureStats(102).then(result=>{
+        expect(result).toEqual( [] );
+    });
+})
+
+test('get student lecture 2',()=>{
+    return DAO.getStudentLectures(269900).then(result=>{
+        expect(result).toEqual( [] );
+    });
+})
+
+test('get teacher lecture 2',()=>{
+    return DAO.getTeacherLectures(239900).then(result=>{
+        expect(result).toEqual( [] );
+    });
+})
+
+test('get students in  lecture 2', () => {
+    return DAO.getStudentsForLecture(300).then(result => {
+        expect(result).toEqual( [] );
+    });
+})
+
+test('get teacher lecture students 2', () => {
+    return DAO.getStudentsForLecturev2(239900).then(result => {
+        expect(result).toEqual( [] );
+    });
+})
+
+test('cancel booking 2', () => {
+    return DAO.cancelBookings(300).then(result => {
+        expect(result).toEqual( 0 );
+    });
+})
+
+test('get student booking 2', () => {
+    return DAO.getStudentBookings(269900).then(result => {
+        expect(result).toEqual( [] );
+    });
+})
+
+test('cancel lecture 2', () => {
+    return DAO.cancelLecture(300).then(result => {
+        expect(result).toEqual( 0 );
+    });
+})
+
+test('Try to see if student infos are undefined', () => {
+    return expect(DAO.getInfoByStudentId(undefined)).rejects.toBe( -1 );
+});
+
+test( 'Try to book a new seat error 1', () => {
+    return expect(DAO.bookSeat( undefined, '269901' )).rejects.toBe( -1 );
+} );
+
+test( 'Try to add new student in waiting list error 1', () => {
+    return expect(DAO.addStudentToWaitingList( undefined, '23' )).rejects.toBe( "DB problem" );
+} );
+
+test( 'Try to check no of seats error 1', () => {
+    return expect(DAO.checkSeatsOfLecture( undefined )).rejects.toBe( 0 );
+} );
+
+test( 'Try to check waiting list error 1', () => {
+    return expect(DAO.getWaitingList( undefined )).rejects.toBe( 'can not get waiting list' );
+} );
+
+test( 'Try to delete and adding booking error 1', () => {
+    return expect(DAO.deleteWaitingAddBooking( undefined )).rejects.toBe( 0 );
+} );
+
+test( 'Try to get lectures stats error 1', () => {
+    return expect(DAO.getLectureStats( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to get student lectures error 1', () => {
+    return expect(DAO.getStudentLectures( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to get teacher lectures error 1', () => {
+    return expect(DAO.getTeacherLectures( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to get students in a lecture error 1', () => {
+    return expect(DAO.getStudentsForLecture( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to get students in lectures of 1 professor error 1', () => {
+    return expect(DAO.getStudentsForLecturev2( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to cancel a booking error 1', () => {
+    return expect(DAO.cancelBookings( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to get students bookings error 1', () => {
+    return expect(DAO.getStudentBookings( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to cancel a lecture error 1', () => {
+    return expect(DAO.cancelLecture( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to concact with positive student error 1', () => {
+    return expect(DAO.getContactsWithPositiveStudent( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to concact with positive teacher error 1', () => {
+    return expect(DAO.getContactsWithPositiveTeacher( undefined )).rejects.toBe( -1 );
+} );
+
+test( 'Try to set Presence lecture error 1', () => {
+    return expect(DAO.setPresenceLecture( 1,undefined )).rejects.toBe( -1 );
+} );
+
+
+test( 'Try to concact with positive student error 1', () => {
+    return DAO.getContactsWithPositiveStudent( 269900 ).then((result)=>{
+        expect(result.uniqTeachers).toEqual(null);
+        expect(result.involvedStudents).toEqual(null);
+    });
+} );
+
+test( 'Try to set student presence in lecture error 1', () => {
+    return expect(DAO.setStudentPresencesForLecture( undefined,[] )).rejects.toBe( -1 );
+} );
+
+test('Try Info ssn of a student error 1',()=>{
+    return DAO.getStudentFromSSN("CLDCDDDD").then((result)=>{
+        expect(result).toEqual( [] );
+    })
+})
+
+
+test('Try Info ssn of a teacher error 1',()=>{
+    return DAO.getTeacherFromSSN("CLDCDDDD").then((result)=>{
+        expect(result).toEqual( [] );
+    })
+})
+
+test('Get students by Course error 1',()=>{
+    return expect(DAO.getStudentByCourse(undefined)).rejects.toBe(-1);
+});

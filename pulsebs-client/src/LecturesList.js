@@ -3,6 +3,8 @@ import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
 import { AuthContext } from './auth/AuthContext';
 
+import Tutorial from './Components/Tutorial';
+
 const LecturesList = (props) => {
 
     let {waitings, lectures, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, deleteWaitingAddBooking, getBookingId } = props;
@@ -11,7 +13,9 @@ const LecturesList = (props) => {
       <AuthContext.Consumer>
             {(context)=>(
               <>
-              <h2>Lectures</h2>
+              <Tutorial on={true} text='Here immediately follows the list of lectures in next days. You can also perform some actions on them.' push={
+                    <h2>Lectures</h2>
+              } />
                 { lectures.length !== 0 &&
                 <Table className="table" id="lectures-table">
                     <thead>
@@ -20,7 +24,7 @@ const LecturesList = (props) => {
                         <th>Time</th>
                         <th>Presence</th>
                         <th>Course</th>
-                        <th>Class</th>
+                        <th>Classroom</th>
                         <th>Teacher</th>
                         <th>Book</th>
                         <th>Unbook</th>
