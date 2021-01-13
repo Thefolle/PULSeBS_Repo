@@ -4,7 +4,7 @@
  * For the ManageLectures page of supportOffice type accout
  */
 import React from 'react';
-import '../../style/DropDown.css';
+import '../../style/dropDown.css';
 import { Form } from "react-bootstrap";
 
 
