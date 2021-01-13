@@ -8,6 +8,8 @@ class scheduledLecture{ //TO FIX: merge with Lecture.js
         this.presence = presence;
         this.bookable = bookable;
         this.active = active;
+        if(dateScheduled)
+           this.dateScheduled=dateScheduled;
     }
 }
 

@@ -87,7 +87,7 @@ exports.getUserByEmail = function ( email ) {
 *   The current implementation extracts all ids and emails from the table and performs the selection in JS.
 */
 
-exports.getLectureInformation = function ( lectureId ) {
+/*exports.getLectureInformation = function ( lectureId ) {
     return new Promise( ( ( resolve, reject ) => {
         let query = 'SELECT id, ref_course AS courseId, ref_class AS classId FROM student;'
         db.all( query, [ lectureId ], ( error, rows ) => {
@@ -96,7 +96,7 @@ exports.getLectureInformation = function ( lectureId ) {
             else resolve( rows.filter( row => studentIds.includes( row.id ) ).map( row => row.email ) );
         } );
     } ) );
-}
+}*/
 
 /*
 * Get email by userId
@@ -110,9 +110,9 @@ exports.getInfoByStudentId = ( studentId ) => {
                     FROM student
                     WHERE id=${ studentId };`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows[0] );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+          if ( rows && rows.length ) resolve( rows[0] );
+          else resolve( [] );
         } );
     } ) );
 }
@@ -175,25 +175,25 @@ exports.bookSeat = ( lectureId, studentId ) => {
         let existBookingQuery = `SELECT id FROM booking B WHERE B.ref_lecture = ${ lectureId } AND ref_student = ${ studentId }`;
 
         db.get( checkQuery, [], ( err1, row1 ) => {
-            if ( err1 ) reject( err1 );
+            if ( err1 ) reject( -1 );
             if ( row1 && row1.bookable === 1 ) {
                 //Student subscription exists
                 db.get( existBookingQuery, [], ( err2, row2 ) => {
-                    if ( err2 ) reject( err2 );
+                    if ( err2 ) reject( -2 );
                     if ( row2 ) {
                         //Booking exist, and it should be updated
                         let updateBookingQuery = `UPDATE booking SET active = 1 WHERE id = ${ row2.id }`;
                         db.run( updateBookingQuery, [], ( err3 ) => {
-                            err3 ? reject( err3 ) : resolve( 1 );
+                            err3 ? reject( -3 ) : resolve( 1 );
                         } )
                     } else {
                         //Booking doesn't exist, and it should be created as a new one
                         db.run( bookQuery, [], ( err3 ) => {
-                            err3 ? reject( err3 ) : resolve( 1 );
+                            err3 ? reject( -4 ) : resolve( 1 );
                         } )
                     }
                 } );
-            } else resolve( 0 );
+            } else resolve( [] );
         } );
     } ) );
 }
@@ -204,7 +204,7 @@ exports.bookSeat = ( lectureId, studentId ) => {
  * Update a booking
  */
 // FIXME: to fix get bookings method
-exports.cancelBooking = ( bookingId ) => {
+/*exports.cancelBooking = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
         db.run( query, [], function ( err ) {
@@ -215,7 +215,7 @@ exports.cancelBooking = ( bookingId ) => {
             } else resolve( 0 );
         } );
     } ) );
-}
+}*/
 
 /**
  * @Feihong
@@ -236,7 +236,7 @@ exports.addStudentToWaitingList = ( studentId, lectureId ) => {
  * @param {*} lectureId
  */
 
-exports.checkStudentInWaitingList = ( studentId, lectureId ) => {
+/*exports.checkStudentInWaitingList = ( studentId, lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let checkWaiting = `SELECT ref_student FROM waiting WHERE ref_student = ${ studentId } And ref_lecture = ${ lectureId }`
         db.all( checkWaiting, [], ( err, row ) => {
@@ -248,8 +248,7 @@ exports.checkStudentInWaitingList = ( studentId, lectureId ) => {
             }
         } )
     } ) )
-}
-
+}*/
 
 /**
  * @Feihong
@@ -281,13 +280,17 @@ exports.checkSeatsOfLecture = ( lectureId ) => {
                         // numbers of seat are: " + row.seats + " lecture id is " + lectureId)
                         db.run( upadteLecture, [], ( error3 ) => {
                             if ( error3 ) {
-                                // console.log("-------------------"+err)
+                              reject(error3);
                             }
                         } )
                         resolve( 1 )
                     } else {
                         // console.log("There is no free seats for student. err massage is:" + err)
-                        db.run( upadteLectureNo )
+                        db.run( upadteLectureNo,[],(error4)=>{
+                          if(error4){
+                            reject(error4);
+                          }
+                        } )
                         resolve( 0 )
                     }
                 } )
@@ -305,27 +308,27 @@ exports.checkSeatsOfLecture = ( lectureId ) => {
 // TODO:
 exports.getWaitingList = ( studentId ) => {
     return new Promise( ( resolve, reject ) => {
-        let query = `SELECT W.id, 
-                            W.ref_student, 
-                            W.ref_lecture, 
-                            W.date, 
-                            W.active, 
-                            CO.desc, 
+        let query = `SELECT W.id,
+                            W.ref_student,
+                            W.ref_lecture,
+                            W.date,
+                            W.active,
+                            CO.desc,
                             CL.desc AS cldesc,
                             L.presence,
                             L.date AS lecdate
-                        FROM waiting W, 
-                            lecture L, 
+                        FROM waiting W,
+                            lecture L,
                             course CO,
-                            class  CL 
+                            class  CL
                         WHERE W.ref_student = ${ studentId } AND
                             W.ref_lecture = L.id AND
                             L.ref_course = CO.id AND
                             L.ref_class  = CL.id`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( 'can not get waiting list' )
-            if ( rows ) resolve( rows )
-            else reject( 0 )
+          if ( err ) reject( 'can not get waiting list' )
+          if ( rows && rows.length ) resolve( rows )
+          else resolve( [] )
         } )
     } )
 }
@@ -438,25 +441,25 @@ exports.getAllLecturesForSupportOffice = ()=>{
                             teacher T
                     WHERE   L.ref_class = CL.id AND
                             L.ref_course = CO.id AND
-                            T.id = CO.ref_teacher`      
+                            T.id = CO.ref_teacher`
         db.all( query, [], (err, rows) => {
             if (err) reject("Query problem");
             if (rows) resolve( rows);
             else reject("nothing find");
         })
     })
-} 
+}
 /**
  * @Feihong
  * @Story17
  * update the bookable attribute of specific lecture
- * 
+ *
  */
 exports.updateBookableAttributForLecture = (lectureId, num)=>{
     console.log("----------------------------" + num+ "-------" + lectureId)
     return new Promise( (resolve, reject) => {
         if (num === 1){
-            
+
             num = 0
         } else {
             num = 1
@@ -485,9 +488,9 @@ exports.getLectureStats = ( lectureId ) => {
                              L.ref_course = CO.id AND
                              L.id = ${ lectureId };`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows[0] );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+          if ( rows && rows.length ) resolve( rows[0] );
+          else resolve( [] );
         } );
     } ) );
 }
@@ -515,15 +518,16 @@ exports.getStudentLectures = ( studentId ) => {
                       WHERE L.ref_course = C.id AND
                             L.ref_class = CL.id AND
                             C.ref_teacher = T.id AND
+                            L.active=1 AND
                             C.id IN (   SELECT  C2.id
                                         FROM    subscription S, student ST, course C2
                                         WHERE   S.ref_course = C2.id AND
                                                 S.ref_student = ${ studentId }
                             );`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+          if ( rows && rows.length ) resolve( rows );
+          else resolve( [] );
         } );
     } ) );
 }
@@ -548,11 +552,12 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 class CL
                         WHERE   L.ref_course = C.id AND
                                 L.ref_class = CL.id AND
-                                C.ref_teacher = ${ teacherId };`
+                                C.ref_teacher = ${ teacherId }
+                                AND L.active=1;`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+           if ( rows && rows.length ) resolve( rows );
+           else resolve( [] )
         } );
     } ) );
 }
@@ -563,15 +568,15 @@ exports.getTeacherLectures = ( teacherId ) => {
 exports.getStudentsForLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `
-                        SELECT S.id,S.email,S.name,S.surname, B.presence 
-                        FROM booking B, student S 
+                        SELECT S.id,S.email,S.name,S.surname, B.presence
+                        FROM booking B, student S
                         WHERE B.ref_student=S.id AND
-                        B.active=1 AND 
+                        B.active=1 AND
                         B.ref_lecture = ${ lectureId };`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+          if ( rows && rows.length ) resolve( rows );
+          else resolve( [] )
         } );
     } ) );
 }
@@ -587,9 +592,9 @@ exports.getStudentsForLecturev2 = ( teacherId ) => {
                      FROM booking B,course CO, lecture L
                      WHERE B.ref_lecture=L.id AND L.ref_course=CO.id AND B.active=1 AND CO.ref_teacher=${ teacherId };`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+          if ( rows && rows.length ) resolve( rows );
+          else resolve( [] );
         } );
     } ) );
 }
@@ -603,7 +608,7 @@ exports.cancelBookings = ( bookingId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE booking SET active = 0 WHERE id = ${ bookingId };`
         db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
+            if ( err ) reject( -1 );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );
         } );
@@ -658,9 +663,9 @@ exports.getStudentBookings = ( studentId ) => {
                                 B.ref_student = ${ studentId } AND
                                 B.active = 1;`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+          if ( err ) reject( -1 );
+          if ( rows && rows.length ) resolve( rows );
+          else resolve( [] );
         } );
     } ) );
 }
@@ -673,7 +678,7 @@ exports.cancelLecture = ( lectureId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE lecture SET active = 0, bookable = 0 WHERE id = ${ lectureId };`
         db.run( query, [], function ( err ) {
-            if ( err ) reject( err );
+            if ( err ) reject( -1 );
             if ( this.changes ) resolve( 1 );
             else resolve( 0 );
         } );
@@ -718,9 +723,9 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
                                 CL.id = L.ref_class
                         GROUP BY B.ref_lecture;`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
-            else if ( rows ) resolve( rows );
-            else resolve( 0 );
+          if ( err ) reject( err );
+          else if ( rows && rows.length ) resolve( rows );
+          else resolve( [] );
         } );
     } ) );
 }
@@ -747,7 +752,7 @@ exports.getTomorrowLessonsStats = ( test = false ) => {
 *   is not active or if the lecture's start time is planned within the next
 *   30 minutes starting from the current time
 * */
-exports.turnLectureIntoOnline = ( lectureId, teacherId = 0 ) => {
+exports.turnLectureIntoOnline = ( lectureId, teacherId ) => {
     return new Promise( ( resolve, reject ) => {
         let query1 = `  SELECT  L.active as active, L.date as date
                         FROM lecture L, course C
@@ -965,7 +970,7 @@ exports.getTeacherBookingStatistics = ( teacherId, courseId, groupBy, presence =
 * Time handling should be done on frontend due to a too simple handling of date format in sqlite
 * */
 
-exports.getTeacherPresenceStats = ( teacherId ) => {
+/*exports.getTeacherPresenceStats = ( teacherId ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `    SELECT *
                          FROM   booking B,
@@ -983,7 +988,7 @@ exports.getTeacherPresenceStats = ( teacherId ) => {
             else resolve( 0 );
         } );
     } ) );
-}
+}*/
 
 /*
 * Get the total of bookings, cancellations and attendances of the system
@@ -1014,7 +1019,7 @@ exports.getAllBookings = ( course, lecture ) => {
                     WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND B.active=1;`; //remember if delete last condition in WHERE statement
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) {
+            if ( rows && rows.length) {
                 lecture = parseInt( lecture );
                 if ( course && course !== "All" )
                     rows = rows.filter( c => c.course === course );
@@ -1022,7 +1027,7 @@ exports.getAllBookings = ( course, lecture ) => {
                     rows = rows.filter( l => l.lecId === lecture );
 
                 resolve( rows );
-            } else resolve( 0 );
+            } else resolve( [] );
         } );
 
     } );
@@ -1035,7 +1040,7 @@ exports.getAllAttendances = ( course, lecture ) => {
                     WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND B.active=1 AND B.presence=1;`; //remember if delete last condition in WHERE statement
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) {
+            if ( rows && rows.length ) {
                 lecture = parseInt( lecture );
                 if ( course && course !== "All" )
                     rows = rows.filter( c => c.course === course );
@@ -1043,7 +1048,7 @@ exports.getAllAttendances = ( course, lecture ) => {
                     rows = rows.filter( l => l.lecId === lecture );
 
                 resolve( rows );
-            } else resolve( 0 );
+            } else resolve( [] );
         } );
 
     } );
@@ -1060,14 +1065,14 @@ exports.getAllCancellationsLectures = ( course, lecture ) => {
                     WHERE L.ref_course=C.id AND L.ref_class=CL.id AND C.ref_teacher=T.id AND L.active=0;`;
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) {
+            if ( rows && rows.length) {
                 lecture = parseInt( lecture );
                 if ( course && course !== "All" )
                     rows = rows.filter( c => c.course === course );
                 if ( lecture && lecture !== -1 )
                     rows = rows.filter( l => l.lecId === lecture );
                 resolve( rows );
-            } else resolve( 0 );
+            } else resolve( [] );
         } );
 
     } );
@@ -1080,14 +1085,14 @@ exports.getAllCancellationsBookings = ( course, lecture ) => {
                     WHERE B.ref_student=S.id AND B.ref_lecture=L.id AND CL.id=L.ref_class AND L.ref_course=C.id AND B.active=0;`;
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) {
+            if ( rows && rows.length ) {
                 lecture = parseInt( lecture );
                 if ( course && course !== "All" )
                     rows = rows.filter( c => c.course === course );
                 if ( lecture && lecture !== -1 )
                     rows = rows.filter( l => l.lecId === lecture );
                 resolve( rows );
-            } else resolve( 0 );
+            } else resolve( [] );
         } );
 
     } );
@@ -1099,8 +1104,8 @@ exports.getAllCourses = () => {
                     FROM course C;`;
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+            if ( rows && rows.length ) resolve( rows );
+            else resolve( [] )
         } );
 
     } );
@@ -1112,8 +1117,8 @@ exports.getAllLectures = () => {
                     FROM lecture L;`;
         db.all( query, [], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+            if ( rows && rows.length ) resolve( rows );
+            else resolve( [] )
         } );
 
     } );
@@ -1125,7 +1130,7 @@ exports.getAllLectures = () => {
 
 // This function get the lecture and teacher that were in contact with the positive student
 
-function getInvolvedLecturesAndTeacher( studentId, test ) {
+/*function getInvolvedLecturesAndTeacher( studentId, test ) {
     return new Promise( ( ( resolve, reject ) => {
         let now = moment().valueOf();
         let twoWeeksAgo = moment().subtract( 14, 'days' ).valueOf();
@@ -1198,7 +1203,7 @@ function getInvolvedStudents( involvedLectures, studentId ) {
                                               else return previousValue.concat( currentValue );
                                           } );
         query = query.concat( involvedLec ).concat( ');' );
-        
+
         db.all( query, [ studentId ], ( err, rows ) => {
             if ( err ) reject( err );
             if ( rows ) resolve( rows );
@@ -1255,6 +1260,92 @@ exports.getContactsWithPositiveStudent = function ( studentId, test = false ) {
             resolve( {uniqTeachers, involvedStudents} );
         }
     } );
+}*/
+
+exports.getContactsWithPositiveStudent = function ( studentId, test = false ) {
+    return new Promise(( resolve, reject ) => {
+        //let involved = await getInvolvedLecturesAndTeacher( studentId, test );
+        //  console.log("involved:");
+        //  console.log(involved);
+
+        let now = moment().valueOf();
+        let twoWeeksAgo = moment().subtract( 14, 'days' ).valueOf();
+        let uniqTeachers = null;
+        let involvedStudents = null;
+
+        let query = `SELECT L.id as lecID,
+                            T.id as tID,
+                            T.name,
+							T.surname,
+							T.ssn
+                     FROM   booking B,
+                            lecture L,
+                            student S,
+                            course C,
+                            teacher T
+                     WHERE  B.ref_student = S.id AND
+                            B.ref_lecture = L.id AND
+                            L.ref_course = C.id AND
+                            C.ref_teacher = T.id AND
+                            B.id IN (   SELECT  B.id
+                                        FROM    booking B,
+                                                lecture L
+                                        WHERE   B.ref_lecture = L.id AND
+                                                B.ref_student = ${ studentId } AND
+                                                B.presence = 1 AND
+                                                L.date < ${ test ? 1607960293000 : now } AND
+                                                L.date > ${ test ? 1606837080000 : twoWeeksAgo } );`
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( -1 );
+            if ( rows && rows.length ) {
+                let involvedTeachers = rows.map(({lecID, ...item}) => item);
+                uniqTeachers = [ ...new Set( involvedTeachers ) ];
+                let involvedLectures = rows.map( r => r.lecID );
+                let query2 = `SELECT DISTINCT(B.ref_student) as sID,
+                            S.name,
+                            S.surname,
+                            S.ssn
+                    FROM    booking B,
+                            student S,
+                            lecture L
+                    WHERE   B.ref_lecture = L.id AND
+                            B.ref_student = S.id AND
+                            B.presence = 1 AND
+                            B.active = 1 AND
+                            B.ref_student != ? AND `
+
+                // add the lectures, such as:  (B.ref_lecture = 7 OR B.ref_lecture = 9) ..
+
+                //let queryToAdd = `(B.ref_lecture = `
+
+                let involvedLec = involvedLectures.map( ( lectureId, i ) => {
+                    if ( i === 0 )
+                        return '(B.ref_lecture = ' + lectureId;
+                    else
+                        return ' OR B.ref_lecture = ' + lectureId;
+                } )
+                    .reduce( ( previousValue, currentValue, currentIndex ) => {
+                        if ( currentIndex === 0 )
+                            return currentValue;
+                        else return previousValue.concat( currentValue );
+                    } );
+                query2 = query2.concat( involvedLec ).concat( ');' );
+
+                db.all( query2, [ studentId ], ( err2, rows2 ) => {
+                    if ( err2 ) reject( -2 );
+                    if ( rows2 && rows2.length ){
+                       involvedStudents = rows2/*.map( s => s.sID )*/;
+                       resolve( {uniqTeachers, involvedStudents} );
+                    }
+                    else{
+                        resolve( {uniqTeachers, involvedStudents} );
+                    }
+                } );
+            } else{
+                resolve( {uniqTeachers, involvedStudents} );
+            }
+        } );
+    } );
 }
 
 /*
@@ -1268,8 +1359,8 @@ exports.getStudentFromSSN = (ssn) => {
                     WHERE ssn = ?;`
         db.all(query, [ssn], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+            if ( rows && rows.length ) resolve( rows );
+            else resolve( [] );
         });
     });
 }
@@ -1285,8 +1376,8 @@ exports.getTeacherFromSSN = (ssn) => {
                     WHERE ssn = ?;`
         db.all(query, [ssn], ( err, rows ) => {
             if ( err ) reject( err );
-            if ( rows ) resolve( rows );
-            else resolve( 0 );
+            if ( rows && rows.length ) resolve( rows );
+            else resolve( [] );
         });
     });
 }
@@ -1317,7 +1408,7 @@ exports.getContactsWithPositiveTeacher = function ( teacherId, test = false ) {
                             L.date < ${ test ? 1607960293000 : now } AND
                             L.date > ${ test ? 1606837080000 : twoWeeksAgo };`
         db.all( query, [], ( err, rows ) => {
-            if ( err ) reject( err );
+            if ( err ) reject( -1 );
             if ( rows ) {
                 if ( rows.length === 0 ) {
                     resolve( null );
@@ -1332,7 +1423,7 @@ exports.getContactsWithPositiveTeacher = function ( teacherId, test = false ) {
 * Make bookable/no bookable a lecture
 * */
 
-exports.editBookableLecture = ( lectureId, bookable ) => {
+/*exports.editBookableLecture = ( lectureId, bookable ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE lecture SET bookable = ${ bookable } WHERE id = ${ lectureId };`
         db.run( query, [], function ( err ) {
@@ -1341,13 +1432,13 @@ exports.editBookableLecture = ( lectureId, bookable ) => {
             else resolve( 0 );
         } );
     } ) );
-}
+}*/
 
 /*
 * Get all courses, with relative lectures anda dates
 * */
 
-exports.getOfficerCoursesLectures = () => {
+/*exports.getOfficerCoursesLectures = () => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `SELECT * FROM lecture L, course C WHERE L.ref_course = C.id;`
         db.all( query, [], ( err, rows ) => {
@@ -1356,13 +1447,13 @@ exports.getOfficerCoursesLectures = () => {
             else resolve( 0 );
         } );
     } ) );
-}
+}*/
 
 /*
 * Edit a lecture date
 * */
 
-exports.editLectureDate = ( lectureId, newDate ) => {
+/*exports.editLectureDate = ( lectureId, newDate ) => {
     return new Promise( ( ( resolve, reject ) => {
         let query = `UPDATE lecture SET date = ${ newDate } WHERE id = ${ lectureId };`
         db.run( query, [], function ( err ) {
@@ -1371,17 +1462,17 @@ exports.editLectureDate = ( lectureId, newDate ) => {
             else resolve( 0 );
         } );
     } ) );
-}
+}*/
 
 exports.setPresenceLecture = ( lectureId, className ) => {
     return new Promise( ( ( resolve, reject ) => {
         let queryClass = `SELECT id FROM class WHERE desc = ${ className }`;
         let queryLecture = `UPDATE lecture SET presence = 1, ref_class = ? WHERE id = ${ lectureId }`;
         db.get( queryClass, [], ( err, row ) => {
-            if ( err ) reject( err );
+            if ( err ) reject( -1 );
             if ( row ) {
                 db.run( queryLecture, [ row.id ], ( err1 ) => {
-                    if ( err1 ) reject( err1 );
+                    if ( err1 ) reject( -2 );
                     else resolve( 1 );
                 } )
             }
@@ -1506,4 +1597,74 @@ exports.setStudentPresencesForLecture = ( lectureId, studentsIds ) => {
         }
 
     } );
+}
+
+
+exports.getStudentByCourse=(course)=>{
+    return new Promise((resolve,reject)=>{
+        let query=`SELECT C.desc as courseName, S.id as studentId,S.name as studentName,S.surname as studentSurname,S.email as studentEmail
+                   FROM course C, subscription SU, student S
+                   WHERE S.id=SU.ref_student AND SU.ref_course=C.id AND C.id=${course};`;
+        db.all( query, [], ( err, rows ) => {
+            if ( err ) reject( -1 );
+            if ( rows && rows.length ) resolve( rows );
+            else resolve( [] );
+        } );
+    });
+}
+
+function getDay(day){
+    if(day==="Monday")
+        return 1;
+    if(day==="Tuesday")
+        return 2;
+    if(day==="Wednesday")
+        return 3;
+    if(day==="Thursday")
+        return 4;
+    if(day==="Friday")
+        return 5;
+    return 0;
+}
+
+exports.updateLectureScheduled = (data) => {
+    return new Promise( ( ( resolve, reject ) => {
+        let dailyStart;
+        let query='';
+        let dayNumber;
+        let dailyStartDay,dailyEnd;
+        let dayDiff;
+        let lenLectures=data.lectures.length;
+        data.lectures.forEach((l,i)=>{
+            dailyStart=data.startDate;
+            dailyStartDay=parseInt(moment(dailyStart).format('d'));
+            dayNumber=getDay(l.dateScheduled);
+            dayDiff=(7+(dayNumber-dailyStartDay))%7;
+            dailyStart=moment(dailyStart).add(dayDiff,'days');
+            /*while(dayNumber!==dailyStartDay){
+                dailyStart=moment(dailyStart).add(1,'days');
+                dailyStartDay=parseInt(moment(dailyStart).format('d'));
+            }*/
+            while(moment(dailyStart).valueOf()<data.endDate){
+                dailyStart=moment(dailyStart).set("hour",0).set("minute",0).valueOf();
+                dailyEnd=moment(dailyStart).add(1,'days').valueOf();
+                let dayDiff=(7+(parseInt(moment(l.date).format('d'))-dayNumber))%7;
+                let dailyStartTime=moment(dailyStart).add(dayDiff,'days').set("hour",moment(l.date).hour()).set("minutes",moment(l.date).minutes()).valueOf();
+                let dailyEndTIme=moment(dailyStart).add(dayDiff,'days').set("hour",moment(l.endTime).hour()).set("minutes",moment(l.endTime).minutes()).valueOf();
+                query=`UPDATE lecture SET date=?, endTime=?, ref_class=? WHERE id IN (SELECT id FROM lecture WHERE date >= ${ dailyStart } AND endTime <= ${ dailyEnd } AND ref_course=${l.ref_course});`
+                db.run( query, [dailyStartTime,dailyEndTIme,l.ref_class], function ( err ) {
+                    if ( err )
+                        reject( err );
+                    else
+                        if(i+1===lenLectures){
+                            resolve(null);
+                        }
+                } );
+                dailyStart=moment(dailyStart).add(1,'week');
+            }
+
+
+        });
+
+    } ) );
 }
