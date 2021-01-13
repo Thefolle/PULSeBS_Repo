@@ -144,10 +144,10 @@ class TeacherPage extends React.Component {
                         {context.authUser && <>
                             <UserNavBar userId={context.authUser.id} />
                             <Container>
-                                <Row>
+                                <Row className={"justify-content-between"}>
                                     <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
                                         <ListGroup className="sidebar" variant="flush" >
-                                            <h5>POLITECNICO DI TORINO</h5>
+                                            <ListGroup.Item className="listGroup-Item">POLITECNICO DI TORINO</ListGroup.Item>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
                                             <Tutorial on={true} text='This is your identification number.' push={
@@ -155,7 +155,7 @@ class TeacherPage extends React.Component {
                                             } />
                                         </ListGroup>
                                     </Col>
-                                    <Col sm={8}>
+                                    <Col sm={9}>
                                         <Switch>
                                             <Route exact path={"/teacher/courses"}>
                                                 <CourseList courses={this.state.courses} />

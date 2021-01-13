@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import API from '../API/API';
 
-import { Row, Col, Form } from 'react-bootstrap';
+import { Row, Col, Form, Container } from 'react-bootstrap';
 
 import DropDown from './DropDown';
 
@@ -286,7 +286,7 @@ class TeacherStatistics extends React.Component {
 
 
     render() {
-        return <>
+        return <Container>
             <Row>
                 <Col md={5}>
                     <Tutorial on={true} text='Filter data by choosing a course.' push={
@@ -337,13 +337,13 @@ class TeacherStatistics extends React.Component {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col xs={12}>
                     <div id='plotId' />
                 </Col>
             </Row>
 
 
-        </>;
+        </Container>;
     }
 }
 

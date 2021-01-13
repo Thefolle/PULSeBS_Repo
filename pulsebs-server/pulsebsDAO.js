@@ -1,7 +1,6 @@
 const sqlite3 = require( 'sqlite3' ).verbose();
 const fs = require( 'fs' );
 const moment = require( 'moment' );
-const {resolve} = require( 'path' );
 moment.locale( 'it' );
 
 const User = require( './User' );
@@ -270,16 +269,16 @@ exports.checkSeatsOfLecture = ( lectureId ) => {
                                     L.id = B.ref_lecture AND
                                     B.active = 1`
         let seats = `SELECT C.seats FROM class C, lecture L WHERE L.ref_class = C.id AND L.id = ${ lectureId }`
-        db.all( numOfBookings, [], ( err, rows ) => {
-            if ( err ) {
+        db.all( numOfBookings, [], ( error1, rows ) => {
+            if ( error1 ) {
                 reject( 0 )
             } else {
-                db.get( seats, [], ( err, row ) => {
+                db.get( seats, [], ( error2, row ) => {
                     if ( row.seats > rows.length ) {
                         // console.log("You can book the lecture, already booking numbers:  " + rows.length + " Total
                         // numbers of seat are: " + row.seats + " lecture id is " + lectureId)
-                        db.run( upadteLecture, [], ( err ) => {
-                            if ( err ) {
+                        db.run( upadteLecture, [], ( error3 ) => {
+                            if ( error3 ) {
                                 // console.log("-------------------"+err)
                             }
                         } )
@@ -354,19 +353,19 @@ exports.deleteWaitingAddBooking = ( lectureId ) => {
         let getQuery = `SELECT ref_student, ref_lecture FROM waiting WHERE ref_lecture = ${ lectureId }`
         let delQuery = `DELETE FROM waiting WHERE ref_student = ? AND ref_lecture = ?`
 
-        db.get( getQuery, [], ( err, row ) => {
-            if ( err ) {
+        db.get( getQuery, [], ( error1, row ) => {
+            if ( error1 ) {
                 reject( 0 )
             } else {
                 if ( row ) {
                     var sId = row.ref_student
-                    db.run( delQuery, [ sId, lectureId ], ( err ) => {
-                        if ( err ) {
+                    db.run( delQuery, [ sId, lectureId ], ( error2 ) => {
+                        if ( error2 ) {
                             reject( -2 )
                         } else {
                             let bookQuery = `INSERT INTO booking (ref_student,ref_lecture,date) VALUES ( ${ sId },${ lectureId },${ moment().valueOf() })`
-                            db.run( bookQuery, [], ( err ) => {
-                                if ( err ) {
+                            db.run( bookQuery, [], ( error3 ) => {
+                                if ( error3 ) {
                                     reject( -3 )
                                 } else {
                                     // TODO: resolve the row, that include the student informations
@@ -389,12 +388,12 @@ exports.deleteWaitingAddBooking = ( lectureId ) => {
                                                                 LE.ref_class = CL.id AND
                                                                 LE.ref_course = CO.id AND
                                                                 B.active = 1`
-                                    db.get( infosQuery, [], ( err, row ) => {
-                                        if ( err ) {
+                                    db.get( infosQuery, [], ( error4, row2 ) => {
+                                        if ( error4 ) {
                                             reject( -4 )
                                         } else {
-                                            if ( row ) {
-                                                resolve( row )
+                                            if ( row2 ) {
+                                                resolve( row2 )
                                             } else {
                                                 reject( -5 )
                                             }
@@ -1015,7 +1014,6 @@ exports.getAllCancellationsLectures = ( course, lecture ) => {
                 resolve( rows );
             } else resolve( 0 );
         } );
-        ;
 
     } );
 }
@@ -1036,7 +1034,6 @@ exports.getAllCancellationsBookings = ( course, lecture ) => {
                 resolve( rows );
             } else resolve( 0 );
         } );
-        ;
 
     } );
 }
@@ -1403,10 +1400,10 @@ exports.setStudentPresencesForLecture = ( lectureId, studentsIds ) => {
         if(inClass.length > 0 && notInClass.length > 0) {
             query = parsePresence(inClass, query, lectureId);
             query2 = parsePresence(notInClass, query2, lectureId);
-            db.run( query, [], function ( err ) {
-                if ( err ) reject( -1 );
-                else db.run( query2,[],function ( err ) {
-                    if ( err ) reject( -1 );
+            db.run( query, [], function ( error1 ) {
+                if ( error1 ) reject( -1 );
+                else db.run( query2,[],function ( error2 ) {
+                    if ( error2 ) reject( -1 );
                     else resolve( this.changes );
                 } )
             } )

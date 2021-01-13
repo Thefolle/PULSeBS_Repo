@@ -13,7 +13,6 @@ const bcrypt = require( 'bcrypt' );
 
 const schedule = require( 'node-schedule' );
 const nodemailer = require( 'nodemailer' );
-const {response} = require( 'express' );
 
 
 // Authorization error
@@ -390,7 +389,6 @@ app.post( '/api/students/:studentId/booking', ( req, res ) => {
  */
 // Add a student to a waiting list
 app.put( '/api/students/:studentId/lectures/:lectureId', ( req, res ) => {
-    const studentId = req.params.studentId;
     const lectureId = req.params.lectureId;
     if ( !lectureId ) {
         res.status( 401 ).end();
@@ -431,13 +429,12 @@ app.get( '/api/student/waitings', ( req, res ) => {
  */
 //According the free seats of a lecture, to Update the bookable attribute of table lecture
 app.post( '/api/students/:studentId/lectures/checkSeats/:lectureId', ( req, res ) => {
-    const studentId = req.user && req.user.user
     const lectureId = req.params.lectureId
     if ( !lectureId ) {
         res.status( 400 ).end( "Can not get lecture!" );
     } else {
         pulsebsDAO.checkSeatsOfLecture( lectureId )
-                  .then( ( lectureId ) => res.status( 200 ).json( {"lectureId": lectureId} ) )
+                  .then( ( lectureIdResult ) => res.status( 200 ).json( {"lectureId": lectureIdResult} ) )
                   .catch( ( err ) => {
                       res.status( 500 ).json( {errors: [ {'param': 'Server-checkSeatsOfLecture', 'msg': err} ],} )
                   } )
@@ -484,7 +481,6 @@ app.get( '/api/student/getFromSSN/:ssn', (req, res) => {
  */
 //  FIXME: refactor
 app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
-    const studentId = req.params.studentId;
     const bookingId = req.params.bookingId;
     if ( !bookingId ) {
         res.status( 401 ).end();
@@ -509,7 +505,6 @@ app.delete( '/api/students/:studentId/bookings/:bookingId', ( req, res ) => {
  *  delete a waiting item from waiting table and add a new booking
  */
 app.delete( '/api/students/:studentId/lectures/:lectureId/waiting', ( req, res ) => {
-    const studentId = req.params.studentId;
     const lectureId = req.params.lectureId;
     if ( !lectureId ) {
         res.status( 401 ).end( 'can not find lecture' );
@@ -522,8 +517,8 @@ app.delete( '/api/students/:studentId/lectures/:lectureId/waiting', ( req, res )
                                   "and successfuly was picked to the booking table, and now need sending a email to notice the student, the lecture id is: " + lectureId
                           } )
                       if ( process.env.TEST && process.env.TEST === '0' ) {
-                          let mailOptions;
-                          mailOptions = {
+                          let mailOptions2;
+                          mailOptions2 = {
                               from: '"PULSeBS Team9" <noreply.pulsebs@gmail.com>',
                               to: 'student.team9@yopmail.com', // replace this row with
                                                                // studentAndLectureInfo.studentEmail
@@ -538,7 +533,7 @@ app.delete( '/api/students/:studentId/lectures/:lectureId/waiting', ( req, res )
                                   " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" ) + "." + "\n\n" +
                                   "Have a good lesson.\n\n - PULSeBS Team9."
                           };
-                          transporter.sendMail( mailOptions, function ( error, info ) {
+                          transporter.sendMail( mailOptions2, function ( error, info ) {
                               if ( error ) {
                                   console.log( "Some error occured in sending the email to shinylover520@gmail.com :" + error );
                               } else {
