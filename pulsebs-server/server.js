@@ -675,7 +675,8 @@ app.put('/api/sofficer/updateLecture/',(req,res)=>{
     if ( 'startDate' in req.body &&
         'endDate' in req.body &&
         'lectures' in req.body
-        ){let lecturesPrint=[...new Set(req.body.lectures.map(i=>i.ref_course))];
+        ){
+            //let lecturesPrint=[...new Set(req.body.lectures.map(i=>i.ref_course))];
             pulsebsDAO.updateLectureScheduled(req.body)
                 .then(()=>{
                     if (process.env.TEST && process.env.TEST === '0' ) {

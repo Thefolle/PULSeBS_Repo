@@ -1,8 +1,6 @@
 const sqlite3 = require( 'sqlite3' ).verbose();
 const fs = require( 'fs' );
 const moment = require( 'moment' );
-const {resolvePath} = require( 'path' );
-const { setUncaughtExceptionCaptureCallback } = require('process');
 moment.locale( 'it' );
 
 const User = require( './User' );
@@ -556,8 +554,8 @@ exports.getTeacherLectures = ( teacherId ) => {
                                 AND L.active=1;`
         db.all( query, [], ( err, rows ) => {
           if ( err ) reject( -1 );
-           if ( rows && rows.length ) resolve( rows );
-           else resolve( [] )
+          if ( rows && rows.length ) resolve( rows );
+          else resolve( [] )
         } );
     } ) );
 }
@@ -1648,9 +1646,9 @@ exports.updateLectureScheduled = (data) => {
             while(moment(dailyStart).valueOf()<data.endDate){
                 dailyStart=moment(dailyStart).set("hour",0).set("minute",0).valueOf();
                 dailyEnd=moment(dailyStart).add(1,'days').valueOf();
-                let dayDiff=(7+(parseInt(moment(l.date).format('d'))-dayNumber))%7;
-                let dailyStartTime=moment(dailyStart).add(dayDiff,'days').set("hour",moment(l.date).hour()).set("minutes",moment(l.date).minutes()).valueOf();
-                let dailyEndTIme=moment(dailyStart).add(dayDiff,'days').set("hour",moment(l.endTime).hour()).set("minutes",moment(l.endTime).minutes()).valueOf();
+                let dayDiff2=(7+(parseInt(moment(l.date).format('d'))-dayNumber))%7;
+                let dailyStartTime=moment(dailyStart).add(dayDiff2,'days').set("hour",moment(l.date).hour()).set("minutes",moment(l.date).minutes()).valueOf();
+                let dailyEndTIme=moment(dailyStart).add(dayDiff2,'days').set("hour",moment(l.endTime).hour()).set("minutes",moment(l.endTime).minutes()).valueOf();
                 query=`UPDATE lecture SET date=?, endTime=?, ref_class=? WHERE id IN (SELECT id FROM lecture WHERE date >= ${ dailyStart } AND endTime <= ${ dailyEnd } AND ref_course=${l.ref_course});`
                 db.run( query, [dailyStartTime,dailyEndTIme,l.ref_class], function ( err ) {
                     if ( err )
