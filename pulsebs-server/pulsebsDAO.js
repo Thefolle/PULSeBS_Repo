@@ -458,8 +458,7 @@ exports.getAllLecturesForSupportOffice = ()=>{
 exports.updateBookableAttributForLecture = (lectureId, num)=>{
     console.log("----------------------------" + num+ "-------" + lectureId)
     return new Promise( (resolve, reject) => {
-        if (num === 1){
-
+        if (num == 1){
             num = 0
         } else {
             num = 1
