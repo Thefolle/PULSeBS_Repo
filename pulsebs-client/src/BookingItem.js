@@ -3,7 +3,7 @@ import moment          from 'moment';
 import Image           from 'react-bootstrap/Image';
 // import context from 'react-bootstrap/esm/AccordionContext';
 import { AuthContext } from './auth/AuthContext';
-import Tutorial from './Components/Tutorial';
+import Tutorial from './components/Tutorial';
 
 const BookingItem = ( props ) => {
 

@@ -6,14 +6,14 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import User from './User';
 import LoginPage from './LoginPage';
 import StudentPage from './studentPage';
-import TeacherPage from './Components/TeacherPage';
-import SupportOfficePage from './Components/SupportOfficePage'
+import TeacherPage from './components/TeacherPage';
+import SupportOfficePage from './components/SupportOfficePage'
 import { AuthContext } from './auth/AuthContext';
-import Header from './Components/Header';
+import Header from './components/Header';
 
 import './App.css';
 import API from './API/API.js';
-import BookingManager from './Components/BookingManager';
+import BookingManager from './components/BookingManager';
 
 function App() {
     return (

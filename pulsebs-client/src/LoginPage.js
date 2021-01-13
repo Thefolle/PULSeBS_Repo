@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 
-import Tutorial from './Components/Tutorial';
+import Tutorial from './components/Tutorial';
 
 import { AuthContext } from './auth/AuthContext';
 

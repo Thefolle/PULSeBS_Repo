@@ -1,13 +1,13 @@
-import Lecture          from './Lecture.js'
-import Booking          from './Booking.js'
-import Student          from './Student'
-import Teacher          from './Teacher'
-import Course           from './Course'
-import Waiting          from './Waiting'
-import Enrollment       from './Enrollment'
-import Class            from './Class'
-import scheduledLecture from './scheduledLecture'
-import LectureTeacher   from './LectureTeacher.js'
+import Lecture          from '../entities/Lecture.js'
+import Booking          from '../entities/Booking.js'
+import Student          from '../entities/Student'
+import Teacher          from '../entities/Teacher'
+import Course           from '../entities/Course'
+import Waiting          from '../entities/Waiting'
+import Enrollment       from '../entities/Enrollment'
+import Class            from '../entities/Class'
+import scheduledLecture from '../entities/ScheduledLecture'
+import LectureTeacher   from '../entities/LectureTeacher.js'
 
 const baseURL = "/api";
 

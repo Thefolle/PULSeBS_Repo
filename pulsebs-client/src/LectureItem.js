@@ -5,7 +5,7 @@ import Image       from 'react-bootstrap/Image';
 import {AuthContext} from './auth/AuthContext';
 //import Lecture from './API/Lecture';
 
-import Tutorial from './Components/Tutorial';
+import Tutorial from './components/Tutorial';
 
 const LectureItem = ( props ) => {
 

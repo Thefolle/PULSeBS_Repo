@@ -8,13 +8,13 @@ import { Row, Col, Container, ListGroup} from "react-bootstrap";
 
 import LecturesList from './LecturesList';
 import BookingsList from './BookingsList';
-import WaitingList from './Components/waitings/WaitingList';
-import UserNavBar from './Components/UserNavBar';
-import StudentCalendar from "./Components/StudentCalendar";
+import WaitingList from './components/waitings/WaitingList';
+import UserNavBar from './components/UserNavBar';
+import StudentCalendar from "./components/StudentCalendar";
 import './App.css';
 import API from './API/API';
 
-import Tutorial from './Components/Tutorial';
+import Tutorial from './components/Tutorial';
 
 
 

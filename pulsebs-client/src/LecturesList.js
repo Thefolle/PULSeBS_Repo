@@ -4,7 +4,7 @@ import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
 import { AuthContext } from './auth/AuthContext';
 
-import Tutorial from './Components/Tutorial';
+import Tutorial from './components/Tutorial';
 
 const LecturesList = (props) => {
 
