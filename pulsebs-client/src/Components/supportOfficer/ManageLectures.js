@@ -3,10 +3,10 @@
  */
 
 import React from 'react';
-import { Table }   from "react-bootstrap";
+import { Table } from "react-bootstrap";
+import { AuthContext } from '../../auth/AuthContext';
+import ManageLecture from './ManageLecture';
 
-import {AuthContext} from '../../auth/AuthContext'
-import ManageLecturesItem from './ManageLecturesItem'
 
 const ManageLectures = (props) => {
     let {lecForFilter, updateBookableAttributForLecture} = props;
@@ -31,7 +31,7 @@ const ManageLectures = (props) => {
                     </thead>
                     <tbody>
                         {lecForFilter.map( (l) => 
-                        <ManageLecturesItem key={l.id}
+                        <ManageLecture key={l.id}
                                                  lecture={l}
                                                  updateBookableAttributForLecture={updateBookableAttributForLecture} />)}
                     </tbody>

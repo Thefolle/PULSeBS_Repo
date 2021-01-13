@@ -1,15 +1,14 @@
-import React, { useState }  from 'react';
-import moment               from 'moment';
-import { Link, Redirect }   from 'react-router-dom';
-import { AuthContext }      from '../../auth/AuthContext';
-import Image                from 'react-bootstrap/Image';
-import { MdDeleteForever }  from "react-icons/md"
-
+import moment from 'moment';
+import React, { useState } from 'react';
+import Image from 'react-bootstrap/Image';
+import { BsFillPeopleFill } from "react-icons/bs";
+import { ImCross } from "react-icons/im";
+import { MdDeleteForever } from "react-icons/md";
+import { Link, Redirect } from 'react-router-dom';
+import { AuthContext } from '../../auth/AuthContext';
+import '../../style/customStyle.css';
 import Tutorial from '../Tutorial';
 
-import '../../style/customStyle.css';
-import { BsFillPeopleFill } from "react-icons/bs";
-import { ImCross }          from "react-icons/im";
 
 const LectureItem = ( props ) => {
     let {lecture, turnLectureIntoOnline, idc, index, cancelLecture} = props;

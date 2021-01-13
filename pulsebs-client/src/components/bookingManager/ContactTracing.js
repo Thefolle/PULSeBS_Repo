@@ -1,12 +1,10 @@
-import React from 'react';
-import { Table } from "react-bootstrap";
-import { AuthContext } from '../../auth/AuthContext';
-import { Form, Col, Row, Button } from 'react-bootstrap';
-//import ShowTraceResult from './ShowTraceResult';
-import API from '../../API/API';
+import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import { jsPDF } from "jspdf";
-import 'jspdf-autotable'
-import BootstrapSwitchButton from 'bootstrap-switch-button-react'
+import 'jspdf-autotable';
+import React from 'react';
+import { Button, Col, Form, Row, Table } from "react-bootstrap";
+import API from '../../API/API';
+import { AuthContext } from '../../auth/AuthContext';
 
 class ContactTracing extends React.Component {
   constructor(props) {

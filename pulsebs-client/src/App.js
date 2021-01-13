@@ -1,19 +1,15 @@
 import React from 'react';
-
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Switch, Route, Redirect } from 'react-router-dom';
-
-import User from './entities/User';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import API from './API/API.js';
+import { AuthContext } from './auth/AuthContext';
+import BookingManagerPage from './components/bookingManager/BookingManagerPage';
+import Header from './components/Header';
 import LoginPage from './components/LoginPage';
 import StudentPage from './components/student/StudentPage';
+import SupportOfficerPage from './components/supportOfficer/SupportOfficerPage';
 import TeacherPage from './components/teacher/TeacherPage';
-import SupportOfficePage from './components/supportOfficer/SupportOfficePage'
-import { AuthContext } from './auth/AuthContext';
-import Header from './components/Header';
-import BookingManager from './components/bookingManager/BookingManager';
-
+import User from './entities/User';
 import './style/App.css';
-import API from './API/API.js';
 
 
 function App() {
@@ -89,10 +85,10 @@ class PULSeBSApp extends React.Component {
                             <TeacherPage />
                         </Route>
                         <Route path='/manager'>
-                            <BookingManager />
+                            <BookingManagerPage />
                         </Route>
                         <Route path='/supportOffice'>
-                            <SupportOfficePage />
+                            <SupportOfficerPage />
                         </Route>
                         <Route exact path='/'>
                             <Redirect to='Login' />

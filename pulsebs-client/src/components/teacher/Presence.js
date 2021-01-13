@@ -1,10 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Table, Form, Row, Button, Col } from "react-bootstrap";
-import API from "../../API/API.js";
 import moment from "moment";
-import { withRouter } from "react-router-dom"
-
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Button, Col, Form, Row, Table } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
+import API from "../../API/API.js";
 import Tutorial from '../Tutorial';
 
 

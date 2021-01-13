@@ -1,21 +1,14 @@
 import React from 'react';
-import {Route} from 'react-router-dom';
-import { withRouter } from 'react-router-dom';
-import {Switch} from 'react-router-dom';
-import {AuthContext} from '../../auth/AuthContext';
-import { Row, Col, Container, ListGroup} from "react-bootstrap";
-
-
-import LecturesList from './LecturesList';
-import BookingsList from './BookingsList';
-import WaitingList from './WaitingList';
-import UserNavBar from '../UserNavBar';
-import StudentCalendar from "./StudentCalendar";
-import '../../style/App.css';
+import { Col, Container, ListGroup, Row } from "react-bootstrap";
+import { Route, Switch, withRouter } from 'react-router-dom';
 import API from '../../API/API';
-
+import { AuthContext } from '../../auth/AuthContext';
+import '../../style/App.css';
+import NavigationBar from '../NavigationBar';
 import Tutorial from '../Tutorial';
-
+import Bookings from './Bookings';
+import Calendar from "./Calendar";
+import Lectures from './Lectures';
 
 
 class StudentPage extends React.Component {
@@ -225,7 +218,7 @@ class StudentPage extends React.Component {
                   {(context)=>(
                      <>
                   {context.authUser && <>
-                    <UserNavBar userId={context.authUser.id}/>
+                    <NavigationBar userId={context.authUser.id}/>
                     <Container>
                     <Row>
                         <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
@@ -245,7 +238,7 @@ class StudentPage extends React.Component {
 
                         <Switch>
                             <Route exact path={this.props.match.url + "/lectures"}>
-                                <LecturesList lectures={this.state.lectures} bookings={this.state.bookings}
+                                <Lectures lectures={this.state.lectures} bookings={this.state.bookings}
                                     bookSeat={this.bookSeat} alreadyBooked={this.alreadyBooked}
                                     cancelBooking={this.cancelBooking}
                                     onload= { this.upDateBookable(context.authUser.id, this.state.lectures) }
@@ -256,10 +249,10 @@ class StudentPage extends React.Component {
                                 />
                             </Route>
                             <Route exact path={this.props.match.url + "/bookings"}>
-                                <BookingsList deleteWaitingAddBooking={this.deleteWaitingAddBooking}  bookings={this.state.bookings} waitings = {this.state.waitings} cancelBooking={this.cancelBooking} />
+                                <Bookings deleteWaitingAddBooking={this.deleteWaitingAddBooking}  bookings={this.state.bookings} waitings = {this.state.waitings} cancelBooking={this.cancelBooking} />
                             </Route>
                             <Route exact path={this.props.match.url + "/calendar"}>
-                                <StudentCalendar bookings={this.state.bookings} />
+                                <Calendar bookings={this.state.bookings} />
                             </Route>
                         </Switch>
 

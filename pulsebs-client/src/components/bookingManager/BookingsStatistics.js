@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table } from "react-bootstrap";
 import { AuthContext } from '../../auth/AuthContext';
-import BookingsStatsItem from './BookingsStatsItem';
+import BookingsStatistic from './BookingsStatistic';
 
 /*
 Type 0: attendances
@@ -50,7 +50,7 @@ const BookingsStats = (props) => {
                                 </thead>
                                 <tbody>
                                     {bookings.map((b, id) =>
-                                            <BookingsStatsItem key={id} booking={b} />
+                                            <BookingsStatistic key={id} booking={b} />
                                         )}
                                 </tbody>
                             </Table>

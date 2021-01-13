@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import { FaBackward } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
-import StudentItem from './StudentItem';
+import Student from './Student';
 
 
 const StudentList = (props) => {
@@ -29,7 +29,7 @@ const StudentList = (props) => {
                                 <tbody>
                                     {students.filter(e => e.lId === parseInt(idl))
                                         .map((s, id) =>
-                                            <StudentItem key={id} student={s} />
+                                            <Student key={id} student={s} />
                                         )}
                                 </tbody>
                             </Table>

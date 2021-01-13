@@ -1,17 +1,17 @@
 import React from 'react';
+import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Row from 'react-bootstrap/Row';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import API from '../../API/API';
-import { withRouter, Switch, Route } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
-import UserNavBar from '../UserNavBar';
 import '../../style/App.css';
 import '../../style/customStyle.css';
-import Container from 'react-bootstrap/Container';
-import BookingsStats from './BookingsStats';
+import NavigationBar from '../NavigationBar';
+import BookingsStatistics from './BookingsStatistics';
 import ContactTracing from './ContactTracing';
-import ListGroup from 'react-bootstrap/ListGroup';
-import DropDownBookingManager from './DropDownBookingManager';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+import DropDown from './DropDown';
 
 class BookingManager extends React.Component {
     constructor(props) {
@@ -163,7 +163,7 @@ class BookingManager extends React.Component {
                 {(context) => (
                     <>
                         {context.authUser && <>
-                            <UserNavBar userId={context.authUser.id} />
+                            <NavigationBar userId={context.authUser.id} />
                             <Container>
                                 <Row>
                                     <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
@@ -178,73 +178,73 @@ class BookingManager extends React.Component {
                                                 <Row>
                                                     <Col>
                                                         <label>Course:</label>
-                                                        <DropDownBookingManager options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
+                                                        <DropDown options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
                                                     </Col>
                                                     <Col>
                                                         <label>Lecture:</label>
-                                                        <DropDownBookingManager options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
+                                                        <DropDown options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
                                                     </Col>
                                                 </Row>
                                                 <br/>
-                                                <BookingsStats bookings={this.state.bookings} type={1}/>
+                                                <BookingsStatistics bookings={this.state.bookings} type={1}/>
                                                 <br/>
-                                                <BookingsStats bookings={this.state.cancellations} type={2}/>
+                                                <BookingsStatistics bookings={this.state.cancellations} type={2}/>
                                                 <br/>
-                                                <BookingsStats bookings={this.state.cancellationsBookings} type={3} />
+                                                <BookingsStatistics bookings={this.state.cancellationsBookings} type={3} />
                                                 <br/>
-                                                <BookingsStats bookings={this.state.attendances} type={0}/>
+                                                <BookingsStatistics bookings={this.state.attendances} type={0}/>
                                             </Route>
                                             <Route exact path={"/manager/bookings"}>
                                                 <Row>
                                                     <Col>
                                                         <label>Course:</label>
-                                                        <DropDownBookingManager options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
+                                                        <DropDown options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
                                                     </Col>
                                                     <Col>
                                                         <label>Lecture:</label>
-                                                        <DropDownBookingManager options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
+                                                        <DropDown options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
                                                     </Col>
                                                 </Row>
-                                                <BookingsStats bookings={this.state.bookings} type={1}/>
+                                                <BookingsStatistics bookings={this.state.bookings} type={1}/>
                                             </Route>
                                             <Route exact path={"/manager/cancellationsLectures"}>
                                                 <Row>
                                                     <Col>
                                                         <label>Course:</label>
-                                                        <DropDownBookingManager options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
+                                                        <DropDown options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
                                                     </Col>
                                                     <Col>
                                                         <label>Lecture:</label>
-                                                        <DropDownBookingManager options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
+                                                        <DropDown options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
                                                     </Col>
                                                 </Row>
-                                                <BookingsStats bookings={this.state.cancellations} type={2}/>
+                                                <BookingsStatistics bookings={this.state.cancellations} type={2}/>
                                             </Route>
                                             <Route exact path={"/manager/cancellationsBookings"}>
                                                 <Row>
                                                     <Col>
                                                         <label>Course:</label>
-                                                        <DropDownBookingManager options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
+                                                        <DropDown options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
                                                     </Col>
                                                     <Col>
                                                         <label>Lecture:</label>
-                                                        <DropDownBookingManager options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
+                                                        <DropDown options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
                                                     </Col>
                                                 </Row>
-                                                <BookingsStats bookings={this.state.cancellationsBookings} type={3} />
+                                                <BookingsStatistics bookings={this.state.cancellationsBookings} type={3} />
                                             </Route>
                                             <Route exact path={"/manager/attendances"}>
                                                 <Row>
                                                     <Col>
                                                         <label>Course:</label>
-                                                        <DropDownBookingManager options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
+                                                        <DropDown options={["All",...new Set(this.state.courses.map(course => course.course))]}  update={this.updateCourse} />
                                                     </Col>
                                                     <Col>
                                                         <label>Lecture:</label>
-                                                        <DropDownBookingManager options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
+                                                        <DropDown options={[-1,...new Set(this.state.lectures.map(lec=>lec.lecId))]}   update={this.updateLecture} />
                                                     </Col>
                                                 </Row>
-                                                <BookingsStats bookings={this.state.attendances} type={0}/>
+                                                <BookingsStatistics bookings={this.state.attendances} type={0}/>
                                             </Route>
                                             <Route exact path={"/manager/tracing"}>
                                                 <ContactTracing />

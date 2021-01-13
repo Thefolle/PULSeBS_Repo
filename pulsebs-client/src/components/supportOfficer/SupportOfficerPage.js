@@ -1,22 +1,17 @@
-import React                                                       from 'react';
-import { withRouter, Switch, Route }                               from 'react-router-dom';
-import moment                                                      from 'moment';
-import UserNavBar                                                  from '../UserNavBar';
-import Form                                                        from 'react-bootstrap/Form'
-import { Row, Col, Container, ListGroup, Button,  FormGroup, FormLabel} from "react-bootstrap";
+import moment from 'moment';
+import React from 'react';
+import { Button, Col, Container, FormGroup, FormLabel, ListGroup, Row } from "react-bootstrap";
+import Form from 'react-bootstrap/Form';
 import DatePicker from "react-datepicker";
-
-
-import '../../style/App.css';
-import API                                                         from '../../API/API';
-import { AuthContext }                                             from '../../auth/AuthContext';
-import CollapsibleTable                                            from "./CollapsibleTable";
-import ManageLectures from './ManageLectures'
-import DropDownSupportOffice from './DropDownSupportOffice'
 import "react-datepicker/dist/react-datepicker.css";
-
-
-
+import { Route, Switch, withRouter } from 'react-router-dom';
+import API from '../../API/API';
+import { AuthContext } from '../../auth/AuthContext';
+import '../../style/App.css';
+import NavigationBar from '../NavigationBar';
+import CollapsibleTable from "./CollapsibleTable";
+import DropDown from './DropDown';
+import ManageLectures from './ManageLectures';
 
 let buttonsStyle = {
     background: "blue",
@@ -30,7 +25,7 @@ let selectedButtonStyle = {
     width: "4rem"
 };
 
-class SupportOfficePage extends React.Component {
+class SupportOfficerPage extends React.Component {
 
     constructor() {
         super();
@@ -616,7 +611,7 @@ componentDidMount(){
                 {(context) => (
                     <>
                         {context.authUser && <>
-                            <UserNavBar userId={context.authUser.id} />
+                            <NavigationBar userId={context.authUser.id} />
                             <Container>
                                 <Row>
                                     <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
@@ -635,7 +630,7 @@ componentDidMount(){
                                                 <Row>
                                                     <Col>
                                                     <label>Course:</label>
-                                                        <DropDownSupportOffice options={["All",...new Set(this.state.lecForSupport.map(l => l.courseDesc))]}
+                                                        <DropDown options={["All",...new Set(this.state.lecForSupport.map(l => l.courseDesc))]}
                                                         update={this.updateLecForSup} />
                                                     </Col>
                                                 </Row>
@@ -997,4 +992,4 @@ componentDidMount(){
                                         <CollapsibleTable tableName={"Lectures"} tableData={this.state.lectures} />
                                         <CollapsibleTable tableName={"Courses"} tableData={this.state.courses} />*/
 
-export default withRouter(SupportOfficePage);
+export default withRouter(SupportOfficerPage);

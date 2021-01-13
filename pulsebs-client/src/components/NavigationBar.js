@@ -12,8 +12,6 @@ import '../style/customStyle.css';
 import Tutorial from './Tutorial';
 
 
-
-
 class UserNavBar extends React.Component {
 
   constructor(props) {

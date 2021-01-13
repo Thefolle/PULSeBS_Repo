@@ -1,14 +1,12 @@
-import React, { useState }  from 'react';
-import { Link, Redirect }   from 'react-router-dom';
-import { Table }            from "react-bootstrap";
-import { AuthContext }      from '../../auth/AuthContext';
-import { FaBackward }       from "react-icons/fa";
-
-import Tutorial from '../Tutorial';
-
-import LectureItem from './LectureItem';
-
+import React from 'react';
+import { Table } from "react-bootstrap";
+import { FaBackward } from "react-icons/fa";
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../auth/AuthContext';
 import '../../style/customStyle.css';
+import Tutorial from '../Tutorial';
+import Lecture from './Lecture';
+
 
 const LectureList = ( props ) => {
     let {lectures, idc, cancelLecture} = props;
@@ -47,7 +45,7 @@ const LectureList = ( props ) => {
                         </tr>
                         </thead>
                         <tbody>
-                        { lectures.filter( l => l.id === parseInt( idc ) ).map( ( l, id ) => <LectureItem key={ id }
+                        { lectures.filter( l => l.id === parseInt( idc ) ).map( ( l, id ) => <Lecture key={ id }
                                                                                                           lecture={ l }
                                                                                                           turnLectureIntoOnline={ props.turnLectureIntoOnline }
                                                                                                           idc={ idc }

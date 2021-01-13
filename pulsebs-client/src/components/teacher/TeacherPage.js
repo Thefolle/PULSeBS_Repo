@@ -1,22 +1,17 @@
 import React from 'react';
-import { withRouter, Switch, Route } from 'react-router-dom';
-
+import { Col, Container, Jumbotron, ListGroup, Row } from "react-bootstrap";
+import { Route, Switch, withRouter } from 'react-router-dom';
 import API from '../../API/API';
-import CourseList from './CourseList';
-import LectureList from './LectureList';
-import StudentList from './StudentList';
-import UserNavBar  from '../UserNavBar';
 import { AuthContext } from '../../auth/AuthContext';
-import TeacherStatistics from './TeacherStatistics';
-import PresencePage from "./PresencePage";
-
-
-import { Row, Col, Container, ListGroup, Jumbotron } from "react-bootstrap";
-
-import Tutorial from '../Tutorial';
-
 import '../../style/App.css';
 import '../../style/customStyle.css';
+import NavigationBar from '../NavigationBar';
+import Tutorial from '../Tutorial';
+import CourseList from './Courses';
+import LectureList from './Lectures';
+import Presence from "./Presence";
+import Statistics from './Statistics';
+import StudentList from './Students';
 
 
 class TeacherPage extends React.Component {
@@ -143,7 +138,7 @@ class TeacherPage extends React.Component {
                 {(context) => (
                     <>
                         {context.authUser && <>
-                            <UserNavBar userId={context.authUser.id} />
+                            <NavigationBar userId={context.authUser.id} />
                             <Container>
                                 <Row className={"justify-content-between"}>
                                     <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
@@ -165,7 +160,7 @@ class TeacherPage extends React.Component {
                                                 <LectureList lectures={this.state.lectures} idc={match.params.courseId} cancelLecture={this.cancelLecture} turnLectureIntoOnline={this.turnLectureIntoOnline} />
                                             )} />
                                             <Route exact path={"/teacher/:courseId/lecture/:lectureId/presence"} render={({ match }) => (
-                                                <PresencePage
+                                                <Presence
                                                               course={ this.state.courses.find( course => course.id === parseInt(match.params.courseId)) }
                                                               lecture={ this.state.lectures.find( lecture => lecture.lecId === parseInt(match.params.lectureId)) }
                                                 />
@@ -177,7 +172,7 @@ class TeacherPage extends React.Component {
                                                 if (!this.state.courses || this.state.courses.length === 0) {
                                                     return <Jumbotron className='error'><p>It seems that you don't have taught at any course.</p><p>Please, refresh the page or contact the segretary for information.</p></Jumbotron>;
                                                 } else {
-                                                    return <TeacherStatistics courses={this.state.courses} userId={context.authUser.id} />
+                                                    return <Statistics courses={this.state.courses} userId={context.authUser.id} />
                                                 }
                                             }
                                             } />

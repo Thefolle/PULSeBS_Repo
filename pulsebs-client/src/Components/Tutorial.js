@@ -1,8 +1,8 @@
 import React from 'react';
-
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 import '../style/App.css';
 import '../style/customStyle.css';
-import { Popover, OverlayTrigger } from 'react-bootstrap';
+
 
 class Tutorial extends React.Component {
 

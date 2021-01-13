@@ -1,17 +1,13 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-
-import { Redirect } from 'react-router-dom';
-
-import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import Jumbotron from 'react-bootstrap/Jumbotron';
-
+import { Redirect } from 'react-router-dom';
+import { AuthContext } from '../auth/AuthContext';
+import '../style/customStyle.css';
 import Tutorial from './Tutorial';
 
-import { AuthContext } from '../auth/AuthContext';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '../style/customStyle.css';
 
 class LoginPage extends React.Component {
   constructor(props) {

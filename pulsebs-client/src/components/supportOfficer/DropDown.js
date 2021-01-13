@@ -8,7 +8,7 @@ import '../../style/dropDown.css';
 import { Form } from "react-bootstrap";
 
 
-const DropDownSupportOffice = function (props) {
+const DropDown = function (props) {
     let {options,update}=props;
 
     const setOptionandValue=(event)=>{
@@ -27,4 +27,4 @@ const DropDownSupportOffice = function (props) {
 }
 
 
-export default DropDownSupportOffice;
+export default DropDown;

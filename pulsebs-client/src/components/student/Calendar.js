@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/timegrid';
 import {AuthContext} from '../../auth/AuthContext';
 import '../../style/studentCalendar.css';
 
-class StudentCalendar extends React.Component {
+class Calendar extends React.Component {
     render() {
         //Loading and preparing bookings
         let events = [];
@@ -44,4 +44,4 @@ class StudentCalendar extends React.Component {
     }
 }
 
-export default StudentCalendar;
+export default Calendar;

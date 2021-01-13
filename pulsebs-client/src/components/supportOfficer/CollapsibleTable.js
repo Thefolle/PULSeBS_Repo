@@ -1,6 +1,6 @@
-import React                              from 'react'
-import { Table, Accordion, Button, Card } from "react-bootstrap";
-import PropTypes            from 'prop-types';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Accordion, Button, Card, Table } from "react-bootstrap";
 
 class CollapsibleTable extends React.Component {
 

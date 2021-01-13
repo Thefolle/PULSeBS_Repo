@@ -3,11 +3,11 @@
  */
 
 import React       from 'react';
-import WaitingItem from './WaitingItem';
+import Waiting from './Waiting';
 import { Table }   from "react-bootstrap";
 import {AuthContext} from '../../auth/AuthContext';
 
-const WaitingList = ( props ) => {
+const Waitings = ( props ) => {
 
     let { bookings} = props; //add delete method
 
@@ -27,7 +27,7 @@ const WaitingList = ( props ) => {
                     </thead>
                     <tbody>
 
-                    { bookings.map( ( b ) => <WaitingItem key={ b.id } booking={ b } /> ) }
+                    { bookings.map( ( b ) => <Waiting key={ b.id } booking={ b } /> ) }
 
                     </tbody>
                 </Table>
@@ -39,4 +39,4 @@ const WaitingList = ( props ) => {
     );
 }
 
-export default WaitingList;
+export default Waitings;

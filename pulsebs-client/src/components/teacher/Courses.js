@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Table } from "react-bootstrap";
 import { AuthContext } from '../../auth/AuthContext';
+import Course from './Course';
 
-import CourseItem from './CourseItem';
 
 const CourseList = (props) => {
 
@@ -19,7 +19,7 @@ const CourseList = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {courses.map((c) => <CourseItem key={c.id} course={c} index={c.id} />)}
+                            {courses.map((c) => <Course key={c.id} course={c} index={c.id} />)}
                         </tbody>
                     </Table>
                 </>

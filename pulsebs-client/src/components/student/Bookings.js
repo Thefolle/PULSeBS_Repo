@@ -1,12 +1,12 @@
-import React       from 'react';
-import BookingItem from './BookingItem';
-import WaitingItem from './WaitingItem'
-import { Table }   from "react-bootstrap";
-import {AuthContext} from '../../auth/AuthContext';
-
+import React from 'react';
+import { Table } from "react-bootstrap";
+import { AuthContext } from '../../auth/AuthContext';
 import Tutorial from '../Tutorial';
+import Booking from './Booking';
+import WaitingItem from './Waiting';
 
-const BookingsList = ( props ) => {
+
+const Bookings = ( props ) => {
 
     let {deleteWaitingAddBooking, waitings, bookings, cancelBooking} = props; //add delete method
 
@@ -31,7 +31,7 @@ const BookingsList = ( props ) => {
                     </thead>
                     <tbody>
 
-                    { bookings.map( ( b ) => <BookingItem key={ b.id } booking={ b } deleteWaitingAddBooking={deleteWaitingAddBooking} cancelBooking={cancelBooking} /> ) }
+                    { bookings.map( ( b ) => <Booking key={ b.id } booking={ b } deleteWaitingAddBooking={deleteWaitingAddBooking} cancelBooking={cancelBooking} /> ) }
 
                     </tbody>
                 </Table>
@@ -61,4 +61,4 @@ const BookingsList = ( props ) => {
     );
 }
 
-export default BookingsList;
+export default Bookings;

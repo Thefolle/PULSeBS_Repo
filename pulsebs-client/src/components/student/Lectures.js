@@ -1,12 +1,12 @@
+import moment from 'moment';
 import React from 'react';
-import moment      from 'moment';
-import LectureItem from './LectureItem';
 import { Table } from "react-bootstrap";
 import { AuthContext } from '../../auth/AuthContext';
-
 import Tutorial from '../Tutorial';
+import Lecture from './Lecture';
 
-const LecturesList = (props) => {
+
+const Lectures = (props) => {
 
     let {waitings, lectures, bookings, bookSeat, addStudentToWaitingList, alreadyBooked, deleteWaitingAddBooking, getBookingId } = props;
 
@@ -35,7 +35,7 @@ const LecturesList = (props) => {
                       {/* TODO: map waitings */}
                     { lectures
                         .filter((l) => !(moment(l.date).isBefore(new Date())))
-                        .map( ( l ) => <LectureItem key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } deleteWaitingAddBooking={ deleteWaitingAddBooking } getBookingId={getBookingId} /> ) }
+                        .map( ( l ) => <Lecture key={ l.id } lecture={ l } waitings = {waitings} bookings={bookings} bookSeat={ bookSeat } addStudentToWaitingList={addStudentToWaitingList} alreadyBooked={ alreadyBooked } deleteWaitingAddBooking={ deleteWaitingAddBooking } getBookingId={getBookingId} /> ) }
                     </tbody>
                 </Table>
                 }
@@ -45,4 +45,4 @@ const LecturesList = (props) => {
     );
 }
 
-export default LecturesList;
+export default Lectures;
