@@ -126,7 +126,10 @@ class Statistics extends React.Component {
                     fixedrange: true
                 },
                 yaxis: {
-                    title: 'Lectures',
+                    title: {
+                        text: 'Lectures',
+                        standoff: 30
+                    },
                     // prevents the axis title to cut off the tick labels by overlapping them
                     automargin: true,
                     fixedrange: true,
@@ -189,7 +192,10 @@ class Statistics extends React.Component {
                     range: [0, maximumValue]
                 },
                 yaxis: {
-                    title: 'Weeks',
+                    title: {
+                        text: 'Weeks',
+                        standoff: 30
+                    },
                     automargin: true,
                     fixedrange: true,
                     tickmode: 'array',
@@ -251,7 +257,10 @@ class Statistics extends React.Component {
                     range: [0, maximumValue]
                 },
                 yaxis: {
-                    title: 'Months',
+                    title: {
+                        text: 'Months',
+                        standoff: 30
+                    },
                     automargin: true,
                     fixedrange: true,
                     tickmode: 'array',
