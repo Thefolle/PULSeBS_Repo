@@ -32,11 +32,13 @@ class TeacherPage extends React.Component {
     // Update the front end instead of retreiving all lectures again, after
     // that a lecture has been turnt to be online (after the click)
     turnLectureIntoOnline = (lectureId, teacherId) => {
-        API.turnLectureIntoOnline(lectureId, teacherId).then( () => {
+        API.turnLectureIntoOnline(lectureId, teacherId).then(() => {
             API.getTeacherLectures().then((lectures) => {
-                this.setState({ lectures: lectures.sort(function (a, b) {
-                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
-                                    }) });
+                this.setState({
+                    lectures: lectures.sort(function (a, b) {
+                        return a.date - b.date || a.course - b.course || a.lecId - b.lecId;
+                    })
+                });
             });
         }).catch(error => {
             console.log(error);
@@ -48,8 +50,8 @@ class TeacherPage extends React.Component {
             .then((lectures) => {
                 this.setState({
                     lectures: lectures.sort(function (a, b) {
-                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
-                                    })
+                        return a.date - b.date || a.course - b.course || a.lecId - b.lecId;
+                    })
                 });
                 this.getStudentsByLecture();
                 this.getCourses(lectures);
@@ -103,9 +105,11 @@ class TeacherPage extends React.Component {
     getTeacherLectures = () => {
         API.getTeacherLectures()
             .then((lectures) => {
-                this.setState({ lectures: lectures.sort(function (a, b) {
-                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
-                                    }) });
+                this.setState({
+                    lectures: lectures.sort(function (a, b) {
+                        return a.date - b.date || a.course - b.course || a.lecId - b.lecId;
+                    })
+                });
                 this.getCourses(lectures);
                 this.getStudentsByLecture();
             })
@@ -118,9 +122,11 @@ class TeacherPage extends React.Component {
         API.cancelLecture(teacherId, lectureId)
             .then(() => {
                 //get the updated list of tasks from the server
-                API.getTeacherLectures().then((lectures) => this.setState({ lectures: lectures.sort(function (a, b) {
-                                        return a.date - b.date || a.course - b.course ||  a.lecId - b.lecId;
-                                    }) }))
+                API.getTeacherLectures().then((lectures) => this.setState({
+                    lectures: lectures.sort(function (a, b) {
+                        return a.date - b.date || a.course - b.course || a.lecId - b.lecId;
+                    })
+                }))
                     .catch((err) => {
                         this.handleErrors(err);
                     });
@@ -139,19 +145,22 @@ class TeacherPage extends React.Component {
                     <>
                         {context.authUser && <>
                             <NavigationBar userId={context.authUser.id} />
-                            <Container>
-                                <Row className={"justify-content-between"}>
-                                    <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
-                                        <ListGroup className="sidebar" variant="flush" >
-                                            <ListGroup.Item className="listGroup-Item">POLITECNICO DI TORINO</ListGroup.Item>
+                            <Container style={{height: '100%'}} fluid>
+                                <Row style={{justifyContent: 'space-evenly', height: '100%'}}>
+                                    <Col sm={3}>
+                                        <ListGroup className="sidebar" variant="flush">
+                                            <h5>POLITECNICO DI TORINO</h5>
+                                            <h3>Teacher</h3>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                            <Tutorial on={true} text='This is your identification number.' push={
-                                                context.authUser.id
-                                            } />
+                                            <ListGroup.Item className="listGroup-Item">
+                                                <Tutorial on={true} text='This is your identification number.' push={
+                                                    context.authUser.id
+                                                } />
+                                            </ListGroup.Item>
                                         </ListGroup>
                                     </Col>
-                                    <Col sm={9}>
+                                    <Col sm={8}>
                                         <Switch>
                                             <Route exact path={"/teacher/courses"}>
                                                 <CourseList courses={this.state.courses} />
@@ -161,10 +170,10 @@ class TeacherPage extends React.Component {
                                             )} />
                                             <Route exact path={"/teacher/:courseId/lecture/:lectureId/presence"} render={({ match }) => (
                                                 <Presence
-                                                              course={ this.state.courses.find( course => course.id === parseInt(match.params.courseId)) }
-                                                              lecture={ this.state.lectures.find( lecture => lecture.lecId === parseInt(match.params.lectureId)) }
+                                                    course={this.state.courses.find(course => course.id === parseInt(match.params.courseId))}
+                                                    lecture={this.state.lectures.find(lecture => lecture.lecId === parseInt(match.params.lectureId))}
                                                 />
-                                        )} />
+                                            )} />
                                             <Route exact path={"/teacher/:courseId/lectures/:lectureId/students"} render={({ match }) => (
                                                 <StudentList students={this.state.students} idl={match.params.lectureId} idc={match.params.courseId} />
                                             )} />

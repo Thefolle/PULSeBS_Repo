@@ -14,7 +14,7 @@ import './style/App.css';
 
 function App() {
     return (
-        <div className="App">
+        <div style={{height: '100%'}} className="App">
             <Router>
                 <PULSeBSApp />
             </Router>

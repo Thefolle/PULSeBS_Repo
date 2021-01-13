@@ -12,6 +12,7 @@ import NavigationBar from '../NavigationBar';
 import CollapsibleTable from "./CollapsibleTable";
 import DropDown from './DropDown';
 import ManageLectures from './ManageLectures';
+import Tutorial from '../Tutorial';
 
 let buttonsStyle = {
     background: "blue",
@@ -59,14 +60,14 @@ class SupportOfficerPage extends React.Component {
             lecForSupport: [], // for Manage lectures page
             lecForFilter: [0]
         };
-        this.updateStudentsData = this.updateStudentsData.bind( this );
-        this.updateTeachersData = this.updateTeachersData.bind( this );
-        this.updateCoursesData = this.updateCoursesData.bind( this );
-        this.updateEnrollmData = this.updateEnrollmData.bind( this );
-        this.updateLecturesData = this.updateLecturesData.bind( this );
-        this.updateClassesData = this.updateClassesData.bind( this );
-        this.updateScheduleData = this.updateScheduleData.bind( this );
-        this.sendData = this.sendData.bind( this );
+        this.updateStudentsData = this.updateStudentsData.bind(this);
+        this.updateTeachersData = this.updateTeachersData.bind(this);
+        this.updateCoursesData = this.updateCoursesData.bind(this);
+        this.updateEnrollmData = this.updateEnrollmData.bind(this);
+        this.updateLecturesData = this.updateLecturesData.bind(this);
+        this.updateClassesData = this.updateClassesData.bind(this);
+        this.updateScheduleData = this.updateScheduleData.bind(this);
+        this.sendData = this.sendData.bind(this);
         this.getAllLecturesForSupportOffice = this.getAllLecturesForSupportOffice.bind(this);
         this.updateBookableAttributForLecture = this.updateBookableAttributForLecture.bind(this);
 
@@ -177,39 +178,39 @@ class SupportOfficerPage extends React.Component {
 
     sendNewSchedule = () => {
         const { schedule, startDate, endDate } = this.state;
-        var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
         let newLectures = [];
 
-       for ( var d = new Date(startDate.valueOf()); d <= endDate; d.setDate(d.getDate() + 1)) {
-           let day = days[d.getDay()];
-           let filteredLectures = schedule.filter((s) => s.day === day);
+        for (var d = new Date(startDate.valueOf()); d <= endDate; d.setDate(d.getDate() + 1)) {
+            let day = days[d.getDay()];
+            let filteredLectures = schedule.filter((s) => s.day === day);
 
-           for(let i=0; i<filteredLectures.length; i++){
-            let s = filteredLectures[i];
-            let start = new Date(d);
-            let end = new Date(d);
-            start.setHours(s.startTime.split(":")[0], s.startTime.split(":")[1], 0, 0);
-            end.setHours(s.endTime.split(":")[0], s.endTime.split(":")[1], 0, 0);
+            for (let i = 0; i < filteredLectures.length; i++) {
+                let s = filteredLectures[i];
+                let start = new Date(d);
+                let end = new Date(d);
+                start.setHours(s.startTime.split(":")[0], s.startTime.split(":")[1], 0, 0);
+                end.setHours(s.endTime.split(":")[0], s.endTime.split(":")[1], 0, 0);
 
-            let startUnix = moment(start).valueOf();
-            let endUnix = moment(end).valueOf();
+                let startUnix = moment(start).valueOf();
+                let endUnix = moment(end).valueOf();
 
-            let lecture = { course: s.course, ref_class: s.class, start_date: startUnix, end_date: endUnix, presence: s.presence, bookable: s.bookable, active: s.active, dateScheduled:s.dateScheduled };
-            newLectures.push(lecture);
+                let lecture = { course: s.course, ref_class: s.class, start_date: startUnix, end_date: endUnix, presence: s.presence, bookable: s.bookable, active: s.active, dateScheduled: s.dateScheduled };
+                newLectures.push(lecture);
+            }
         }
-    }
 
-    //MY IMPLEMENTATION - Vincenzo
-        API.updateScheduleLectues(newLectures,moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then(()=>{
-        //API.importCSV([], [], [], [], [], newLectures).then((result) => {
-                //get the updated list of tasks from the server
-                this.setState({
-                    failed: 0,
-                    schedulecsv: undefined,
-                    //lecturesImported: newLectures,
-                    scheduleImported: schedule //do we need to import in the db the schedule too?
-                });
+        //MY IMPLEMENTATION - Vincenzo
+        API.updateScheduleLectues(newLectures, moment(startDate).valueOf(), moment(endDate.setDate(endDate.getDate() + 1)).valueOf()).then(() => {
+            //API.importCSV([], [], [], [], [], newLectures).then((result) => {
+            //get the updated list of tasks from the server
+            this.setState({
+                failed: 0,
+                schedulecsv: undefined,
+                //lecturesImported: newLectures,
+                scheduleImported: schedule //do we need to import in the db the schedule too?
+            });
         }) //if SUCCEDED return 1
             .catch((errorObj) => {
                 this.handleErrors(errorObj);
@@ -441,7 +442,7 @@ class SupportOfficerPage extends React.Component {
     }
 
     updateScheduleData(result) {
-        var data = result.data.map(e => ({ course: e.course, class: e.class, day: e.day, startTime: e.startTime, endTime: e.endTime, presence: e.presence, bookable: e.bookable, active: e.active, dateScheduled:e.dateScheduled }));
+        var data = result.data.map(e => ({ course: e.course, class: e.class, day: e.day, startTime: e.startTime, endTime: e.endTime, presence: e.presence, bookable: e.bookable, active: e.active, dateScheduled: e.dateScheduled }));
         this.setState({ schedule: data });
     }
 
@@ -520,19 +521,23 @@ class SupportOfficerPage extends React.Component {
      * @Story17
      * get all lectures
      */
-    getAllLecturesForSupportOffice = () =>{
-        API.getAllLecturesForSupportOffice().then( (lectures) => {
-            this.setState({lecForSupport: lectures.sort(function(a, b){
-                return b.date -a.date
-            })})
+    getAllLecturesForSupportOffice = () => {
+        API.getAllLecturesForSupportOffice().then((lectures) => {
+            this.setState({
+                lecForSupport: lectures.sort(function (a, b) {
+                    return b.date - a.date
+                })
+            })
 
-            if(this.state.lecForFilter[0]===0){
-                this.setState({lecForFilter: lectures.sort(function(a, b){
-                    return b.date -a.date
-                })})
+            if (this.state.lecForFilter[0] === 0) {
+                this.setState({
+                    lecForFilter: lectures.sort(function (a, b) {
+                        return b.date - a.date
+                    })
+                })
             }
             // TODO: sort the lectures
-        } ).catch( (err) => {
+        }).catch((err) => {
             this.handleErrors(err)
         })
 
@@ -543,63 +548,66 @@ class SupportOfficerPage extends React.Component {
      * @Story17
      * update bookable attribut of a specificlecture
      */
-    updateBookableAttributForLecture = (lectureId, num)=>{
+    updateBookableAttributForLecture = (lectureId, num) => {
         API.updateBookableAttributForLecture(lectureId, num)
             .then((result) => {
                 console.log(result)
             })
-            .catch( (err) => {
+            .catch((err) => {
                 this.handleErrors(err)
             })
-        if(num ==1)num=0
+        if (num == 1) num = 0
         else num = 1
-        for(let l of this.state.lecForFilter){
-            if(l.id == lectureId){
+        for (let l of this.state.lecForFilter) {
+            if (l.id == lectureId) {
                 l.bookable = num
             }
         }
         this.componentDidMount()
     }
 
-/**
- * @Feihong
- * @Story17
- * update lectures
- */
-updateLecForSup = (courseName) =>{
-    if(courseName==="All"){
-        API.getAllLecturesForSupportOffice().then( (lectures) => {
-            this.setState({lecForFilter: lectures.sort(function(a, b){
-                return b.date -a.date
-            })})
-            // TODO: sort the lectures
-        } ).catch( (err) => {
-            this.handleErrors(err)
-        })
-    }else
-    {
-        var lectures = new Array();
-        for(let lecture of this.state.lecForSupport){
-            if (lecture.courseDesc == courseName){
+    /**
+     * @Feihong
+     * @Story17
+     * update lectures
+     */
+    updateLecForSup = (courseName) => {
+        if (courseName === "All") {
+            API.getAllLecturesForSupportOffice().then((lectures) => {
+                this.setState({
+                    lecForFilter: lectures.sort(function (a, b) {
+                        return b.date - a.date
+                    })
+                })
+                // TODO: sort the lectures
+            }).catch((err) => {
+                this.handleErrors(err)
+            })
+        } else {
+            var lectures = new Array();
+            for (let lecture of this.state.lecForSupport) {
+                if (lecture.courseDesc == courseName) {
 
-                lectures.push(lecture)
+                    lectures.push(lecture)
+                }
             }
+            this.setState({
+                lecForFilter: lectures.sort(function (a, b) {
+                    return b.date - a.date
+                })
+            })
         }
-        this.setState({lecForFilter: lectures.sort(function(a, b){
-            return b.date -a.date
-        })})
     }
-}
 
-/**
- * @Feihong
- * @Story17
- * live cycle
- */
-componentDidMount(){
-    this.getAllLecturesForSupportOffice()
-    // this.updateLecForSup()
-}
+    /**
+     * @Feihong
+     * @Story17
+     * live cycle
+     */
+    componentDidMount() {
+        this.getAllLecturesForSupportOffice()
+        // this.updateLecForSup()
+    }
 
 
 
@@ -612,36 +620,40 @@ componentDidMount(){
                     <>
                         {context.authUser && <>
                             <NavigationBar userId={context.authUser.id} />
-                            <Container>
-                                <Row>
-                                    <Col sm={3} id="left-sidebar" className="collapse d-sm-block below-nav">
+                            <Container style={{height: '100%'}} fluid>
+                                <Row style={{justifyContent: 'space-evenly', height: '100%'}}>
+                                    <Col sm={3}>
                                         <ListGroup className="sidebar" variant="flush">
                                             <h5>POLITECNICO DI TORINO</h5>
-                                            <h3>SUPPORT OFFICE</h3>
+                                            <h3>Support officer</h3>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.name}</ListGroup.Item>
                                             <ListGroup.Item className="listGroup-Item"> {context.authUser.surname}</ListGroup.Item>
-                                            <ListGroup.Item className="listGroup-Item"> {context.authUser.id}</ListGroup.Item>
+                                            <ListGroup.Item className="listGroup-Item">
+                                                <Tutorial on={true} text='This is your identification number.' push={
+                                                    context.authUser.id
+                                                } />
+                                            </ListGroup.Item>
                                         </ListGroup>
                                     </Col>
                                     <Col sm={8}>
                                         <Switch>
-                                            <Route exact path = {"/supportOffice/manageLectures"}>
-                                            <h2>Operate The Bookable Of A Lecture</h2>
+                                            <Route exact path={"/supportOffice/manageLectures"}>
+                                                <h2>Operate The Bookable Of A Lecture</h2>
                                                 <Row>
                                                     <Col>
-                                                    <label>Course:</label>
-                                                        <DropDown options={["All",...new Set(this.state.lecForSupport.map(l => l.courseDesc))]}
-                                                        update={this.updateLecForSup} />
+                                                        <label>Course:</label>
+                                                        <DropDown options={["All", ...new Set(this.state.lecForSupport.map(l => l.courseDesc))]}
+                                                            update={this.updateLecForSup} />
                                                     </Col>
                                                 </Row>
 
-                                                <ManageLectures onLoad={this.FirstLoadDataToFiler} lecForFilter = {this.state.lecForFilter}
-                                                updateBookableAttributForLecture = {this.updateBookableAttributForLecture}
+                                                <ManageLectures onLoad={this.FirstLoadDataToFiler} lecForFilter={this.state.lecForFilter}
+                                                    updateBookableAttributForLecture={this.updateBookableAttributForLecture}
                                                 />
 
 
                                             </Route>
-                                            <Route exact path = {"/supportOffice/uploadFile"}>
+                                            <Route exact path={"/supportOffice/uploadFile"}>
                                                 <Col sm={8} hidden={this.state.failed === 0}>
                                                     <br />
                                                     <h4>Import CSV files to set up the system:</h4>
@@ -873,7 +885,7 @@ componentDidMount(){
                                                     <br />
                                                     <Row>
                                                         <Col sm={5}>
-                                                                <FormGroup>
+                                                            <FormGroup>
                                                                 <Row>
                                                                     <Col sm={2}><FormLabel>from:</FormLabel></Col>
                                                                     <Col sm={2}><DatePicker
@@ -883,8 +895,8 @@ componentDidMount(){
                                                                         onChange={this.handleStartDate}
                                                                         minDate={new Date()}
                                                                     /></Col></Row>
-                                                                </FormGroup>
-                                                                <FormGroup>
+                                                            </FormGroup>
+                                                            <FormGroup>
                                                                 <Row>
                                                                     <Col sm={2}><FormLabel>to:</FormLabel></Col>
                                                                     <Col sm={2}><DatePicker
@@ -894,7 +906,7 @@ componentDidMount(){
                                                                         onChange={this.handleEndDate}
                                                                         minDate={this.state.startDate}
                                                                     /></Col></Row>
-                                                                </FormGroup>
+                                                            </FormGroup>
                                                         </Col>
                                                         <Col sm={4}>
 
@@ -964,7 +976,7 @@ componentDidMount(){
                                                     <CollapsibleTable tableName={"Schedule"}
                                                         tableHeader={["course", "class", "day",
                                                             "start_time", "end_time",
-                                                            "presence", "bookable", "active","old_day"]}
+                                                            "presence", "bookable", "active", "old_day"]}
                                                         tableData={this.state.scheduleImported} />
 
                                                 </Col>
