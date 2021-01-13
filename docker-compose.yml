@@ -1,12 +1,12 @@
 version: "3"
 services:
   pulsebs-client:
-    image: gallofrancesco/pulsebs-frontend:sprint2
+    image: gallofrancesco/pulsebs-frontend:sprint4
     container_name: pulsebs-client
     ports:
       - 3000:3000
   pulsebs-server:
-    image: gallofrancesco/pulsebs-backend:sprint2
+    image: gallofrancesco/pulsebs-backend:sprint4
     container_name: pulsebs-server
     ports:
       - 3001:3001

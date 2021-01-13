@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Dropdown} from 'react-bootstrap';
-import '../../style/dropDown.css';
+import '../../style/DropDown.css';
 
 let DropDown = function (props) {
     let { options, defaultOption, variant, extraPadding, setSelectedOption } = props;
@@ -33,9 +33,9 @@ let DropDown = function (props) {
 
 }
 
-// <DropDown options={['option1', 'option2', 'opti3', 'option4']} defaultOption={'option2'} setSelectedOption={(selectedOption) => 
+// <DropDown options={['option1', 'option2', 'opti3', 'option4']} defaultOption={'option2'} setSelectedOption={(selectedOption) =>
 //    /*  this function is called when an option is clicked; it receives the selected option as a string; */
 //    console.log('option selected: ' + selectedOption)
-// }/> 
+// }/>
 
 export default DropDown;
