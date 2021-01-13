@@ -1,6 +1,6 @@
 class scheduledLecture{ //TO FIX: merge with Lecture.js
 
-    constructor(course, ref_class, start_date, end_date, presence, bookable, active ) {
+    constructor(course, ref_class, start_date, end_date, presence, bookable, active, dateScheduled ) {
         this.ref_course = course;
         this.ref_class = ref_class;
         this.date = start_date;
