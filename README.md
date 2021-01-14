@@ -5,13 +5,15 @@ PULSeBS, a.k.a. Pandemic University Lecture Seat Booking System, is an applicati
 
 ## Installation
 
-- *Docker*: clone the repository from the main branch in local, open a shell in the root folder of the project; the command to run the whole application is: ```docker-compose -f ./docker-compose.yml up```, then you can reach the web application from ```http://localhost:3000```
+- *Docker in local* : clone the repository from the main branch in local; open Docker Desktop; open a shell in ./pulsebs-client/ and run ```docker build --tag client .```; now change directory to ./pulsebs-server/ and run ```docker build --tag server .```; change directory again in the root folder of the project; the command to run the whole application is: ```docker-compose -f ./docker-compose.yml up```, then you can reach the web application from ```http://localhost:3000```;
+
+- *Docker from DockerHub* : open Docker Desktop; open a shell in an arbitrary folder and run ```docker pull gallofrancesco/pulsebs-frontend:<tag>``` and replace the tag with a valid value, like *sprint4*; now run ```docker pull gallofrancesco/pulsebs-backend:<tag>``` with the same tag as before; now change directory of the shell inside the project root folder and run ```docker-compose -f ./docker-compose.yml up```, then you can reach the web application from ```http://localhost:3000```;
 
 - *Development mode*: clone the repository from the main branch in local and:
-    1. Install the dependencies on server side through a shell on folder ./pulsebs-server/ through the command: ```npm install```
-    2. Install the dependencies on client side through a shell on folder ./pulsebs-client/ through the command: ```npm install```
-    3. Run the server from folder ./pulsebs-server/ through the command: ```node ./server.js```
-    4. Run the client from folder ./pulsebs-client/ through the command: ```npm start```
+    1. Install the dependencies on server side through a shell on folder ./pulsebs-server/ through the command: ```npm install```;
+    2. Install the dependencies on client side through a shell on folder ./pulsebs-client/ through the command: ```npm install```;
+    3. Run the server from folder ./pulsebs-server/ through the command: ```node ./server.js```;
+    4. Run the client from folder ./pulsebs-client/ through the command: ```npm start```.
 
 ## Important documents
 
