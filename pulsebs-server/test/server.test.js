@@ -59,7 +59,7 @@ describe('API STUDENT', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(14);
+            expect(response.body.length).toEqual(24);
         });
 
     });
@@ -404,7 +404,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(9);
+            expect(response.body.length).toEqual(17);
         });
 
     });
@@ -420,7 +420,7 @@ describe('API TEACHER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(26);
+            expect(response.body.length).toBe(38);
         });
     });
 
@@ -604,7 +604,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toEqual(23);
+            expect(response.body.length).toEqual(34);
         });
 
     });
@@ -619,7 +619,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(34);
+            expect(response.body.length).toBe(47);
         });
     });
 
@@ -633,7 +633,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(18);
+            expect(response.body.length).toBe(25);
         });
     });
 
@@ -675,7 +675,7 @@ describe('API MANAGER', () => {
                 .set('Content-Type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(33); //change this value
+            expect(response.body.length).toBe(46); //change this value
         });
     });
 

@@ -57,21 +57,21 @@ test('Book a lecture 3', () => {
 //GET STUDENT LECTURES
 test( 'Try to get a student\'s lectures', () => {
     return DAO.getStudentLectures( '269901' ).then( result => {
-        expect( result.length ).toEqual( 14 ); //old value 7
+        expect( result.length ).toEqual( 24 ); //old value 7
     } )
 } );
 
 //GET TEACHER LECTURES
 test( 'Try to get a teacher\'s lectures', () => {
     return DAO.getTeacherLectures( '239901' ).then( result => {
-        expect( result.length ).toBe( 11 ); //old value 11
+        expect( result.length ).toBe( 19 ); //old value 11
     } );
 } );
 
 //GET STUDENTS BOOKED FOR LECTURE ID
 test( 'Try to get students booked for lectures of 1 professor', () => {
     return DAO.getStudentsForLecturev2( '239901' ).then( result => {
-        expect( result.length ).toBe( 25 ); //old value 3
+        expect( result.length ).toBe( 37 ); //old value 3
     } );
 } );
 
@@ -103,7 +103,7 @@ test( 'Try to get students booked for lecture 4', () => {
 //GET ALL STUDENT'S BOOKINGS
 test( 'Try to get all student\'s bookings', () => {
     return DAO.getStudentBookings( '269901' ).then( result => {
-        expect( result.length ).toEqual( 7 ); //old value 3
+        expect( result.length ).toEqual( 10 ); //old value 3
     } )
 } );
 
@@ -336,7 +336,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 
     test( 'per week', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'week' ).then( statistics => {
-            expect( statistics.length ).toEqual(3
+            expect( statistics.length ).toEqual(4
                                                 /*  [
                                                       {
                                                           "bookingNumber": 2,
@@ -372,7 +372,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 
     test( 'per week - Presence ON', () => {
         return DAO.getTeacherBookingStatistics( 239901, 2, 'week',"1" ).then( statistics => {
-            expect( statistics.length ).toEqual(3
+            expect( statistics.length ).toEqual(4
                                                 /*  [
                                                       {
                                                           "bookingNumber": 2,
@@ -404,7 +404,7 @@ describe( '[PUL 10] Get teacher statistics', () => {
 describe( "[PUL-11] Get statistics for manager", () => {
     test( 'get All Bookings 1', () => {
         return DAO.getAllBookings().then( b => {
-            expect( b.length ).toBe( 33 );
+            expect( b.length ).toBe( 46 );
         } )
     } );
 
@@ -426,7 +426,7 @@ describe( "[PUL-11] Get statistics for manager", () => {
 
     test( 'get All Attendances 1', () => {
         return DAO.getAllAttendances().then( b => {
-            expect( b.length ).toBe( 29 );
+            expect( b.length ).toBe( 42 );
         } )
     } );
 
@@ -498,7 +498,7 @@ describe( "[PUL-11] Get statistics for manager", () => {
 
     test( 'get All Lectures', () => {
         return DAO.getAllLectures().then( c => {
-            expect( c.length ).toBe( 23 ); //change value(depends of cardinality of lectures)
+            expect( c.length ).toBe( 34 ); //change value(depends of cardinality of lectures)
         } );
     } );
 
