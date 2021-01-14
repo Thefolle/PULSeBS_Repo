@@ -68,8 +68,8 @@ class SupportOfficerPage extends React.Component {
         this.updateClassesData = this.updateClassesData.bind(this);
         this.updateScheduleData = this.updateScheduleData.bind(this);
         this.sendData = this.sendData.bind(this);
-        this.getAllLecturesForSupportOffice = this.getAllLecturesForSupportOffice.bind(this);
-        this.updateBookableAttributForLecture = this.updateBookableAttributForLecture.bind(this);
+        //this.getAllLecturesForSupportOffice = this.getAllLecturesForSupportOffice.bind(this);
+        //this.updateBookableAttributForLecture = this.updateBookableAttributForLecture.bind(this);
 
         this.handleStartDate = this.handleStartDate.bind(this);
         this.handleEndDate = this.handleEndDate.bind(this);
@@ -516,12 +516,12 @@ class SupportOfficerPage extends React.Component {
         });
     }
 
-    /**
+  /*  /**
      * @Feihong
      * @Story17
      * get all lectures
      */
-    getAllLecturesForSupportOffice = () => {
+    /*getAllLecturesForSupportOffice = () => {
         API.getAllLecturesForSupportOffice().then((lectures) => {
             this.setState({
                 lecForSupport: lectures.sort(function (a, b) {
@@ -541,14 +541,14 @@ class SupportOfficerPage extends React.Component {
             this.handleErrors(err)
         })
 
-    }
+    }*/
 
-    /**
+  /*  /**
      * @Feihong
      * @Story17
      * update bookable attribut of a specificlecture
      */
-    updateBookableAttributForLecture = (lectureId, num) => {
+  /*  updateBookableAttributForLecture = (lectureId, num) => {
         API.updateBookableAttributForLecture(lectureId, num)
             .then((result) => {
                 console.log(result)
@@ -564,14 +564,14 @@ class SupportOfficerPage extends React.Component {
             }
         }
         this.componentDidMount()
-    }
+    }*/
 
-    /**
+/*    /**
      * @Feihong
      * @Story17
      * update lectures
      */
-    updateLecForSup = (courseName) => {
+/*    updateLecForSup = (courseName) => {
         if (courseName === "All") {
             API.getAllLecturesForSupportOffice().then((lectures) => {
                 this.setState({
@@ -597,17 +597,17 @@ class SupportOfficerPage extends React.Component {
                 })
             })
         }
-    }
+    }*/
 
-    /**
+    /*/**
      * @Feihong
      * @Story17
      * live cycle
      */
-    componentDidMount() {
+    /*componentDidMount() {
         this.getAllLecturesForSupportOffice()
         // this.updateLecForSup()
-    }
+    }*/
 
 
 
@@ -637,7 +637,7 @@ class SupportOfficerPage extends React.Component {
                                     </Col>
                                     <Col sm={8}>
                                         <Switch>
-                                            <Route exact path={"/supportOffice/manageLectures"}>
+                                            {/*<Route exact path={"/supportOffice/manageLectures"}>
                                                 <h2>Operate The Bookable Of A Lecture</h2>
                                                 <Row>
                                                     <Col>
@@ -652,7 +652,7 @@ class SupportOfficerPage extends React.Component {
                                                 />
 
 
-                                            </Route>
+                                            </Route>*/}
                                             <Route exact path={"/supportOffice/uploadFile"}>
                                                 <Col sm={8} hidden={this.state.failed === 0}>
                                                     <br />

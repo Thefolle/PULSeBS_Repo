@@ -976,7 +976,9 @@ test( 'Try to check no of seats error 1', () => {
 } );
 
 test( 'Try to check waiting list error 1', () => {
-    return expect(DAO.getWaitingList( undefined )).rejects.toBe( 'can not get waiting list' );
+    return DAO.getWaitingList( undefined ).then((result)=>{
+        expect(result).toEqual( [] );
+    });
 } );
 
 test( 'Try to delete and adding booking error 1', () => {

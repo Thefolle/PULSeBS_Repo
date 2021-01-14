@@ -31,6 +31,8 @@ class ContactTracing extends React.Component {
         if(studentMatricola.length === 6) {
           this.setState({ valid: true });
           this.getTraceStudent(studentMatricola);
+        }else{
+          this.setState({valid:false});
         }
       }
       else {
@@ -68,6 +70,8 @@ class ContactTracing extends React.Component {
         if(teacherMatricola.length === 6) {
           this.setState({ valid: true });
           this.getTraceTeacher(teacherMatricola);
+        }else{
+          this.setState({valid:false});
         }
       }
       else {
@@ -248,7 +252,7 @@ class ContactTracing extends React.Component {
 
 const ShowTraceResult = (props) => {
   let { students, teachers, tracedId, tracedSSN, type } = props;
-  
+
 
   // console.log("showTrace:");
   // console.log([students]);
@@ -371,11 +375,11 @@ const ShowTraceResult = (props) => {
   };
 
   function getPDF(teachers, students, traced, tracedIsStudent) {
-    var teac = teachers.map( function( el ){ 
-      return ["Teacher", el.tID, el.name, el.surname, el.ssn]; 
+    var teac = teachers.map( function( el ){
+      return ["Teacher", el.tID, el.name, el.surname, el.ssn];
      });
-    var stud = students.map( function( el ){ 
-      return ["Student", el.sID, el.name, el.surname, el.ssn]; 
+    var stud = students.map( function( el ){
+      return ["Student", el.sID, el.name, el.surname, el.ssn];
      });
 
     const rows = [];
@@ -385,7 +389,7 @@ const ShowTraceResult = (props) => {
     for(const s of stud) {
       rows.push(s);
     }
-    
+
     //downloadPDF(rows.join('\n'));
     downloadPDF(rows, traced, tracedIsStudent);
   }

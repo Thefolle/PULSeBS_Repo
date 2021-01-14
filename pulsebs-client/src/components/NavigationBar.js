@@ -69,7 +69,7 @@ class NavigationBar extends React.Component {
                 <Route path='/supportOffice'>
                   <Navbar.Collapse id="basic-navbar-nav">
                    <Nav className="mr-auto">
-                      <Nav.Link href="/supportOffice/manageLectures">Manage Lectures <FaBookOpen className={"ml-0.5"} /></Nav.Link>
+                      {/*<Nav.Link href="/supportOffice/manageLectures">Manage Lectures <FaBookOpen className={"ml-0.5"} /></Nav.Link>*/}
                       <Nav.Link href="/supportOffice/uploadFile">Upload Files<FaCalendarAlt className={"ml-0.5"} /></Nav.Link>
                     </Nav>
                   </Navbar.Collapse>

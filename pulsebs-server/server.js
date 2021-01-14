@@ -238,7 +238,7 @@ app.put( '/api/teachers/:teacherId/lectures/:lectureId', ( req, res ) => {
                             " (" + studentAndLectureInfo.studentId + ")," +
                             " the lesson of the course " + studentAndLectureInfo.courseDescription + "," +
                             " planned to take place in class " + studentAndLectureInfo.lectureClass +
-                            " on " + moment.unix( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" ) + "," +
+                            " on " + moment( studentAndLectureInfo.lectureDate ).format( "YYYY-MM-DD HH:mm" ) + "," +
                             " has been just turnt to be online by the teacher." + "\n\n" +
                             "Have a good virtual lesson.\n\n - PULSeBS Team9."
                     };

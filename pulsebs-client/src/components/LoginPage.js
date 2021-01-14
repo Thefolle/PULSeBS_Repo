@@ -33,7 +33,7 @@ class LoginPage extends React.Component {
       <AuthContext.Consumer>
           {(context)=>(
            <>
-            {context.authUser && this.state.redirect ? <Redirect to={{ pathname: context.authUser.type === 0 ? '/student/lectures' : context.authUser.type === 1 ? '/teacher/courses' : context.authUser.type===2 ? '/manager/allStats': '/supportOffice/manageLectures'}} /> : undefined}
+            {context.authUser && this.state.redirect ? <Redirect to={{ pathname: context.authUser.type === 0 ? '/student/lectures' : context.authUser.type === 1 ? '/teacher/courses' : context.authUser.type===2 ? '/manager/allStats': '/supportOffice/uploadFile'}} /> : undefined}
             <Form id='loginForm' method="POST" onSubmit={(event) => this.login(event, context.loginUser)}>
               <Form.Row style={{marginTop: '60px', marginBottom: '40px'}}><h1 style={{fontSize: '5rem'}}>Login</h1></Form.Row>
               <Form.Group controlId="formEmail">
@@ -59,7 +59,7 @@ class LoginPage extends React.Component {
                   <Button variant="primary" type="submit" disabled={!this.state.email.includes('@') || this.state.password.length === 0}>Log in</Button>
                 } />
               </Form.Group>
-              
+
 
             </Form>
           </>
