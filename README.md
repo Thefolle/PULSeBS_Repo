@@ -5,7 +5,7 @@ PULSeBS, a.k.a. Pandemic University Lecture Seat Booking System, is an applicati
 
 ## Installation
 
-- *Docker from DockerHub* : copy the docker-compose.yml file from the project in the local machine, no matters where; open a shell in that directory and run ```docker-compose -f ./docker-compose.yml up```, then you can reach the web application from ```http://localhost:3000```;
+- *Docker* : The best way to deploy backend and frontend together is using Docker-Compose. To do that just clone the project, open a shell in project directory and run ```docker-compose -f ./docker-compose.yml up```, then you can reach the web application from ```http://localhost:3000```;
 
 - *Development mode*: clone the repository from the main branch in local and:
     1. Install the dependencies on server side through a shell on folder ./pulsebs-server/ through the command: ```npm install```;
