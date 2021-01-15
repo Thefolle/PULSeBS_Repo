@@ -13,9 +13,9 @@ sections:
 ### Macro statistics
 - Number of stories committed vs done: 8 / 7
 - Total points committed vs done: 39 / 36
-- Nr of hours planned vs spent (as a team)
-- Estimated: 39h 30m
-- Logged:	41h 31m
+- Nr of hours planned vs spent (as a team):
+	- Estimated: 39h 30m
+	- Logged:	41h 31m
 
 ### Detailed statistics
 
@@ -34,11 +34,12 @@ note: #21bis was already done as part of the story 9 so we didn’t spend other 
 story #0 contains technical_tasks and issues
 
 average = 41h 31m / 18 = 2h 18m 23s
+
 Standard Deviation: 1.5985519102852
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table
 
-Task estimation error ratio = 39h 30m /41h 31m =0,9514
+Task estimation error ratio = 39h 30m /41h 31m = 0,9514
 
 ## QUALITY MEASURES	
 - Unit Testing:
@@ -59,9 +60,9 @@ Task estimation error ratio = 39h 30m /41h 31m =0,9514
      - Hours spent on remediation : 46m
      - debt ratio (as reported by SonarQube under "Measures-Maintainability"): 0.1%
      - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ):
-    	- Reliability: A
-	    - Security: A
-	    - Maintainability: A
+ 		- Reliability: A
+ 		- Security: A
+ 		- Maintainability: A
 
 ## ASSESSMENT
 - What caused your errors in estimation (if any)?
